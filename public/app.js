@@ -1,6 +1,6 @@
 const $ = selector => document.querySelector(selector);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const state = { user: null, sections: {}, categories: [], items: [], section: location.hash === '#krisztian' ? 'krisztian' : 'common', trash: false, detail: null, busy: false };
+const state = { user: null, sections: {}, categories: [], items: [], section: ['common','misi','nandi','attila','krisztian'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'common', trash: false, detail: null, busy: false };
 const descriptions = {
   common: 'A weboldal közös alapjai: bemutatkozás, arculat és minden, ami összeköt.',
   misi: 'Misi gyűjtőrésze: referenciák, projektfotók, leírások és ötletek.',
@@ -46,7 +46,8 @@ function render() {
   $('#upload-button').hidden = state.trash;
   let referenceLink = $('#reference-link');
   if (!referenceLink) { referenceLink = document.createElement('div'); referenceLink.id = 'reference-link'; referenceLink.className = 'notice'; referenceLink.innerHTML = '<strong>Szűrhető referencialista</strong><p>Projektek, források, fotólinkek és helyszínek. Új referencia felvétele, importálás és szerkesztés.</p><a class="primary" href="/referenciak">Referencia-kezelő megnyitása →</a>'; $('.page-heading').after(referenceLink); }
-  referenceLink.hidden = state.trash || state.section !== 'krisztian';
+  referenceLink.hidden = state.trash;
+  referenceLink.querySelector('a').href = `/referenciak?section=${state.section}`;
   $('#collection-title').firstChild.textContent = state.trash ? 'Kukába helyezett anyagok ' : 'Feltöltött anyagok ';
   $('#stat-files').textContent = active.length;
   $('#stat-versions').textContent = active.reduce((sum, i) => sum + i.version_count, 0);

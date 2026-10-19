@@ -89,12 +89,14 @@ npm test
 ```
 
 A tesztek ideiglenes mappában ellenőrzik a közös belépést, több munkamenetet, feltöltést, adatszerkesztést, verzióletöltést, kukát, visszaállítást, újraindítás utáni adatmegőrzést, jelszócsere utáni belépésérvénytelenítést, eredetellenőrzést és belépési próbálkozáskorlátot. Az éles adatokat nem érintik.
-# Krisztián referencia-kezelője
+# Közös referencia-kezelő
 
-A Krisztián gyűjtőrész „Referencia-kezelő megnyitása” hivatkozása a `/referenciak` oldalra vezet. A közös jelszavas belépés itt is szükséges. Az első induláskor 43 projekt és 50 helyszín kerül az adatbázisba; későbbi indulások és telepítések nem írják felül a szerkesztéseket.
+Mind az öt gyűjtőrész „Referencia-kezelő megnyitása” hivatkozása a `/referenciak` oldalra vezet. A közös jelszavas belépés itt is szükséges. Az első induláskor 43 projekt és 50 helyszín kerül az adatbázisba; későbbi indulások és telepítések nem írják felül a szerkesztéseket.
 
 A kereső mellett kategória-, azonosítási állapot-, tervév- és fotólinkszűrő használható. A projektek adatlapján szerkeszthetők a leírások, forrás- és fotólinkek, címkék, helyszínek és koordináták. Új projektek és helyszínek felvehetők. Az archiválás visszafordítható: az „Archiváltak” szűrővel megnyitva törölhető az archiválás jelölése. Az egyidejű módosításokat verzióellenőrzés védi.
 
 A JSON biztonsági mentés az aktuális teljes listát tartalmazza. A JSON import csak új projektazonosítókat vesz fel, a meglévő adatokat nem cseréli le. A helyszínazonosítók stabilak; a koordináták kezdetben hiányoznak, ellenőrzött WGS84 értékekkel egészíthetők ki. A kutatási lista személyes szakmai munkákból készült; a GAUT szerepe, bizonytalan adatok és fotóengedélyek publikálás előtt ellenőrizendők.
 
 A referenciaadatok a meglévő `DATA_DIR/gaut.sqlite` adatbázisban tárolódnak. Az adatbázis és a feltöltött fájlok rendszeres külső biztonsági mentése továbbra is ajánlott.
+
+Minden referencia a Közös, Misi, Nándi, Attila vagy Krisztián gyűjtőrészhez rendelhető, és erre külön szűrő is rendelkezésre áll. Mindenki minden referenciát láthat és szerkeszthet a közös belépéssel. A meglévő rekordok egyszeri migrációval Krisztián jelölést kapnak, az összes korábbi módosításuk megőrzésével. Régebbi, gyűjtőrész nélküli JSON importnál az új rekordok a Közös részbe kerülnek.

@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
+const OWNERS = ['common', 'misi', 'nandi', 'attila', 'krisztian'];
 export function referenceStore(db) {
   const seed = JSON.parse(readFileSync(new URL('./seed/references.json', import.meta.url), 'utf8'));
   db.exec('CREATE TABLE IF NOT EXISTS reference_records(id TEXT PRIMARY KEY,payload TEXT NOT NULL,revision INTEGER NOT NULL,updated_at TEXT NOT NULL); CREATE TABLE IF NOT EXISTS reference_meta(key TEXT PRIMARY KEY,value TEXT NOT NULL)');
@@ -9,6 +10,8 @@ export function referenceStore(db) {
   function validate(p) {
     if (!p || typeof p !== 'object' || Array.isArray(p)) fail(400,'Hibás referencia.');
     const r = structuredClone(p); delete r.revision; delete r.updated_at;
+    if (r.section === undefined) r.section = 'common';
+    if (!OWNERS.includes(r.section)) fail(400,'Válassz érvényes referencia-gyűjtőrészt.');
     if (!/^[a-zA-Z0-9_-]{1,100}$/.test(r.id || '')) fail(400,'Érvénytelen azonosító.');
     if (typeof r.name !== 'string' || !r.name.trim() || r.name.length>500) fail(400,'A projekt neve kötelező, legfeljebb 500 karakter.');
     for (const key of ['design_year','category','city','address','identification_status','scope_from_pdf','background','questions','publication_status','attribution','website_copy_draft','technical_detail']) { if(r[key]===undefined) r[key]=''; if(typeof r[key]!=='string') fail(400,'A szöveges mezőkben szöveget adj meg.'); }
@@ -32,11 +35,22 @@ export function referenceStore(db) {
     if (JSON.stringify(r).length>250000) fail(413,'Túl nagy referencia.');
     return r;
   }
-  const initial = seed.projects.map(p=>validate({...p,locations:seed.locations.filter(l=>l.project_id===p.id)}));
+  const initial = seed.projects.map(p=>validate({...p,section:'krisztian',locations:seed.locations.filter(l=>l.project_id===p.id)}));
   function uniqueLocations(r) { const others=db.prepare('SELECT payload FROM reference_records WHERE id<>?').all(r.id).flatMap(row=>JSON.parse(row.payload).locations.map(l=>l.location_id)); if(r.locations.some(l=>others.includes(l.location_id))) fail(400,'Ez a helyszínazonosító már másik projekthez tartozik.'); }
   if (!db.prepare("SELECT 1 FROM reference_meta WHERE key='seed-v1'").get()) {
     db.exec('BEGIN IMMEDIATE');
     try { for (const p of initial) insert.run(p.id,JSON.stringify(p),new Date().toISOString()); db.prepare('INSERT INTO reference_meta VALUES(?,?)').run('seed-v1','1'); db.exec('COMMIT'); } catch(e) { db.exec('ROLLBACK'); throw e; }
+  }
+  // One-time migration preserves all existing edits and invalidates stale editors.
+  if (!db.prepare("SELECT 1 FROM reference_meta WHERE key='owners-v1'").get()) {
+    db.exec('BEGIN IMMEDIATE');
+    try {
+      for (const row of db.prepare('SELECT * FROM reference_records').all()) {
+        const p=JSON.parse(row.payload);
+        if (p.section===undefined) { p.section='krisztian'; db.prepare('UPDATE reference_records SET payload=?,revision=revision+1 WHERE id=?').run(JSON.stringify(p),row.id); }
+      }
+      db.prepare('INSERT INTO reference_meta VALUES(?,?)').run('owners-v1','1'); db.exec('COMMIT');
+    } catch(e) { db.exec('ROLLBACK'); throw e; }
   }
   return {
     list:()=>db.prepare('SELECT id FROM reference_records ORDER BY id').all().map(r=>get(r.id)),
