@@ -1,0 +1,2643 @@
+{
+  "schema_version": "1.0",
+  "research_date": "2026-10-19",
+  "language": "hu",
+  "source_pdf": "Szabó_Krisztián_01_10018_szakmai_cim_kerelem_melleklet_20251223.pdf",
+  "notes": [
+    "A tervévek a személyes szakmai anyagból származnak; nem átadási évek.",
+    "A külső források az épületazonosítást és háttéradatokat támogatják; nem igazolják önmagukban a GAUT közreműködését.",
+    "A lokációazonosítók saját stabil kulcsok, nem Google Place ID-k.",
+    "A térképlink keresés, nem ellenőrzött koordináta. Minden koordináta null, amíg geokódolás és ellenőrzés nem történik.",
+    "A fotólinkek képekhez/galériákhoz vezetnek; képfájlok és képhasználati engedélyek nincsenek a csomagban."
+  ],
+  "projects": [
+    {
+      "id": "GAUT-REF-001",
+      "name": "OBI áruház, Kecskemét",
+      "design_year": "2008",
+      "category": "Iroda és kereskedelem",
+      "city": "Kecskemét",
+      "address": "Izsáki út 12/b",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "Gépészeti erősáram és automatika gyártmányterv.",
+      "background": "Az OBI hivatalos üzletlistája alapján az áruház helyszíne azonosítható. A 2008-as tervcsomag pontos rendszerhatára a belső dokumentációból egészítendő ki.",
+      "questions": "A konkrét gépészeti rendszerek és a megbízó megadása; saját külső vagy gépészeti kép.",
+      "sources": [
+        {
+          "id": "obi",
+          "title": "OBI hivatalos áruházlista",
+          "url": "https://www.obi.hu/aruhaz"
+        }
+      ],
+      "photo_sources": [],
+      "tags": [
+        "Automatika",
+        "Gyártmányterv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "OBI Áruház Kecskemét – gyártmányterv        (2008)",
+      "location_ids": [
+        "LOC-001-A"
+      ],
+      "website_copy_draft": "OBI áruház, Kecskemét. Gépészeti erősáram és automatika gyártmányterv."
+    },
+    {
+      "id": "GAUT-REF-002",
+      "name": "Egerszalóki hotel – Saliris Resort / Hunguest Saliris",
+      "design_year": "2009",
+      "category": "Szálloda és turizmus",
+      "city": "Egerszalók",
+      "address": "",
+      "identification_status": "Valószínű",
+      "scope_from_pdf": "Gyógy- és élményfürdő-komplexum hotelépületének gyártmányterve.",
+      "background": "A leírás jól illeszkedik az egerszalóki Saliris szálloda- és fürdőkomplexumhoz. A hotel önálló referenciaként kezelendő, a teljes fürdő tervezése nem állítható.",
+      "questions": "Erősítsük meg, hogy a 2009-es terv valóban a Saliris hotelre vonatkozik; pontos cím és munkarész.",
+      "sources": [
+        {
+          "id": "saliris",
+          "title": "Hunguest Saliris – hivatalos szállodaoldal",
+          "url": "https://www.hunguest.eu/hu/hotel/egerszalok/hunguest_saliris/hunguest_saliris/"
+        }
+      ],
+      "photo_sources": [
+        {
+          "title": "Hunguest Saliris – hivatalos szállodaoldal",
+          "url": "https://www.hunguest.eu/hu/hotel/egerszalok/hunguest_saliris/hunguest_saliris/",
+          "media_type": "Fotóforrás / galéria",
+          "reuse_status": "Felhasználási engedély nincs igazolva"
+        }
+      ],
+      "tags": [
+        "Hotel",
+        "Automatika",
+        "Gyártmányterv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "Egerszalók, gyógy és élményfürdő komplexum – Hotel épület. gyártmányterv   (2009)",
+      "location_ids": [
+        "LOC-002-A"
+      ],
+      "website_copy_draft": "Egerszalóki hotel – Saliris Resort / Hunguest Saliris. Gyógy- és élményfürdő-komplexum hotelépületének gyártmányterve."
+    },
+    {
+      "id": "GAUT-REF-003",
+      "name": "K&H bankfiókok – 25 helyszín felújítása",
+      "design_year": "2011",
+      "category": "Iroda és kereskedelem",
+      "city": "Több település",
+      "address": "",
+      "identification_status": "Projektcsoport",
+      "scope_from_pdf": "Épületgépészeti felújítás, légtechnikai munkarész 25 bankfióknál.",
+      "background": "Országos fiókhálózati projektcsoport; egyetlen ponttal nem ábrázolható helyesen. A bank más beruházásait nem kapcsoltam automatikusan ehhez a munkához.",
+      "questions": "A 25 fiók címlistája, az érintett légtechnikai munkák, tervezési fázis és megbízó szükséges.",
+      "sources": [],
+      "photo_sources": [],
+      "tags": [
+        "Légtechnika",
+        "Felújítás",
+        "Több helyszín"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "K&H Bankfiókok épületgépészeti felújítása, légtechnika munkarész (25 bankfiók)   (2011)",
+      "location_ids": [
+        "LOC-003-A"
+      ],
+      "website_copy_draft": "K&H bankfiókok – 25 helyszín felújítása. Épületgépészeti felújítás, légtechnikai munkarész 25 bankfióknál."
+    },
+    {
+      "id": "GAUT-REF-004",
+      "name": "Andrássy-kastély, Tiszadob",
+      "design_year": "2011",
+      "category": "Műemlék és kultúra",
+      "city": "Tiszadob",
+      "address": "Bocskai utca 59.",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "Gépészeti erősáram és automatika gyártmányterv.",
+      "background": "A tiszadobi történeti kastély közönségforgalmi és turisztikai épület. Az intézményi forrás helyszínt és épületleírást ad.",
+      "questions": "A 2011-es munkarész pontosítása és felújítás utáni engedélyezett fotó.",
+      "sources": [
+        {
+          "id": "tiszadob",
+          "title": "Andrássy-kastély – Kulturális Örökség Napjai",
+          "url": "https://oroksegnapok.gov.hu/helyszin/2857"
+        }
+      ],
+      "photo_sources": [],
+      "tags": [
+        "Műemlék",
+        "Automatika",
+        "Gyártmányterv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "Andrássy Kastély – Tiszadob. gyártmányterv       (2011)",
+      "location_ids": [
+        "LOC-004-A"
+      ],
+      "website_copy_draft": "Andrássy-kastély, Tiszadob. Gépészeti erősáram és automatika gyártmányterv."
+    },
+    {
+      "id": "GAUT-REF-005",
+      "name": "Fővárosi Állatkert – állatházak termálvizes hőellátása",
+      "design_year": "2011",
+      "category": "Energia és infrastruktúra",
+      "city": "Budapest",
+      "address": "",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "Állatházak termálvizes hőellátásának gyártmányterve.",
+      "background": "Az Állatkert saját beszámolója szerint a Széchenyi Fürdő termálhőjét hasznosító fűtési rendszer 2011–2012-ben épült ki. A közlemény megerősíti a fejlesztés jellegét.",
+      "questions": "Az érintett állatházak és a saját tervcsomag határa; ne az egész Állatkert automatizálásaként szerepeljen.",
+      "sources": [
+        {
+          "id": "zooheat",
+          "title": "Állatkert – a termálhő alapú fűtés bemutatása",
+          "url": "https://zoobudapest.com/aktualis/igy-varazsolunk-meleget-allataink-szamara-a-teli-hidegben/"
+        }
+      ],
+      "photo_sources": [
+        {
+          "title": "Állatkert – a termálhő alapú fűtés bemutatása",
+          "url": "https://zoobudapest.com/aktualis/igy-varazsolunk-meleget-allataink-szamara-a-teli-hidegben/",
+          "media_type": "Fotóforrás / galéria",
+          "reuse_status": "Felhasználási engedély nincs igazolva"
+        }
+      ],
+      "tags": [
+        "Termálhő",
+        "Fűtésszabályozás",
+        "Gyártmányterv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "campus_id": "CAMPUS-ZOO-BUDAPEST",
+      "original_entry": "Fővárosi Állat- és Növénykert – Állatházak termálvizes hőellátása – gyártmányterv   (2011)",
+      "location_ids": [
+        "LOC-005-A"
+      ],
+      "website_copy_draft": "Fővárosi Állatkert – állatházak termálvizes hőellátása. Állatházak termálvizes hőellátásának gyártmányterve."
+    },
+    {
+      "id": "GAUT-REF-006",
+      "name": "SZTE klinikai tömbök és sürgősségi betegellátó",
+      "design_year": "2012",
+      "category": "Egészségügy",
+      "city": "Szeged",
+      "address": "Semmelweis utca – klinikai tömbök",
+      "identification_status": "Valószínű",
+      "scope_from_pdf": "A forrásban: „SZOTE 256 és 400 ágyas klinika és SBO” – gyártmányterv.",
+      "background": "Az SZTE nyilvános anyagai 265 ágyas új és 410 ágyas meglévő tömböt, valamint SBO-fejlesztést írnak le. A számbeli eltérést nem javítottam bizonyítottnak tekintve.",
+      "questions": "A 256/400 és 265/410 elnevezések egyeztetése; érintett épületek és tervszámok.",
+      "sources": [
+        {
+          "id": "szte",
+          "title": "SZTE – klinikai fejlesztés és galéria",
+          "url": "https://u-szeged.hu/sztehirek/2014-majus/megindul-koltozes-szte"
+        }
+      ],
+      "photo_sources": [
+        {
+          "title": "SZTE – klinikai fejlesztés és galéria",
+          "url": "https://u-szeged.hu/sztehirek/2014-majus/megindul-koltozes-szte",
+          "media_type": "Fotóforrás / galéria",
+          "reuse_status": "Felhasználási engedély nincs igazolva"
+        }
+      ],
+      "tags": [
+        "Klinika",
+        "Automatika",
+        "Gyártmányterv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "SZOTE 256 és 400 ágyas klinika és SBO – gyártmányterv      (2012)",
+      "location_ids": [
+        "LOC-006-A"
+      ],
+      "website_copy_draft": "SZTE klinikai tömbök és sürgősségi betegellátó. A forrásban: „SZOTE 256 és 400 ágyas klinika és SBO” – gyártmányterv."
+    },
+    {
+      "id": "GAUT-REF-007",
+      "name": "Richter Gedeon – dorogi üzemrészek",
+      "design_year": "2012",
+      "category": "Ipar és logisztika",
+      "city": "Dorog",
+      "address": "",
+      "identification_status": "Részben azonosított",
+      "scope_from_pdf": "A munkalista szerint: címkéző, Szintetikus I. és II. üzem; gépészeti erősáram és automatika tervezés.",
+      "background": "A Richter hivatalos oldala a dorogi hatóanyaggyártó telephelyet azonosítja. A mai üzemelnevezések nem igazolják önmagukban a 2012-es belső épületkódokat.",
+      "questions": "A címkéző és Szintetikus II. akkori megnevezésének, épületszámának, tervezési fázisának egyeztetése.",
+      "sources": [
+        {
+          "id": "richter",
+          "title": "Richter – gyártás és dorogi gyáregység",
+          "url": "https://website-prod-cm.gedeonrichter.com/hu-hu/rolunk/tevekenysegunk/gyartas"
+        }
+      ],
+      "photo_sources": [],
+      "tags": [
+        "Gyógyszeripar",
+        "Automatika",
+        "Több épület"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "Richter Gedeon Gyógyszergyár- Dorog (Cimkéző, szintetikus I és II. üzem)    (2012)",
+      "location_ids": [
+        "LOC-007-A"
+      ],
+      "website_copy_draft": "Richter Gedeon – dorogi üzemrészek. A munkalista szerint: címkéző, Szintetikus I. és II. üzem; gépészeti erősáram és automatika tervezés."
+    },
+    {
+      "id": "GAUT-REF-008",
+      "name": "Kanizsai Dorottya Kórház",
+      "design_year": "2012–2013",
+      "category": "Egészségügy",
+      "city": "Nagykanizsa",
+      "address": "Szekeres József utca 2–8.",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "Gépészeti erősáram és automatika gyártmányterv.",
+      "background": "A forrás „Dorottya Kórház” elnevezése a nagykanizsai Kanizsai Dorottya Kórházzal azonosítható. Az intézményi cím hivatalos nyilvántartásból származik.",
+      "questions": "Az érintett pavilonok és rendszerek, konkrét korszerűsítési ütem.",
+      "sources": [
+        {
+          "id": "kanizsa",
+          "title": "OKFŐ – Kanizsai Dorottya Kórház",
+          "url": "https://okfo.gov.hu/egeszsegugyi-intezmenyek/Egeszsegugyi_intezmenyek/nagykanizsai-kanizsai-dorottya-korhaz"
+        }
+      ],
+      "photo_sources": [],
+      "tags": [
+        "Kórház",
+        "Automatika",
+        "Gyártmányterv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "Dorottya Kórház – Nagykanizsa – gyártmányterv          (2012-2013)",
+      "location_ids": [
+        "LOC-008-A"
+      ],
+      "website_copy_draft": "Kanizsai Dorottya Kórház. Gépészeti erősáram és automatika gyártmányterv."
+    },
+    {
+      "id": "GAUT-REF-009",
+      "name": "Csillagpont Kórház – légkezelővezérlők",
+      "design_year": "2012",
+      "category": "Egészségügy",
+      "city": "Miskolc",
+      "address": "",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "Légkezelővezérlők gyártmánytervei, 16 kapcsolószekrény.",
+      "background": "A miskolci Csillagpont épület kórházi fejlesztésként beazonosítható; építészeti bemutatása képeket is tartalmaz.",
+      "questions": "Telephelyen belüli épületpont; a 16 szekrényhez tartozó légtechnikai rendszerlista.",
+      "sources": [
+        {
+          "id": "csillag",
+          "title": "Csillagpont – építészeti adatlap, képek",
+          "url": "https://www.kitervezte.hu/epuletek/kultura/csillagpont-korhaz-miskolc"
+        }
+      ],
+      "photo_sources": [
+        {
+          "title": "Csillagpont – építészeti adatlap, képek",
+          "url": "https://www.kitervezte.hu/epuletek/kultura/csillagpont-korhaz-miskolc",
+          "media_type": "Fotóforrás / galéria",
+          "reuse_status": "Felhasználási engedély nincs igazolva"
+        }
+      ],
+      "tags": [
+        "Légtechnika",
+        "Kapcsolószekrény",
+        "Gyártmányterv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "Miskolc Csillagpont Kórház – Légkezelő vezérlők gyártmánytervei (16db kapcsolószekrény)  (2012)",
+      "location_ids": [
+        "LOC-009-A"
+      ],
+      "website_copy_draft": "Csillagpont Kórház – légkezelővezérlők. Légkezelővezérlők gyártmánytervei, 16 kapcsolószekrény."
+    },
+    {
+      "id": "GAUT-REF-010",
+      "name": "CBA Erzsébet Áruház",
+      "design_year": "2012",
+      "category": "Iroda és kereskedelem",
+      "city": "",
+      "address": "",
+      "identification_status": "Pontosítandó",
+      "scope_from_pdf": "Gépészeti erősáram és automatika gyártmányterv.",
+      "background": "Egy címtörténeti találat Budapest XX., Kossuth Lajos utca 33. címet társít ehhez a névhez. Ez csak azonosítási nyom, nem megerősített projektcím.",
+      "questions": "A terv címlapja vagy település és cím szükséges; addig térképre nem helyezhető.",
+      "sources": [
+        {
+          "id": "cba",
+          "title": "Címtörténeti találat – csak lehetséges cím",
+          "url": "https://www.cimtortenet.com/budapest-kossuth-lajos-utca-33-1201-hungary"
+        }
+      ],
+      "photo_sources": [],
+      "tags": [
+        "Áruház",
+        "Automatika",
+        "Gyártmányterv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "CBA Erzsébet Áruház – gyártmányterv        (2012)",
+      "location_ids": [
+        "LOC-010-A"
+      ],
+      "website_copy_draft": "CBA Erzsébet Áruház. Gépészeti erősáram és automatika gyártmányterv."
+    },
+    {
+      "id": "GAUT-REF-011",
+      "name": "FŐTÁV hőközpontok – távfelügyeleti illesztés",
+      "design_year": "2013",
+      "category": "Energia és infrastruktúra",
+      "city": "Budapest, több helyszín",
+      "address": "",
+      "identification_status": "Projektcsoport",
+      "scope_from_pdf": "Hőközpontok távfelügyeleti rendszerbe illesztése, kiviteli terv.",
+      "background": "Budapest klímastratégiája külön foglalkozik a hőközpontok távfelügyeletével. Ez programháttér, nem a konkrét 2013-as hőközpontlista igazolása.",
+      "questions": "Hőközpont-azonosítók, címlista, darabszám és protokollok szükségesek.",
+      "sources": [
+        {
+          "id": "fotav",
+          "title": "Budapest klímastratégiája – hőközponti távfelügyelet",
+          "url": "https://archiv.budapest.hu/Documents/Bp_Klimastratégiája_v2.0_tarsadalmi_egyeztetésre.pdf"
+        }
+      ],
+      "photo_sources": [],
+      "tags": [
+        "Távfelügyelet",
+        "Hőközpont",
+        "Kiviteli terv",
+        "Több helyszín"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "FŐTÁV hőközpontok távfelügyeleti rendszerbe illesztés, kiviteli terv    (2013)",
+      "location_ids": [
+        "LOC-011-A"
+      ],
+      "website_copy_draft": "FŐTÁV hőközpontok – távfelügyeleti illesztés. Hőközpontok távfelügyeleti rendszerbe illesztése, kiviteli terv."
+    },
+    {
+      "id": "GAUT-REF-012",
+      "name": "MEDITOP – tablettázó üzem",
+      "design_year": "2013",
+      "category": "Ipar és logisztika",
+      "city": "Pilisborosjenő",
+      "address": "Ady Endre utca 1.",
+      "identification_status": "Részben azonosított",
+      "scope_from_pdf": "Tablettázó üzem kiviteli és gyártmányterve.",
+      "background": "A gyártó hivatalos elérhetősége megerősíti a pilisborosjenői telephelyet. A tablettázó konkrét belső épülete és 2013-as fejlesztési üteme külön egyeztetendő.",
+      "questions": "A tablettázó épületkódja, rendszerhatár, szükséges műszaki leírás és gyári fotó.",
+      "sources": [
+        {
+          "id": "meditop",
+          "title": "MEDITOP – telephely",
+          "url": "https://www.meditop.hu/kapcsolat/"
+        }
+      ],
+      "photo_sources": [],
+      "tags": [
+        "Gyógyszeripar",
+        "Kiviteli terv",
+        "Gyártmányterv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "MEDITOP Kft. Tablettázó Üzem – kiviteli és gyártmányterv      (2013)",
+      "location_ids": [
+        "LOC-012-A"
+      ],
+      "website_copy_draft": "MEDITOP – tablettázó üzem. Tablettázó üzem kiviteli és gyártmányterve."
+    },
+    {
+      "id": "GAUT-REF-013",
+      "name": "Debreceni Egyetem – Ortopédiai Klinika korszerűsítése",
+      "design_year": "2013",
+      "category": "Egészségügy",
+      "city": "Debrecen",
+      "address": "",
+      "identification_status": "Részben azonosított",
+      "scope_from_pdf": "DEOEC Ortopédiai Klinika korszerűsítése, gyártmányterv.",
+      "background": "A DEOEC korabeli intézménynév a Debreceni Egyetem orvosi centrumára utal. A jelenlegi klinikai szervezeti és telephelyi állapot nem azonosítható automatikusan a 2013-as munkával.",
+      "questions": "Korabeli cím, épület/pavilon és tervszám szükséges.",
+      "sources": [
+        {
+          "id": "de",
+          "title": "Debreceni Egyetem – klinikai intézmények háttéranyaga",
+          "url": "https://hirek.unideb.hu/tovabbi-hat-klinikara-latogatott-kuratorium"
+        }
+      ],
+      "photo_sources": [],
+      "tags": [
+        "Klinika",
+        "Felújítás",
+        "Gyártmányterv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "DEOEC – Ortopédiai Klinika korszerűsítése – gyártmányterv     (2013)",
+      "location_ids": [
+        "LOC-013-A"
+      ],
+      "website_copy_draft": "Debreceni Egyetem – Ortopédiai Klinika korszerűsítése. DEOEC Ortopédiai Klinika korszerűsítése, gyártmányterv."
+    },
+    {
+      "id": "GAUT-REF-014",
+      "name": "Szent Borbála Kórház – energetikai/gépészeti felújítás",
+      "design_year": "2014",
+      "category": "Egészségügy",
+      "city": "Tatabánya",
+      "address": "",
+      "identification_status": "Valószínű",
+      "scope_from_pdf": "Tatabányai Kórház KEOP-pályázata, gépészeti felújítás.",
+      "background": "A kivitelezői referencia 2014 decemberében átadott energetikai korszerűsítést említ a Szent Borbála Kórháznál. Ez erős azonosítási támpont, de a konkrét pályázati szám hiányzik.",
+      "questions": "KEOP-azonosító, pavilonok, tervfázis és automatika-munkarész.",
+      "sources": [
+        {
+          "id": "tata",
+          "title": "Élő-Energia – tatabányai energetikai korszerűsítés",
+          "url": "https://eloenergia.hu/?action=references_magyar&lang=hu"
+        }
+      ],
+      "photo_sources": [],
+      "tags": [
+        "Energetikai korszerűsítés",
+        "Felújítás"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "Tatabányai Kórház KEOP pályázat – Gépészeti felújítás      (2014)",
+      "location_ids": [
+        "LOC-014-A"
+      ],
+      "website_copy_draft": "Szent Borbála Kórház – energetikai/gépészeti felújítás. Tatabányai Kórház KEOP-pályázata, gépészeti felújítás."
+    },
+    {
+      "id": "GAUT-REF-015",
+      "name": "MLSZ Telki Edzőközpont – bővítés",
+      "design_year": "2014",
+      "category": "Sport és fürdő",
+      "city": "Telki",
+      "address": "",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "Bővítéshez kapcsolódó gyártási terv.",
+      "background": "Az MLSZ korabeli fejlesztési beszámolója a telki edzőcentrum bővítését dokumentálja. A saját feladat pontos épülete és műszaki tartalma a belső tervből pótlandó.",
+      "questions": "Épület és ütem megnevezése; a központ egészétől elválasztott rendszerhatár.",
+      "sources": [
+        {
+          "id": "telki",
+          "title": "MLSZ – infrastruktúra-fejlesztési beszámoló",
+          "url": "https://szovetseg.mlsz.hu/adat/dokumentum/5640/dokumentumok/taograf-2014..pdf"
+        }
+      ],
+      "photo_sources": [],
+      "tags": [
+        "Sport",
+        "Bővítés",
+        "Gyártási terv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "MLSZ Telki Edzőközpont bővítés – gyártási terv       (2014)",
+      "location_ids": [
+        "LOC-015-A"
+      ],
+      "website_copy_draft": "MLSZ Telki Edzőközpont – bővítés. Bővítéshez kapcsolódó gyártási terv."
+    },
+    {
+      "id": "GAUT-REF-016",
+      "name": "GE Aviation – üzemépület-bővítés",
+      "design_year": "2015",
+      "category": "Ipar és logisztika",
+      "city": "Veresegyház",
+      "address": "",
+      "identification_status": "Valószínű",
+      "scope_from_pdf": "Üzemépület-bővítés gyártási terve.",
+      "background": "A városi korabeli kiadvány 2015-ben átadott GE Aviation csarnokbővítést mutat be Veresegyházon. Az év és a beruházástípus illeszkedik a munkalistához.",
+      "questions": "Meg kell erősíteni, hogy ez az érintett telephely és csarnok; a tervezési év nem azonos automatikusan az átadással.",
+      "sources": [
+        {
+          "id": "geav",
+          "title": "Veresi Krónika – a GE Aviation 2015-ös bővítése",
+          "url": "https://www.veresegyhaz.hu/_upload/editor/Onkormanyzat/VeresiKronika/veresi_kronika_2015_10.pdf"
+        }
+      ],
+      "photo_sources": [
+        {
+          "title": "Veresi Krónika – a GE Aviation 2015-ös bővítése",
+          "url": "https://www.veresegyhaz.hu/_upload/editor/Onkormanyzat/VeresiKronika/veresi_kronika_2015_10.pdf",
+          "media_type": "Fotóforrás / galéria",
+          "reuse_status": "Felhasználási engedély nincs igazolva"
+        }
+      ],
+      "tags": [
+        "Repülőgépipar",
+        "Bővítés",
+        "Gyártási terv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "GE A VIATION – Üzemépület bővítés. Gyártási terv       (2015)",
+      "location_ids": [
+        "LOC-016-A"
+      ],
+      "website_copy_draft": "GE Aviation – üzemépület-bővítés. Üzemépület-bővítés gyártási terve."
+    },
+    {
+      "id": "GAUT-REF-017",
+      "name": "Betegápoló Irgalmas Rend – kórházi fűtéskorszerűsítés",
+      "design_year": "2015",
+      "category": "Egészségügy",
+      "city": "",
+      "address": "",
+      "identification_status": "Pontosítandó",
+      "scope_from_pdf": "Fűtéskorszerűsítés, gyártási terv.",
+      "background": "A dokumentumból a rend megnevezése ismert, de a település és az intézmény nem derül ki. Nem választottam önkényesen budapesti vagy más kórházat.",
+      "questions": "Település, kórháznév, cím, tervszám és műszaki rendszer szükséges.",
+      "sources": [],
+      "photo_sources": [],
+      "tags": [
+        "Fűtésszabályozás",
+        "Felújítás",
+        "Gyártási terv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "Betegápoló Irgalmas Rend Kórház. Fűtéskorszerűsítés. Gyártási terv     (2015)",
+      "location_ids": [
+        "LOC-017-A"
+      ],
+      "website_copy_draft": "Betegápoló Irgalmas Rend – kórházi fűtéskorszerűsítés. Fűtéskorszerűsítés, gyártási terv."
+    },
+    {
+      "id": "GAUT-REF-018",
+      "name": "GE Power – „MEADOW” raktárcsarnok",
+      "design_year": "2016",
+      "category": "Ipar és logisztika",
+      "city": "",
+      "address": "",
+      "identification_status": "Pontosítandó",
+      "scope_from_pdf": "Új raktárcsarnok kialakítása, gyártási terv.",
+      "background": "A GE Power veresegyházi telephelye nyilvános háttéranyaggal azonosítható, de a MEADOW belső projektnév és a konkrét csarnok nincs összekapcsolva igazolt forrással.",
+      "questions": "A MEADOW terv címlapja, település és cím szükséges. Veresegyház jelenleg csak jelölt.",
+      "sources": [
+        {
+          "id": "gepower",
+          "title": "GE Power veresegyházi telephely – háttéranyag",
+          "url": "https://www.kvalikon.hu/cikkek-tudastar/best-practice-forum-osszefoglalok/best-practice-forum-ge-power"
+        }
+      ],
+      "photo_sources": [],
+      "tags": [
+        "Raktár",
+        "Gyártási terv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "GE POWERS MEADOW új raktárcsarnok kialakítása. Gyártási terv     (2016)",
+      "location_ids": [
+        "LOC-018-A"
+      ],
+      "website_copy_draft": "GE Power – „MEADOW” raktárcsarnok. Új raktárcsarnok kialakítása, gyártási terv."
+    },
+    {
+      "id": "GAUT-REF-019",
+      "name": "Debreceni Egyetem – Liszt terem",
+      "design_year": "2016",
+      "category": "Műemlék és kultúra",
+      "city": "Debrecen",
+      "address": "Egyetem tér 1. – Zeneművészeti Kar",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "Liszt teremhez kapcsolódó gyártási terv.",
+      "background": "Az egyetem helyszínoldala a koncerttermet és a mai címet azonosítja. Régebbi egyetemi dokumentumok Nagyerdei körút 82. címet is használnak; az épületbejárat pontosítása hasznos.",
+      "questions": "Munkarész és tervszám; korabeli cím és a terem gépészeti rendszerei.",
+      "sources": [
+        {
+          "id": "liszt",
+          "title": "Debreceni Egyetem – Liszt terem helyszínadatai",
+          "url": "https://music.unideb.hu/koncert-helyszinek"
+        }
+      ],
+      "photo_sources": [],
+      "tags": [
+        "Oktatás",
+        "Hangversenyterem",
+        "Gyártási terv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "Debreceni Egyetem-Zeneművészeti kar- Liszt Terem. Gyártási terv     (2016)",
+      "location_ids": [
+        "LOC-019-A"
+      ],
+      "website_copy_draft": "Debreceni Egyetem – Liszt terem. Liszt teremhez kapcsolódó gyártási terv."
+    },
+    {
+      "id": "GAUT-REF-020",
+      "name": "HungaroControl ANS III – jégakkumulációs rendszer",
+      "design_year": "2017",
+      "category": "Energia és infrastruktúra",
+      "city": "Budapest",
+      "address": "",
+      "identification_status": "Valószínű",
+      "scope_from_pdf": "Jégakkumulációs rendszer gyártási terve.",
+      "background": "A HungaroControl hivatalos oldala az ANS III budapesti légiforgalmi irányítóközpontot azonosítja. A 2017-es jégakkumulációs munkarészre a saját PDF szolgáltat adatot.",
+      "questions": "Telephely és tervszám megerősítése; a jégakkumuláció rendszerhatára.",
+      "sources": [
+        {
+          "id": "ans",
+          "title": "HungaroControl – ANS III irányítóközpont",
+          "url": "https://www.hungarocontrol.hu/sajtoszoba/hirek/ansiii-avato"
+        }
+      ],
+      "photo_sources": [
+        {
+          "title": "HungaroControl – ANS III irányítóközpont",
+          "url": "https://www.hungarocontrol.hu/sajtoszoba/hirek/ansiii-avato",
+          "media_type": "Fotóforrás / galéria",
+          "reuse_status": "Felhasználási engedély nincs igazolva"
+        }
+      ],
+      "tags": [
+        "Hűtés",
+        "Jégakkumuláció",
+        "Gyártási terv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "ANS III. Jégakkumulációs rendszer. Gyártási terv       (2017)",
+      "location_ids": [
+        "LOC-020-A"
+      ],
+      "website_copy_draft": "HungaroControl ANS III – jégakkumulációs rendszer. Jégakkumulációs rendszer gyártási terve."
+    },
+    {
+      "id": "GAUT-REF-021",
+      "name": "Flór Ferenc Kórház – fűtéskorszerűsítés",
+      "design_year": "2017",
+      "category": "Egészségügy",
+      "city": "Kistarcsa",
+      "address": "",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "Fűtési rendszer korszerűsítése, gyártási terv.",
+      "background": "A 2017-es kormányzati közlés a kistarcsai kórház energetikai fejlesztései között fűtéskorszerűsítést is felsorol. A saját munkarész a benyújtott tervlistából származik.",
+      "questions": "Pontos telephely/épület, energetikai projektazonosító és felügyeleti rendszer.",
+      "sources": [
+        {
+          "id": "flor",
+          "title": "Kormányzati közlés – Flór Ferenc Kórház fejlesztése",
+          "url": "https://2015-2019.kormany.hu/hu/emberi-eroforrasok-miniszteriuma/egeszsegugyert-felelos-allamtitkarsag/hirek/megujul-a-pest-megyei-flor-ferenc-korhaz"
+        }
+      ],
+      "photo_sources": [],
+      "tags": [
+        "Fűtésszabályozás",
+        "Felújítás",
+        "Gyártási terv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "Flór Ferenc Kórház – Fűtési rendszer korszerűsítés. Gyártási terv     (2017)",
+      "location_ids": [
+        "LOC-021-A"
+      ],
+      "website_copy_draft": "Flór Ferenc Kórház – fűtéskorszerűsítés. Fűtési rendszer korszerűsítése, gyártási terv."
+    },
+    {
+      "id": "GAUT-REF-022",
+      "name": "PENNY logisztikai központ – valószínűleg Veszprém",
+      "design_year": "2017",
+      "category": "Ipar és logisztika",
+      "city": "Veszprém",
+      "address": "",
+      "identification_status": "Valószínű",
+      "scope_from_pdf": "Épületgépészeti automatika és épületfelügyelet gyártmányterve.",
+      "background": "A PENNY hivatalos oldala a veszprémi központ 2017-es megnyitását jelzi. A KÉSZ ehhez a helyszínhez projektbemutatást és képeket közöl. A munkalistában nincs település.",
+      "questions": "Erősítsük meg Veszprémet, majd a címet, vezérlőplatformot és rendszerlistát.",
+      "sources": [
+        {
+          "id": "penny",
+          "title": "PENNY – logisztikai központok és veszprémi nyitás",
+          "url": "https://www.pennykarrier.penny.hu/logisztika"
+        },
+        {
+          "id": "pennyphoto",
+          "title": "KÉSZ – veszprémi PENNY referencia, képek",
+          "url": "https://www.keszgroup.com/referenciaink/ipari-es-kereskedelmi-letesitmenyek/gyarak-ipari-csarnokok-ipari-parkok/penny-market"
+        }
+      ],
+      "photo_sources": [
+        {
+          "title": "KÉSZ – veszprémi PENNY referencia, képek",
+          "url": "https://www.keszgroup.com/referenciaink/ipari-es-kereskedelmi-letesitmenyek/gyarak-ipari-csarnokok-ipari-parkok/penny-market",
+          "media_type": "Fotóforrás / galéria",
+          "reuse_status": "Felhasználási engedély nincs igazolva"
+        }
+      ],
+      "tags": [
+        "Logisztika",
+        "Épületfelügyelet",
+        "Gyártmányterv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "PENNY Logisztikai Központ – Épületgépészetiautomatika és épületfelügyelet gyártmányterv (2017)",
+      "location_ids": [
+        "LOC-022-A"
+      ],
+      "website_copy_draft": "PENNY logisztikai központ – valószínűleg Veszprém. Épületgépészeti automatika és épületfelügyelet gyártmányterve."
+    },
+    {
+      "id": "GAUT-REF-023",
+      "name": "BudaPart lakóépületek – BRA, BRC, BRB, BRD, BRE, BRG, BRK",
+      "design_year": "2018–2025",
+      "category": "Lakóépület",
+      "city": "Budapest XI.",
+      "address": "",
+      "identification_status": "Projektcsoport",
+      "scope_from_pdf": "A felsorolt hét épület gépészeti erősáram/automatika gyártmánytervei.",
+      "background": "A fejlesztői dokumentumok és a gépészeti kivitelező anyaga a BudaPart belső épületkódjait használja. A felsorolt épületeket külön helyszín-gyermekrekordokként célszerű kezelni.",
+      "questions": "Épületenként pontos postai cím, tervezési év, tervszám, rendszer és fotó; a kódokat ne keverjük más BudaPart-házakkal.",
+      "sources": [
+        {
+          "id": "budapart",
+          "title": "BudaPart – épületkódokat tartalmazó fejlesztési dokumentum",
+          "url": "https://budapart.hu/en/download/2/43964-kgallocation-and-impact-report2023finalsigned"
+        },
+        {
+          "id": "budaensi",
+          "title": "ENSI – BudaPart épületek és szakági háttér",
+          "url": "https://www.ensi.hu/hirek/downtown-irodahaz-hotel-epuletgepeszet-ensi"
+        }
+      ],
+      "photo_sources": [],
+      "tags": [
+        "Társasház",
+        "Több épület",
+        "Gyártmányterv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "building_codes": [
+        "BRA",
+        "BRC",
+        "BRB",
+        "BRD",
+        "BRE",
+        "BRG",
+        "BRK"
+      ],
+      "original_entry": "BUDAPART Társasházak BRA, BRC, BRB, BRD, BRE, BRG, BRK épületek. Gyártmánytervek (2018-2025)",
+      "location_ids": [
+        "LOC-023-BRA",
+        "LOC-023-BRC",
+        "LOC-023-BRB",
+        "LOC-023-BRD",
+        "LOC-023-BRE",
+        "LOC-023-BRG",
+        "LOC-023-BRK"
+      ],
+      "website_copy_draft": "BudaPart lakóépületek – BRA, BRC, BRB, BRD, BRE, BRG, BRK. A felsorolt hét épület gépészeti erősáram/automatika gyártmánytervei."
+    },
+    {
+      "id": "GAUT-REF-024",
+      "name": "Fővárosi Állatkert – Cápasuli / Cápanevelde",
+      "design_year": "2018",
+      "category": "Műemlék és kultúra",
+      "city": "Budapest",
+      "address": "",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "FÁNK Pannon Projekt – Cápanevelde, gyártási terv.",
+      "background": "Az Állatkert saját közlése szerint a Cápasuli 2018-ban nyílt meg. Ezt a bemutatóhelyet kell megkülönböztetni a teljes Pannon Park/Biodóm projekttől.",
+      "questions": "A terv pontos épületneve és munkarésze; külön térképpont az Állatkerten belül.",
+      "sources": [
+        {
+          "id": "capa",
+          "title": "Állatkert – a 2018-ban átadott Cápasuli",
+          "url": "https://zoobudapest.com/aktualis/a-capasuli-vendege/"
+        }
+      ],
+      "photo_sources": [
+        {
+          "title": "Állatkert – a 2018-ban átadott Cápasuli",
+          "url": "https://zoobudapest.com/aktualis/a-capasuli-vendege/",
+          "media_type": "Fotóforrás / galéria",
+          "reuse_status": "Felhasználási engedély nincs igazolva"
+        }
+      ],
+      "tags": [
+        "Állatkert",
+        "Akvárium",
+        "Gyártási terv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "campus_id": "CAMPUS-ZOO-BUDAPEST",
+      "original_entry": "FÁNK – Pannon Projekt – Cápanevelde. Gyártási terv      (2018)",
+      "location_ids": [
+        "LOC-024-A"
+      ],
+      "website_copy_draft": "Fővárosi Állatkert – Cápasuli / Cápanevelde. FÁNK Pannon Projekt – Cápanevelde, gyártási terv."
+    },
+    {
+      "id": "GAUT-REF-025",
+      "name": "GS Yuasa – miskolci csarnok",
+      "design_year": "2018",
+      "category": "Ipar és logisztika",
+      "city": "Miskolc",
+      "address": "",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "Légkezelővezérlők és fűtési rendszer automatika-gyártmányterve.",
+      "background": "A hivatalos beruházási közlés a GS Yuasa akkumulátoripari gyárát a miskolci déli ipari parkhoz köti. A saját terv 2018-as; a gyár megvalósulási időpontját külön kell kezelni.",
+      "questions": "Utca, csarnok/ütem és automatika-rendszer; engedélyezett üzemi fotó.",
+      "sources": [
+        {
+          "id": "yuasa",
+          "title": "Kormányzati közlés – GS Yuasa miskolci gyár",
+          "url": "https://akadalymentes.2015-2019.kormany.hu/en/ministry-of-foreign-affairs-and-trade/news/new-battery-production-plant-to-be-constructed-in-miskolc"
+        }
+      ],
+      "photo_sources": [],
+      "tags": [
+        "Akkumulátoripar",
+        "Légtechnika",
+        "Fűtésszabályozás"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "YUASA Csarnok Miskolc – Légkezelővezérlők és fűtési rendszer. Automatika gyártmányterv (2018)",
+      "location_ids": [
+        "LOC-025-A"
+      ],
+      "website_copy_draft": "GS Yuasa – miskolci csarnok. Légkezelővezérlők és fűtési rendszer automatika-gyártmányterve."
+    },
+    {
+      "id": "GAUT-REF-026",
+      "name": "AVL – iroda- és tesztépület, Érd",
+      "design_year": "2019",
+      "category": "Ipar és logisztika",
+      "city": "Érd",
+      "address": "Mühlgang utca 5.",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "Épületgépészeti automatika kiviteli és gyártmányterve.",
+      "background": "Az AVL hivatalos oldala az érdi Hungarian Tech Centert, irodát és tesztfunkciókat mutatja be. A cím és a fejlesztési jelleg összhangban van a korabeli beruházási közléssel.",
+      "questions": "Az iroda és a tesztépület saját rendszerhatárainak szétválasztása.",
+      "sources": [
+        {
+          "id": "avl",
+          "title": "AVL – érdi Hungarian Tech Center, cím és képek",
+          "url": "https://www.avl.com/en-gb/locations/avl-hungary-kft"
+        }
+      ],
+      "photo_sources": [
+        {
+          "title": "AVL – érdi Hungarian Tech Center, cím és képek",
+          "url": "https://www.avl.com/en-gb/locations/avl-hungary-kft",
+          "media_type": "Fotóforrás / galéria",
+          "reuse_status": "Felhasználási engedély nincs igazolva"
+        }
+      ],
+      "tags": [
+        "Kutatás-fejlesztés",
+        "Iroda",
+        "Kiviteli terv",
+        "Gyártmányterv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "A VL Irodaház és tesztépület – Épületgépészeti-automatika kiviteli és gyártmányterv   (2019)",
+      "location_ids": [
+        "LOC-026-A"
+      ],
+      "website_copy_draft": "AVL – iroda- és tesztépület, Érd. Épületgépészeti automatika kiviteli és gyártmányterve."
+    },
+    {
+      "id": "GAUT-REF-027",
+      "name": "Károlyi-kastély, Füzérradvány",
+      "design_year": "2019",
+      "category": "Műemlék és kultúra",
+      "city": "Füzérradvány",
+      "address": "",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "Gépészeti erősáram és automatika gyártási terve.",
+      "background": "Az önkormányzat oldalán a kastély külön galériával szerepel. A tervezési munka éve 2019; a megújult épület átadása más időpont, nem helyettesíti ezt az évszámot.",
+      "questions": "Pontos cím és műszaki munkarész; engedélyezett, felújítás utáni képek.",
+      "sources": [
+        {
+          "id": "fuz",
+          "title": "Füzérradvány – kastély fotógaléria",
+          "url": "https://www.fuzerradvany.hu/galeria/"
+        }
+      ],
+      "photo_sources": [
+        {
+          "title": "Füzérradvány – kastély fotógaléria",
+          "url": "https://www.fuzerradvany.hu/galeria/",
+          "media_type": "Fotóforrás / galéria",
+          "reuse_status": "Felhasználási engedély nincs igazolva"
+        }
+      ],
+      "tags": [
+        "Műemlék",
+        "Felújítás",
+        "Gyártási terv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "Füzérradványi Károlyi- Kastély. Gyártási terv       (2019)",
+      "location_ids": [
+        "LOC-027-A"
+      ],
+      "website_copy_draft": "Károlyi-kastély, Füzérradvány. Gépészeti erősáram és automatika gyártási terve."
+    },
+    {
+      "id": "GAUT-REF-028",
+      "name": "NSK – tanuszodák és tornatermek",
+      "design_year": "2020",
+      "category": "Sport és fürdő",
+      "city": "Több település",
+      "address": "",
+      "identification_status": "Projektcsoport",
+      "scope_from_pdf": "Légkezelővezérlők elektromos és automatika tervei.",
+      "background": "A korabeli önkormányzati dokumentum az NSK részvételét igazolja a köznevelési infrastruktúra-fejlesztési programban. A konkrét tervezői helyszínlista nincs a PDF-ben.",
+      "questions": "Településenként intézménynév, cím, létesítménytípus, ütem és munkarész szükséges; programképet ne rendeljünk találomra egy saját projekthez.",
+      "sources": [
+        {
+          "id": "nsk",
+          "title": "Rétság önkormányzati anyag – NSK programháttér",
+          "url": "https://retsag.hu/ok/tu2020-01.pdf"
+        }
+      ],
+      "photo_sources": [],
+      "tags": [
+        "Tanuszoda",
+        "Tornaterem",
+        "Légtechnika",
+        "Több helyszín"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "NSK Tanuszodák és tornatermek – Légkezelő vezérlők elektromos és automatika tervei  (2020)",
+      "location_ids": [
+        "LOC-028-A"
+      ],
+      "website_copy_draft": "NSK – tanuszodák és tornatermek. Légkezelővezérlők elektromos és automatika tervei."
+    },
+    {
+      "id": "GAUT-REF-029",
+      "name": "Szervita Square Building",
+      "design_year": "2020",
+      "category": "Iroda és kereskedelem",
+      "city": "Budapest V.",
+      "address": "Bárczy István utca 2–4. / Szervita tér",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "Gépészeti erősáram és automatika gyártási terve.",
+      "background": "Belvárosi, irodát, üzleteket és lakásokat is tartalmazó vegyes funkciójú épület. A beruházói épületbemutatás helyszínt, funkciókat és képeket ad.",
+      "questions": "A saját feladat az iroda-, lakó-, kereskedelmi vagy közös rendszerek közül melyekre terjedt ki?",
+      "sources": [
+        {
+          "id": "szervita",
+          "title": "Szervita – épületbemutatás és képek",
+          "url": "https://www.szervitaluxuryresidences.com/en/building"
+        }
+      ],
+      "photo_sources": [
+        {
+          "title": "Szervita – épületbemutatás és képek",
+          "url": "https://www.szervitaluxuryresidences.com/en/building",
+          "media_type": "Fotóforrás / galéria",
+          "reuse_status": "Felhasználási engedély nincs igazolva"
+        }
+      ],
+      "tags": [
+        "Iroda",
+        "Vegyes funkció",
+        "Gyártási terv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "Szervita Square Irodaház - Gyártási terv        (2020)",
+      "location_ids": [
+        "LOC-029-A"
+      ],
+      "website_copy_draft": "Szervita Square Building. Gépészeti erősáram és automatika gyártási terve."
+    },
+    {
+      "id": "GAUT-REF-030",
+      "name": "BalaLand FamilyPark és Mövenpick BalaLand Resort",
+      "design_year": "2021",
+      "category": "Szálloda és turizmus",
+      "city": "Szántód",
+      "address": "Móricz Zsigmond utca 96.",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "A hotel és az élménypark teljes épületgépészeti automatika gyártási terve; CIMON PLC és SCADA.",
+      "background": "A hivatalos szálloda- és parkoldalak egymás mellett működő hotel- és élményparki létesítményt mutatnak be. A PDF részletes műszaki leírása alapján kiemelt esettanulmányra alkalmas.",
+      "questions": "Hotel és park önálló térképpontjának későbbi felvétele; tervév és átadási év szétválasztása.",
+      "sources": [
+        {
+          "id": "bala",
+          "title": "BalaLand – hivatalos galéria",
+          "url": "https://www.movenpickbalaland.hu/hu/galeria/"
+        },
+        {
+          "id": "balapark",
+          "title": "BalaLand FamilyPark – szálloda és park kapcsolata",
+          "url": "https://balalandfamilypark.hu/en/accommodation/"
+        }
+      ],
+      "photo_sources": [
+        {
+          "title": "BalaLand – hivatalos galéria",
+          "url": "https://www.movenpickbalaland.hu/hu/galeria/",
+          "media_type": "Fotóforrás / galéria",
+          "reuse_status": "Felhasználási engedély nincs igazolva"
+        },
+        {
+          "title": "BalaLand FamilyPark – szálloda és park kapcsolata",
+          "url": "https://balalandfamilypark.hu/en/accommodation/",
+          "media_type": "Fotóforrás / galéria",
+          "reuse_status": "Felhasználási engedély nincs igazolva"
+        }
+      ],
+      "tags": [
+        "Hotel",
+        "Élményfürdő",
+        "CIMON",
+        "PLC",
+        "SCADA",
+        "Épületfelügyelet"
+      ],
+      "source_pdf_pages": [
+        1,
+        2,
+        3
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "highlight": true,
+      "technical_detail": "A PDF szerint a hotelnél 5 építőelemes légkezelő, központi elszívás, CO-szellőzés, fűtés/hűtés és HMV, hő- és füstelvezetés, tűzcsappantyú-felügyelet és fogyasztásmérés szerepelt. A park külön hőmérsékletszintű fűtési köröket, hőszivattyús és medencevízfűtési rendszereket, padlófűtést, Modbus-illesztéseket és villamos állapotfelügyeletet kapott.",
+      "original_entry": "BALALAND Family Park és Hotel - Gyártási terv       (2021)",
+      "location_ids": [
+        "LOC-030-A"
+      ],
+      "website_copy_draft": "BalaLand FamilyPark és Mövenpick BalaLand Resort. A hotel és az élménypark teljes épületgépészeti automatika gyártási terve; CIMON PLC és SCADA."
+    },
+    {
+      "id": "GAUT-REF-031",
+      "name": "Balassagyarmati Törvényszék – fűtési/hűtési korszerűsítés",
+      "design_year": "2021",
+      "category": "Oktatás és középület",
+      "city": "Balassagyarmat",
+      "address": "",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "VRV-rendszer energiaellátásának és gépészeti automatikájának gyártmányterve.",
+      "background": "A PDF a bírósági épületszárny VRV-rendszerét és meglévő radiátoros fűtéshez kapcsolását részletesen bemutatja. A referenciát erre a korszerűsítésre célszerű szűkíteni.",
+      "questions": "Pontos cím és érintett épületszárny; jóváhagyott külső fotó.",
+      "sources": [
+        {
+          "id": "balassa",
+          "title": "Balassagyarmati Törvényszék – intézményi dokumentum",
+          "url": "https://birosag.hu/sites/default/files/2024-09/szmsz_egyseges_szerkezetbena2023.el_.ii_.b.40._szam_alatti_modositasokkal_.pdf"
+        }
+      ],
+      "photo_sources": [],
+      "tags": [
+        "Középület",
+        "VRV",
+        "Fűtésszabályozás",
+        "Energetikai korszerűsítés"
+      ],
+      "source_pdf_pages": [
+        1,
+        5,
+        6
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "highlight": true,
+      "technical_detail": "Három VRV-kültéri egység, szintenkénti beltéri betáplálás és központi vezérlés szerepel. A PDF szerint 2 °C külső hőmérsékleti határhoz igazodik a VRV és a radiátoros fűtés együttműködése. Feladat volt a cseppvízrendszer fűtése és a lekötött villamos teljesítmény felülvizsgálata is.",
+      "original_entry": "Balassagyarmati Törvényszék – Fűtési rendszer korszerűsítés- gyártási terv    (2021)",
+      "location_ids": [
+        "LOC-031-A"
+      ],
+      "website_copy_draft": "Balassagyarmati Törvényszék – fűtési/hűtési korszerűsítés. VRV-rendszer energiaellátásának és gépészeti automatikájának gyártmányterve."
+    },
+    {
+      "id": "GAUT-REF-032",
+      "name": "Radisson Collection Hotel, Basilica Budapest – „Bazilika Hotel”",
+      "design_year": "2021",
+      "category": "Szálloda és turizmus",
+      "city": "Budapest V.",
+      "address": "Szent István tér 13–14.",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "Gépészeti automatika gyártási terv, WAGO PLC, 17 kapcsolószekrény; hotel front office illesztés.",
+      "background": "A felhasználó által megadott tervcímlap címe és HRSZ 24631 adata, valamint a mai hotel címe egyezik. A 2021-es tervezés és a későbbi hotelnyitás külön adat.",
+      "questions": "A PDF történeti épületadatait külön ellenőrizni kell; a tervezői munkarész megnevezésének végleges jóváhagyása.",
+      "sources": [
+        {
+          "id": "baz",
+          "title": "Radisson Collection Basilica – hivatalos oldal és fotók",
+          "url": "https://www.radissonhotels.com/en-us/hotels/radisson-collection-basilica-budapest"
+        },
+        {
+          "id": "issei",
+          "title": "ISSEI – a hotel címe és skybar bemutatása",
+          "url": "https://isseibudapest.hu/"
+        }
+      ],
+      "photo_sources": [
+        {
+          "title": "Radisson Collection Basilica – hivatalos oldal és fotók",
+          "url": "https://www.radissonhotels.com/en-us/hotels/radisson-collection-basilica-budapest",
+          "media_type": "Fotóforrás / galéria",
+          "reuse_status": "Felhasználási engedély nincs igazolva"
+        }
+      ],
+      "tags": [
+        "Hotel",
+        "WAGO",
+        "PLC",
+        "Épületfelügyelet",
+        "Helyiségszabályozás"
+      ],
+      "source_pdf_pages": [
+        1,
+        4
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "highlight": true,
+      "parcel_id": "24631",
+      "additional_evidence": "Felhasználói tervcímlapkép: Szent István tér 13–14., HRSZ 24631; a terv dokumentációját nem publikáljuk.",
+      "technical_detail": "A PDF légtechnikai és VRV-illesztéseket, szobai hőmérséklet-szabályozást, tűzcsappantyú-felügyeletet, hő- és füstelvezetést, világításvezérlést és vízbetörés-jelzést sorol fel. A front office kapcsolat a szobák foglaltságához igazítható működést támogatja.",
+      "original_entry": "Bazilika Hotel - Gyártási terv         (2021)",
+      "location_ids": [
+        "LOC-032-A"
+      ],
+      "website_copy_draft": "Radisson Collection Hotel, Basilica Budapest – „Bazilika Hotel”. Gépészeti automatika gyártási terv, WAGO PLC, 17 kapcsolószekrény; hotel front office illesztés."
+    },
+    {
+      "id": "GAUT-REF-033",
+      "name": "Balatonakarattyai Oktatási és Konferencia Központ – BOKK",
+      "design_year": "2021",
+      "category": "Szálloda és turizmus",
+      "city": "Balatonakarattya",
+      "address": "",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "A teljes létesítményt lefedő felügyelet és épületenkénti automatika gyártási terve; CIMON PLC és SCADA, 16 kapcsolószekrény.",
+      "background": "Többépületes oktatási, konferencia-, szállás- és wellnesskomplexum. A helyi környezeti dokumentum a BOKK projektet azonosítja.",
+      "questions": "Pontos postai cím, épületenkénti térképpontok és használható képek; a megnyitás dátumát külön kell felvenni.",
+      "sources": [
+        {
+          "id": "bokk",
+          "title": "Balatonakarattya – BOKK projekt környezeti dokumentuma",
+          "url": "https://balatonakarattya.hu/images/2020/kikoto1/EVD_Balatonakarattya_kikoto.pdf"
+        },
+        {
+          "id": "bokkphoto",
+          "title": "BOKK – rendezvényhelyszín-bemutatás",
+          "url": "https://www.mtpa.hu/helyszinek/2269"
+        }
+      ],
+      "photo_sources": [],
+      "tags": [
+        "Konferencia",
+        "Oktatás",
+        "Wellness",
+        "CIMON",
+        "SCADA",
+        "Több épület"
+      ],
+      "source_pdf_pages": [
+        1,
+        3
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "highlight": true,
+      "technical_detail": "A PDF kilenc épületet nevez meg: étkező, konferencia, hotel, wellness, Szív, Lagúna 1–2., Seafood étterem és szauna. Légkezelő-illesztések, hőszivattyús fűtés/hűtés és HMV, IRC helyiségszabályozás, VRV-felügyelet, villamos állapotfelügyelet és RWA-vezérlés szerepel.",
+      "original_entry": "Konferencia és Oktatási Központ – Balatonakarattya - Gyártási terv     (2021)",
+      "location_ids": [
+        "LOC-033-A"
+      ],
+      "website_copy_draft": "Balatonakarattyai Oktatási és Konferencia Központ – BOKK. A teljes létesítményt lefedő felügyelet és épületenkénti automatika gyártási terve; CIMON PLC és SCADA, 16 kapcsolószekrény."
+    },
+    {
+      "id": "GAUT-REF-034",
+      "name": "Samsung SDI, Göd – tűzeseti feszültségmentesítés",
+      "design_year": "2022",
+      "category": "Ipar és logisztika",
+      "city": "Göd",
+      "address": "Schenek István utca 1.",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "Tűzeseti feszültségmentesítő rendszer gyártási terve.",
+      "background": "A Samsung SDI hivatalos globális telephelylistája a gödi helyszínt azonosítja. A referenciát az érintett tűzeseti rendszerre kell korlátozni.",
+      "questions": "Épület/ütem megjelölése és rendszerhatár; a teljes gyár automatizálása nem állítható.",
+      "sources": [
+        {
+          "id": "samsung",
+          "title": "Samsung SDI – hivatalos telephelylista",
+          "url": "https://www.samsungsdi.com/about-sdi/global-network.html"
+        }
+      ],
+      "photo_sources": [],
+      "tags": [
+        "Akkumulátoripar",
+        "Tűzeseti feszültségmentesítés",
+        "Gyártási terv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "SAMSUNG GÖD – Tűzeseti feszültségmentesítő rendszer – gyártási terv    (2022)",
+      "location_ids": [
+        "LOC-034-A"
+      ],
+      "website_copy_draft": "Samsung SDI, Göd – tűzeseti feszültségmentesítés. Tűzeseti feszültségmentesítő rendszer gyártási terve."
+    },
+    {
+      "id": "GAUT-REF-035",
+      "name": "Tiszaligeti Élményfürdő, Szolnok",
+      "design_year": "2022",
+      "category": "Sport és fürdő",
+      "city": "Szolnok",
+      "address": "Tiszaligeti sétány 8.",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "Gépészeti erősáram és automatika gyártási terve.",
+      "background": "A fürdő hivatalos oldala a létesítményt és szolgáltatásait mutatja be. A 2022-es tervezési munka nem azonos a nyilvános megnyitás évével.",
+      "questions": "A 2022-es ütem rendszerei, épületei és tervszámai; megfelelő időszakot ábrázoló fotó.",
+      "sources": [
+        {
+          "id": "szolnok",
+          "title": "Tiszaligeti Élményfürdő – hivatalos bemutatkozás",
+          "url": "https://tlef.hu/rolunk"
+        }
+      ],
+      "photo_sources": [],
+      "tags": [
+        "Fürdő",
+        "Automatika",
+        "Gyártási terv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "Szolnok – Tiszaligeti Fürdő - Gyártási terv        (2022)",
+      "location_ids": [
+        "LOC-035-A"
+      ],
+      "website_copy_draft": "Tiszaligeti Élményfürdő, Szolnok. Gépészeti erősáram és automatika gyártási terve."
+    },
+    {
+      "id": "GAUT-REF-036",
+      "name": "BakerStreet I irodaház",
+      "design_year": "2023",
+      "category": "Iroda és kereskedelem",
+      "city": "Budapest XI.",
+      "address": "Hengermalom út 18.",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "Gépészeti erősáram és automatika gyártási terve.",
+      "background": "Az ATENOR BakerStreet első üteme az E.ON székházaként azonosítható. Az első épületet külön kell kezelni a BakerStreet II elnevezésű későbbi fejlesztéstől.",
+      "questions": "A tervben szereplő ütem és rendszerlista jóváhagyása.",
+      "sources": [
+        {
+          "id": "baker",
+          "title": "BakerStreet I – épületazonosítás és képek",
+          "url": "https://www.irodakereso.hu/cikkek/irodapiaci-hirek/hasznalatbaveteli-engedelyt-kapott-a-bakerstreet-elso-epulete-az-uj-e-on-szekhaz"
+        }
+      ],
+      "photo_sources": [
+        {
+          "title": "BakerStreet I – épületazonosítás és képek",
+          "url": "https://www.irodakereso.hu/cikkek/irodapiaci-hirek/hasznalatbaveteli-engedelyt-kapott-a-bakerstreet-elso-epulete-az-uj-e-on-szekhaz",
+          "media_type": "Fotóforrás / galéria",
+          "reuse_status": "Felhasználási engedély nincs igazolva"
+        }
+      ],
+      "tags": [
+        "Iroda",
+        "Gyártási terv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "Bakerstreet Irodaház - Gyártási terv         (2023)",
+      "location_ids": [
+        "LOC-036-A"
+      ],
+      "website_copy_draft": "BakerStreet I irodaház. Gépészeti erősáram és automatika gyártási terve."
+    },
+    {
+      "id": "GAUT-REF-037",
+      "name": "City Pearl – I. ütem, hő- és füstmentesítés",
+      "design_year": "2023",
+      "category": "Lakóépület",
+      "city": "Budapest IX.",
+      "address": "Soroksári út 58. – fejlesztési terület",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "Hő- és füstmentesítés, épületautomatika gyártmányterve.",
+      "background": "A City Pearl beruházói oldala elkülöníti az I. és II. ütemet. A megadott cím a projektterület/értékesítési hely, nem ellenőrzött épületbejárat.",
+      "questions": "A saját ütem épületjele és térképpontja, rendszerhatárok és megfelelő fotó.",
+      "sources": [
+        {
+          "id": "city",
+          "title": "City Pearl – beruházói hírek, I–II. ütem",
+          "url": "https://citypearl.hu/hirek/"
+        }
+      ],
+      "photo_sources": [],
+      "tags": [
+        "Társasház",
+        "Hő- és füstelvezetés",
+        "Gyártmányterv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "campus_id": "CAMPUS-CITY-PEARL",
+      "original_entry": "City Pearl társasház- I. ütem. Hő-és füstmentesítés. Épületautomatika gyártmányterv   (2023)",
+      "location_ids": [
+        "LOC-037-A"
+      ],
+      "website_copy_draft": "City Pearl – I. ütem, hő- és füstmentesítés. Hő- és füstmentesítés, épületautomatika gyártmányterve."
+    },
+    {
+      "id": "GAUT-REF-038",
+      "name": "RUBIN / GKN autóalkatrészgyártó üzem, Felsőzsolca",
+      "design_year": "2023",
+      "category": "Ipar és logisztika",
+      "city": "Felsőzsolca",
+      "address": "",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "Épületautomatika gyártmányterve.",
+      "background": "A kivitelezői/beszállítói referencia RUBIN néven azonosítja a felsőzsolcai alkatrészgyárat, külön csarnok-, iroda- és laborfunkciókkal. A GKN névvel való kapcsolat a nyilvános beruházási anyagokban is megjelenik.",
+      "questions": "Pontos cím, beruházói név véglegesítése és tervezési ütem; a kivitelező 2022-es szerkezeti munkája külön évadat.",
+      "sources": [
+        {
+          "id": "rubin",
+          "title": "SW Umwelttechnik – RUBIN üzem referencia és képek",
+          "url": "https://www.sw-umwelttechnik.hu/rolunk/referenciak/rubin-alkatreszgyarto-uezem-felsozsolca"
+        }
+      ],
+      "photo_sources": [
+        {
+          "title": "SW Umwelttechnik – RUBIN üzem referencia és képek",
+          "url": "https://www.sw-umwelttechnik.hu/rolunk/referenciak/rubin-alkatreszgyarto-uezem-felsozsolca",
+          "media_type": "Fotóforrás / galéria",
+          "reuse_status": "Felhasználási engedély nincs igazolva"
+        }
+      ],
+      "tags": [
+        "Autóipar",
+        "Automatika",
+        "Gyártmányterv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "RUBIN Autóalkatrész gyártó üzem – Felsőzsolca. Épületautomatika gyártmányterv   (2023)",
+      "location_ids": [
+        "LOC-038-A"
+      ],
+      "website_copy_draft": "RUBIN / GKN autóalkatrészgyártó üzem, Felsőzsolca. Épületautomatika gyártmányterve."
+    },
+    {
+      "id": "GAUT-REF-039",
+      "name": "RiverPark irodák – DDC-csere",
+      "design_year": "2024",
+      "category": "Iroda és kereskedelem",
+      "city": "Budapest IX.",
+      "address": "Közraktár utca 30–32.",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "28 kapcsolószekrényt érintő DDC-csere, épületautomatika gyártmányterve.",
+      "background": "A hivatalos oldal a történeti és modern épületrészből álló RiverPark komplexumot azonosítja. A PDF alapján korszerűsítési esettanulmányra alkalmas.",
+      "questions": "Épületenkénti bontás és a felújítás utáni állapot igazolása.",
+      "sources": [
+        {
+          "id": "river",
+          "title": "RiverPark – hivatalos épületbemutatás és galéria",
+          "url": "https://riverpark.hu/"
+        }
+      ],
+      "photo_sources": [
+        {
+          "title": "RiverPark – hivatalos épületbemutatás és galéria",
+          "url": "https://riverpark.hu/",
+          "media_type": "Fotóforrás / galéria",
+          "reuse_status": "Felhasználási engedély nincs igazolva"
+        }
+      ],
+      "tags": [
+        "DDC-csere",
+        "CIMON",
+        "PLC",
+        "Felújítás"
+      ],
+      "source_pdf_pages": [
+        1,
+        4,
+        5
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "highlight": true,
+      "technical_detail": "A PDF szerint a meglévő TAC-rendszert CIMON PLC-re cserélték. A terv a bontást és az új készülékek beépítését egyaránt támogatta, a meglévő kapcsolószekrények változásainak felmérésével és a nem kompatibilis terepi elemek cseréjével. A PDF záró mondata félbemarad, ezért abból további funkciót nem vezettem le.",
+      "original_entry": "River Park Irodaház- DDC csere (28 kapcsolószekrény) Épületautomatika gyártmányterv  (2024)",
+      "location_ids": [
+        "LOC-039-A"
+      ],
+      "website_copy_draft": "RiverPark irodák – DDC-csere. 28 kapcsolószekrényt érintő DDC-csere, épületautomatika gyártmányterve."
+    },
+    {
+      "id": "GAUT-REF-040",
+      "name": "W-Scope Hungary – nyíregyházi gyár",
+      "design_year": "2024",
+      "category": "Ipar és logisztika",
+      "city": "Nyíregyháza",
+      "address": "",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "Tűzeseti feszültségmentesítő rendszer épületautomatika-gyártmányterve.",
+      "background": "A városi közlemény és a CÉH referenciaoldala a déli ipari park szeparátorfólia-gyárát azonosítja. A saját feladat a tűzeseti rendszer tervezéséhez kapcsolódik.",
+      "questions": "Pontos cím, gyártóépület/ütem, engedélyezett képhasználat.",
+      "sources": [
+        {
+          "id": "wscope",
+          "title": "CÉH – W-Scope gyár referencia és kép",
+          "url": "https://www.ceh.hu/hu/projects/samsung-w-scope"
+        },
+        {
+          "id": "wcity",
+          "title": "Nyíregyháza – W-Scope beruházás",
+          "url": "https://www.nyiregyhaza.hu/post/1100-munkahelyet-teremt-a-w-scope-hungary-plant-kft-2024-02-08"
+        }
+      ],
+      "photo_sources": [
+        {
+          "title": "CÉH – W-Scope gyár referencia és kép",
+          "url": "https://www.ceh.hu/hu/projects/samsung-w-scope",
+          "media_type": "Fotóforrás / galéria",
+          "reuse_status": "Felhasználási engedély nincs igazolva"
+        }
+      ],
+      "tags": [
+        "Akkumulátoripar",
+        "Tűzeseti feszültségmentesítés",
+        "Gyártmányterv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "W-SCOPE Nyíregyháza – Tűzeseti feszültségmentesítő rendszer – Épületautomatika gyártmányterv (2024)",
+      "location_ids": [
+        "LOC-040-A"
+      ],
+      "website_copy_draft": "W-Scope Hungary – nyíregyházi gyár. Tűzeseti feszültségmentesítő rendszer épületautomatika-gyártmányterve."
+    },
+    {
+      "id": "GAUT-REF-041",
+      "name": "City Pearl – II. ütem, gépészeti automatika",
+      "design_year": "2025",
+      "category": "Lakóépület",
+      "city": "Budapest IX.",
+      "address": "Soroksári út 58. – fejlesztési terület",
+      "identification_status": "Azonosított",
+      "scope_from_pdf": "Épületgépészeti automatika gyártmányterve.",
+      "background": "Azonos fejlesztési terület, mint az I. ütem, de eltérő tervezési munkával és ütemmel. A két referencia a térképen később külön épületpontként vagy összevont csoportként is kezelhető.",
+      "questions": "II. ütem épületjele és pontos koordinátája; a 2025-ös terv nem jelent 2025-ös átadást.",
+      "sources": [
+        {
+          "id": "city",
+          "title": "City Pearl – beruházói hírek, I–II. ütem",
+          "url": "https://citypearl.hu/hirek/"
+        }
+      ],
+      "photo_sources": [],
+      "tags": [
+        "Társasház",
+        "Automatika",
+        "Gyártmányterv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "campus_id": "CAMPUS-CITY-PEARL",
+      "original_entry": "City Pearl társasház- II. ütem. Épületgépészeti- automatika gyártmányterv    (2025)",
+      "location_ids": [
+        "LOC-041-A"
+      ],
+      "website_copy_draft": "City Pearl – II. ütem, gépészeti automatika. Épületgépészeti automatika gyártmányterve."
+    },
+    {
+      "id": "GAUT-REF-042",
+      "name": "Mérleg utca 4. és 6. – szállodák",
+      "design_year": "2025",
+      "category": "Szálloda és turizmus",
+      "city": "Budapest V.",
+      "address": "Mérleg utca 4. és Mérleg utca 6.",
+      "identification_status": "Részben azonosított",
+      "scope_from_pdf": "Szállodaépületek kialakítása, gépészeti automatika gyártmányterve.",
+      "background": "A 6. szám a Mamaison Hotel Chain Bridge helyszíne; a 4. szám külön szállodaprojekt. Az EBH korábbi ismertetője is két épületet említ, de a 2019–2020-as munkát nem azonosítom automatikusan a saját 2025-ös ütemmel.",
+      "questions": "Mindkét hotel mai neve és a 2025-ös tervcsomag határa; külön helyszínrekordokban kezelendők.",
+      "sources": [
+        {
+          "id": "merleg",
+          "title": "EBH Invest – Mérleg utcai szállodaprojekt",
+          "url": "https://ebhinvest.hu/uj-szalloda-kialakitasa-a-belvarosban/"
+        },
+        {
+          "id": "mamaison",
+          "title": "Mamaison Hotel Chain Bridge – hivatalos oldal, galéria",
+          "url": "https://www.mamaisonhotelchainbridge.com/"
+        }
+      ],
+      "photo_sources": [
+        {
+          "title": "Mamaison Hotel Chain Bridge – hivatalos oldal, galéria",
+          "url": "https://www.mamaisonhotelchainbridge.com/",
+          "media_type": "Fotóforrás / galéria",
+          "reuse_status": "Felhasználási engedély nincs igazolva"
+        }
+      ],
+      "tags": [
+        "Hotel",
+        "Funkcióváltás",
+        "Gyártmányterv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "split_addresses": [
+        "Mérleg utca 4.",
+        "Mérleg utca 6."
+      ],
+      "original_entry": "Bp. Mérleg u 4 és 6 – Szállodaépület kialakítása. Épületgépészeti- automatika gyártmányterv  (2025)",
+      "location_ids": [
+        "LOC-042-1",
+        "LOC-042-2"
+      ],
+      "website_copy_draft": "Mérleg utca 4. és 6. – szállodák. Szállodaépületek kialakítása, gépészeti automatika gyártmányterve."
+    },
+    {
+      "id": "GAUT-REF-043",
+      "name": "Ranolder iskola és Reischl-sörház – fejlesztés",
+      "design_year": "2025",
+      "category": "Oktatás és középület",
+      "city": "Keszthely",
+      "address": "Deák Ferenc utca / Sörház utca – fejlesztési tömb",
+      "identification_status": "Részben azonosított",
+      "scope_from_pdf": "Ranolder János Római Katolikus Általános Iskola és rendezvénytér, iskola- és sörházépület kiviteli terve.",
+      "background": "Az önkormányzati anyag a Ranolder iskola és a Reischl-sörház közös fejlesztési területét azonosítja. A 2023-as pályázati látványterv csak előzmény, nem bizonyítottan a 2025-ös kiviteli terv építészeti változata.",
+      "questions": "Elfogadott építészeti terv, pontos címek, iskola/sörház rendszerhatár és megvalósulási állapot.",
+      "sources": [
+        {
+          "id": "ranolder",
+          "title": "Keszthely – Ranolder iskola és Reischl-sörház fejlesztési terület",
+          "url": "https://onkormanyzat.keszthely.hu/wp-content/uploads/document_library/foepiteszi-iroda/tajekoztato/kph-fi-hesz_eloterjesztes_20241218_1_sz_melleklet_keszthely-varos-telepulesrendezesi-eszkozeinek-2024-evi-1-modositasa_zaro_velemenyezesi_dokumentacio-tajekoztato.pdf"
+        },
+        {
+          "id": "ranrender",
+          "title": "3h – 2023-as pályázati terv, nem megvalósulási fotó",
+          "url": "https://3h.hu/work/index.php?s=ranolder-educational-cultural-and-sport-centre-keszthely-2023"
+        }
+      ],
+      "photo_sources": [
+        {
+          "title": "3h – 2023-as pályázati terv, nem megvalósulási fotó",
+          "url": "https://3h.hu/work/index.php?s=ranolder-educational-cultural-and-sport-centre-keszthely-2023",
+          "media_type": "Pályázati látványterv",
+          "reuse_status": "Felhasználási engedély nincs igazolva"
+        }
+      ],
+      "tags": [
+        "Iskola",
+        "Kultúra",
+        "Műemléki környezet",
+        "Kiviteli terv"
+      ],
+      "source_pdf_pages": [
+        1
+      ],
+      "attribution": "Szabó Krisztián szakmai munkalistája; a GAUT szerződéses szerepe publikálás előtt megerősítendő.",
+      "publication_status": "Szerkesztés és jóváhagyás alatt",
+      "original_entry": "Ranolder János Római Kat. Általános isk. és rendezvénytér – Iskola és sörház épület. Kiviteli terv (2025)",
+      "location_ids": [
+        "LOC-043-A"
+      ],
+      "website_copy_draft": "Ranolder iskola és Reischl-sörház – fejlesztés. Ranolder János Római Katolikus Általános Iskola és rendezvénytér, iskola- és sörházépület kiviteli terve."
+    }
+  ],
+  "locations": [
+    {
+      "location_id": "LOC-001-A",
+      "project_id": "GAUT-REF-001",
+      "campus_id": null,
+      "name": "OBI áruház, Kecskemét",
+      "country_code": "HU",
+      "city": "Kecskemét",
+      "address": "Izsáki út 12/b",
+      "parcel_id": null,
+      "location_precision": "Cím vagy projektterület; koordináta ellenőrizendő",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "OBI áruház, Kecskemét, Kecskemét, Izsáki út 12/b, Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=OBI%20%C3%A1ruh%C3%A1z%2C%20Kecskem%C3%A9t%2C%20Kecskem%C3%A9t%2C%20Izs%C3%A1ki%20%C3%BAt%2012%2Fb%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-002-A",
+      "project_id": "GAUT-REF-002",
+      "campus_id": null,
+      "name": "Egerszalóki hotel – Saliris Resort / Hunguest Saliris",
+      "country_code": "HU",
+      "city": "Egerszalók",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Település/telephely; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "Egerszalóki hotel – Saliris Resort / Hunguest Saliris, Egerszalók, , Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=Egerszal%C3%B3ki%20hotel%20%E2%80%93%20Saliris%20Resort%20%2F%20Hunguest%20Saliris%2C%20Egerszal%C3%B3k%2C%20%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-003-A",
+      "project_id": "GAUT-REF-003",
+      "campus_id": null,
+      "name": "K&H bankfiókok – 25 helyszín felújítása",
+      "country_code": "HU",
+      "city": "Több település",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Több helyszín; címlista hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": null,
+      "map_search_url": null,
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-004-A",
+      "project_id": "GAUT-REF-004",
+      "campus_id": null,
+      "name": "Andrássy-kastély, Tiszadob",
+      "country_code": "HU",
+      "city": "Tiszadob",
+      "address": "Bocskai utca 59.",
+      "parcel_id": null,
+      "location_precision": "Cím vagy projektterület; koordináta ellenőrizendő",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "Andrássy-kastély, Tiszadob, Tiszadob, Bocskai utca 59., Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=Andr%C3%A1ssy-kast%C3%A9ly%2C%20Tiszadob%2C%20Tiszadob%2C%20Bocskai%20utca%2059.%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-005-A",
+      "project_id": "GAUT-REF-005",
+      "campus_id": "CAMPUS-ZOO-BUDAPEST",
+      "name": "Fővárosi Állatkert – állatházak termálvizes hőellátása",
+      "country_code": "HU",
+      "city": "Budapest",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Település/telephely; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "Fővárosi Állatkert – állatházak termálvizes hőellátása, Budapest, , Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=F%C5%91v%C3%A1rosi%20%C3%81llatkert%20%E2%80%93%20%C3%A1llath%C3%A1zak%20term%C3%A1lvizes%20h%C5%91ell%C3%A1t%C3%A1sa%2C%20Budapest%2C%20%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-006-A",
+      "project_id": "GAUT-REF-006",
+      "campus_id": null,
+      "name": "SZTE klinikai tömbök és sürgősségi betegellátó",
+      "country_code": "HU",
+      "city": "Szeged",
+      "address": "Semmelweis utca – klinikai tömbök",
+      "parcel_id": null,
+      "location_precision": "Cím vagy projektterület; koordináta ellenőrizendő",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "SZTE klinikai tömbök és sürgősségi betegellátó, Szeged, Semmelweis utca – klinikai tömbök, Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=SZTE%20klinikai%20t%C3%B6mb%C3%B6k%20%C3%A9s%20s%C3%BCrg%C5%91ss%C3%A9gi%20betegell%C3%A1t%C3%B3%2C%20Szeged%2C%20Semmelweis%20utca%20%E2%80%93%20klinikai%20t%C3%B6mb%C3%B6k%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-007-A",
+      "project_id": "GAUT-REF-007",
+      "campus_id": null,
+      "name": "Richter Gedeon – dorogi üzemrészek",
+      "country_code": "HU",
+      "city": "Dorog",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Település/telephely; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "Richter Gedeon – dorogi üzemrészek, Dorog, , Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=Richter%20Gedeon%20%E2%80%93%20dorogi%20%C3%BCzemr%C3%A9szek%2C%20Dorog%2C%20%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-008-A",
+      "project_id": "GAUT-REF-008",
+      "campus_id": null,
+      "name": "Kanizsai Dorottya Kórház",
+      "country_code": "HU",
+      "city": "Nagykanizsa",
+      "address": "Szekeres József utca 2–8.",
+      "parcel_id": null,
+      "location_precision": "Cím vagy projektterület; koordináta ellenőrizendő",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "Kanizsai Dorottya Kórház, Nagykanizsa, Szekeres József utca 2–8., Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=Kanizsai%20Dorottya%20K%C3%B3rh%C3%A1z%2C%20Nagykanizsa%2C%20Szekeres%20J%C3%B3zsef%20utca%202%E2%80%938.%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-009-A",
+      "project_id": "GAUT-REF-009",
+      "campus_id": null,
+      "name": "Csillagpont Kórház – légkezelővezérlők",
+      "country_code": "HU",
+      "city": "Miskolc",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Település/telephely; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "Csillagpont Kórház – légkezelővezérlők, Miskolc, , Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=Csillagpont%20K%C3%B3rh%C3%A1z%20%E2%80%93%20l%C3%A9gkezel%C5%91vez%C3%A9rl%C5%91k%2C%20Miskolc%2C%20%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-010-A",
+      "project_id": "GAUT-REF-010",
+      "campus_id": null,
+      "name": "CBA Erzsébet Áruház",
+      "country_code": "HU",
+      "city": null,
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Helyszín nem igazolt",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": null,
+      "map_search_url": null,
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-011-A",
+      "project_id": "GAUT-REF-011",
+      "campus_id": null,
+      "name": "FŐTÁV hőközpontok – távfelügyeleti illesztés",
+      "country_code": "HU",
+      "city": "Budapest, több helyszín",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Több helyszín; címlista hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": null,
+      "map_search_url": null,
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-012-A",
+      "project_id": "GAUT-REF-012",
+      "campus_id": null,
+      "name": "MEDITOP – tablettázó üzem",
+      "country_code": "HU",
+      "city": "Pilisborosjenő",
+      "address": "Ady Endre utca 1.",
+      "parcel_id": null,
+      "location_precision": "Cím vagy projektterület; koordináta ellenőrizendő",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "MEDITOP – tablettázó üzem, Pilisborosjenő, Ady Endre utca 1., Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=MEDITOP%20%E2%80%93%20tablett%C3%A1z%C3%B3%20%C3%BCzem%2C%20Pilisborosjen%C5%91%2C%20Ady%20Endre%20utca%201.%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-013-A",
+      "project_id": "GAUT-REF-013",
+      "campus_id": null,
+      "name": "Debreceni Egyetem – Ortopédiai Klinika korszerűsítése",
+      "country_code": "HU",
+      "city": "Debrecen",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Település/telephely; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "Debreceni Egyetem – Ortopédiai Klinika korszerűsítése, Debrecen, , Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=Debreceni%20Egyetem%20%E2%80%93%20Ortop%C3%A9diai%20Klinika%20korszer%C5%B1s%C3%ADt%C3%A9se%2C%20Debrecen%2C%20%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-014-A",
+      "project_id": "GAUT-REF-014",
+      "campus_id": null,
+      "name": "Szent Borbála Kórház – energetikai/gépészeti felújítás",
+      "country_code": "HU",
+      "city": "Tatabánya",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Település/telephely; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "Szent Borbála Kórház – energetikai/gépészeti felújítás, Tatabánya, , Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=Szent%20Borb%C3%A1la%20K%C3%B3rh%C3%A1z%20%E2%80%93%20energetikai%2Fg%C3%A9p%C3%A9szeti%20fel%C3%BAj%C3%ADt%C3%A1s%2C%20Tatab%C3%A1nya%2C%20%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-015-A",
+      "project_id": "GAUT-REF-015",
+      "campus_id": null,
+      "name": "MLSZ Telki Edzőközpont – bővítés",
+      "country_code": "HU",
+      "city": "Telki",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Település/telephely; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "MLSZ Telki Edzőközpont – bővítés, Telki, , Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=MLSZ%20Telki%20Edz%C5%91k%C3%B6zpont%20%E2%80%93%20b%C5%91v%C3%ADt%C3%A9s%2C%20Telki%2C%20%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-016-A",
+      "project_id": "GAUT-REF-016",
+      "campus_id": null,
+      "name": "GE Aviation – üzemépület-bővítés",
+      "country_code": "HU",
+      "city": "Veresegyház",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Település/telephely; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "GE Aviation – üzemépület-bővítés, Veresegyház, , Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=GE%20Aviation%20%E2%80%93%20%C3%BCzem%C3%A9p%C3%BClet-b%C5%91v%C3%ADt%C3%A9s%2C%20Veresegyh%C3%A1z%2C%20%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-017-A",
+      "project_id": "GAUT-REF-017",
+      "campus_id": null,
+      "name": "Betegápoló Irgalmas Rend – kórházi fűtéskorszerűsítés",
+      "country_code": "HU",
+      "city": null,
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Helyszín nem igazolt",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": null,
+      "map_search_url": null,
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-018-A",
+      "project_id": "GAUT-REF-018",
+      "campus_id": null,
+      "name": "GE Power – „MEADOW” raktárcsarnok",
+      "country_code": "HU",
+      "city": null,
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Helyszín nem igazolt",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": null,
+      "map_search_url": null,
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-019-A",
+      "project_id": "GAUT-REF-019",
+      "campus_id": null,
+      "name": "Debreceni Egyetem – Liszt terem",
+      "country_code": "HU",
+      "city": "Debrecen",
+      "address": "Egyetem tér 1. – Zeneművészeti Kar",
+      "parcel_id": null,
+      "location_precision": "Cím vagy projektterület; koordináta ellenőrizendő",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "Debreceni Egyetem – Liszt terem, Debrecen, Egyetem tér 1. – Zeneművészeti Kar, Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=Debreceni%20Egyetem%20%E2%80%93%20Liszt%20terem%2C%20Debrecen%2C%20Egyetem%20t%C3%A9r%201.%20%E2%80%93%20Zenem%C5%B1v%C3%A9szeti%20Kar%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-020-A",
+      "project_id": "GAUT-REF-020",
+      "campus_id": null,
+      "name": "HungaroControl ANS III – jégakkumulációs rendszer",
+      "country_code": "HU",
+      "city": "Budapest",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Település/telephely; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "HungaroControl ANS III – jégakkumulációs rendszer, Budapest, , Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=HungaroControl%20ANS%20III%20%E2%80%93%20j%C3%A9gakkumul%C3%A1ci%C3%B3s%20rendszer%2C%20Budapest%2C%20%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-021-A",
+      "project_id": "GAUT-REF-021",
+      "campus_id": null,
+      "name": "Flór Ferenc Kórház – fűtéskorszerűsítés",
+      "country_code": "HU",
+      "city": "Kistarcsa",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Település/telephely; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "Flór Ferenc Kórház – fűtéskorszerűsítés, Kistarcsa, , Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=Fl%C3%B3r%20Ferenc%20K%C3%B3rh%C3%A1z%20%E2%80%93%20f%C5%B1t%C3%A9skorszer%C5%B1s%C3%ADt%C3%A9s%2C%20Kistarcsa%2C%20%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-022-A",
+      "project_id": "GAUT-REF-022",
+      "campus_id": null,
+      "name": "PENNY logisztikai központ – valószínűleg Veszprém",
+      "country_code": "HU",
+      "city": "Veszprém",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Település/telephely; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "PENNY logisztikai központ – valószínűleg Veszprém, Veszprém, , Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=PENNY%20logisztikai%20k%C3%B6zpont%20%E2%80%93%20val%C3%B3sz%C3%ADn%C5%B1leg%20Veszpr%C3%A9m%2C%20Veszpr%C3%A9m%2C%20%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-023-BRA",
+      "project_id": "GAUT-REF-023",
+      "campus_id": null,
+      "name": "BudaPart BRA",
+      "country_code": "HU",
+      "city": "Budapest XI.",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Épületkód; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "BudaPart BRA Budapest",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=BudaPart%20BRA%20Budapest",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-023-BRC",
+      "project_id": "GAUT-REF-023",
+      "campus_id": null,
+      "name": "BudaPart BRC",
+      "country_code": "HU",
+      "city": "Budapest XI.",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Épületkód; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "BudaPart BRC Budapest",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=BudaPart%20BRC%20Budapest",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-023-BRB",
+      "project_id": "GAUT-REF-023",
+      "campus_id": null,
+      "name": "BudaPart BRB",
+      "country_code": "HU",
+      "city": "Budapest XI.",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Épületkód; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "BudaPart BRB Budapest",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=BudaPart%20BRB%20Budapest",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-023-BRD",
+      "project_id": "GAUT-REF-023",
+      "campus_id": null,
+      "name": "BudaPart BRD",
+      "country_code": "HU",
+      "city": "Budapest XI.",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Épületkód; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "BudaPart BRD Budapest",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=BudaPart%20BRD%20Budapest",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-023-BRE",
+      "project_id": "GAUT-REF-023",
+      "campus_id": null,
+      "name": "BudaPart BRE",
+      "country_code": "HU",
+      "city": "Budapest XI.",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Épületkód; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "BudaPart BRE Budapest",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=BudaPart%20BRE%20Budapest",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-023-BRG",
+      "project_id": "GAUT-REF-023",
+      "campus_id": null,
+      "name": "BudaPart BRG",
+      "country_code": "HU",
+      "city": "Budapest XI.",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Épületkód; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "BudaPart BRG Budapest",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=BudaPart%20BRG%20Budapest",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-023-BRK",
+      "project_id": "GAUT-REF-023",
+      "campus_id": null,
+      "name": "BudaPart BRK",
+      "country_code": "HU",
+      "city": "Budapest XI.",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Épületkód; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "BudaPart BRK Budapest",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=BudaPart%20BRK%20Budapest",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-024-A",
+      "project_id": "GAUT-REF-024",
+      "campus_id": "CAMPUS-ZOO-BUDAPEST",
+      "name": "Fővárosi Állatkert – Cápasuli / Cápanevelde",
+      "country_code": "HU",
+      "city": "Budapest",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Település/telephely; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "Fővárosi Állatkert – Cápasuli / Cápanevelde, Budapest, , Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=F%C5%91v%C3%A1rosi%20%C3%81llatkert%20%E2%80%93%20C%C3%A1pasuli%20%2F%20C%C3%A1panevelde%2C%20Budapest%2C%20%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-025-A",
+      "project_id": "GAUT-REF-025",
+      "campus_id": null,
+      "name": "GS Yuasa – miskolci csarnok",
+      "country_code": "HU",
+      "city": "Miskolc",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Település/telephely; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "GS Yuasa – miskolci csarnok, Miskolc, , Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=GS%20Yuasa%20%E2%80%93%20miskolci%20csarnok%2C%20Miskolc%2C%20%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-026-A",
+      "project_id": "GAUT-REF-026",
+      "campus_id": null,
+      "name": "AVL – iroda- és tesztépület, Érd",
+      "country_code": "HU",
+      "city": "Érd",
+      "address": "Mühlgang utca 5.",
+      "parcel_id": null,
+      "location_precision": "Cím vagy projektterület; koordináta ellenőrizendő",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "AVL – iroda- és tesztépület, Érd, Érd, Mühlgang utca 5., Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=AVL%20%E2%80%93%20iroda-%20%C3%A9s%20teszt%C3%A9p%C3%BClet%2C%20%C3%89rd%2C%20%C3%89rd%2C%20M%C3%BChlgang%20utca%205.%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-027-A",
+      "project_id": "GAUT-REF-027",
+      "campus_id": null,
+      "name": "Károlyi-kastély, Füzérradvány",
+      "country_code": "HU",
+      "city": "Füzérradvány",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Település/telephely; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "Károlyi-kastély, Füzérradvány, Füzérradvány, , Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=K%C3%A1rolyi-kast%C3%A9ly%2C%20F%C3%BCz%C3%A9rradv%C3%A1ny%2C%20F%C3%BCz%C3%A9rradv%C3%A1ny%2C%20%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-028-A",
+      "project_id": "GAUT-REF-028",
+      "campus_id": null,
+      "name": "NSK – tanuszodák és tornatermek",
+      "country_code": "HU",
+      "city": "Több település",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Több helyszín; címlista hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": null,
+      "map_search_url": null,
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-029-A",
+      "project_id": "GAUT-REF-029",
+      "campus_id": null,
+      "name": "Szervita Square Building",
+      "country_code": "HU",
+      "city": "Budapest V.",
+      "address": "Bárczy István utca 2–4. / Szervita tér",
+      "parcel_id": null,
+      "location_precision": "Cím vagy projektterület; koordináta ellenőrizendő",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "Szervita Square Building, Budapest V., Bárczy István utca 2–4. / Szervita tér, Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=Szervita%20Square%20Building%2C%20Budapest%20V.%2C%20B%C3%A1rczy%20Istv%C3%A1n%20utca%202%E2%80%934.%20%2F%20Szervita%20t%C3%A9r%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-030-A",
+      "project_id": "GAUT-REF-030",
+      "campus_id": null,
+      "name": "BalaLand FamilyPark és Mövenpick BalaLand Resort",
+      "country_code": "HU",
+      "city": "Szántód",
+      "address": "Móricz Zsigmond utca 96.",
+      "parcel_id": null,
+      "location_precision": "Cím vagy projektterület; koordináta ellenőrizendő",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "BalaLand FamilyPark és Mövenpick BalaLand Resort, Szántód, Móricz Zsigmond utca 96., Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=BalaLand%20FamilyPark%20%C3%A9s%20M%C3%B6venpick%20BalaLand%20Resort%2C%20Sz%C3%A1nt%C3%B3d%2C%20M%C3%B3ricz%20Zsigmond%20utca%2096.%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-031-A",
+      "project_id": "GAUT-REF-031",
+      "campus_id": null,
+      "name": "Balassagyarmati Törvényszék – fűtési/hűtési korszerűsítés",
+      "country_code": "HU",
+      "city": "Balassagyarmat",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Település/telephely; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "Balassagyarmati Törvényszék – fűtési/hűtési korszerűsítés, Balassagyarmat, , Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=Balassagyarmati%20T%C3%B6rv%C3%A9nysz%C3%A9k%20%E2%80%93%20f%C5%B1t%C3%A9si%2Fh%C5%B1t%C3%A9si%20korszer%C5%B1s%C3%ADt%C3%A9s%2C%20Balassagyarmat%2C%20%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-032-A",
+      "project_id": "GAUT-REF-032",
+      "campus_id": null,
+      "name": "Radisson Collection Hotel, Basilica Budapest – „Bazilika Hotel”",
+      "country_code": "HU",
+      "city": "Budapest V.",
+      "address": "Szent István tér 13–14.",
+      "parcel_id": "24631",
+      "location_precision": "Cím vagy projektterület; koordináta ellenőrizendő",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "Radisson Collection Hotel, Basilica Budapest – „Bazilika Hotel”, Budapest V., Szent István tér 13–14., Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=Radisson%20Collection%20Hotel%2C%20Basilica%20Budapest%20%E2%80%93%20%E2%80%9EBazilika%20Hotel%E2%80%9D%2C%20Budapest%20V.%2C%20Szent%20Istv%C3%A1n%20t%C3%A9r%2013%E2%80%9314.%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-033-A",
+      "project_id": "GAUT-REF-033",
+      "campus_id": null,
+      "name": "Balatonakarattyai Oktatási és Konferencia Központ – BOKK",
+      "country_code": "HU",
+      "city": "Balatonakarattya",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Település/telephely; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "Balatonakarattyai Oktatási és Konferencia Központ – BOKK, Balatonakarattya, , Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=Balatonakarattyai%20Oktat%C3%A1si%20%C3%A9s%20Konferencia%20K%C3%B6zpont%20%E2%80%93%20BOKK%2C%20Balatonakarattya%2C%20%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-034-A",
+      "project_id": "GAUT-REF-034",
+      "campus_id": null,
+      "name": "Samsung SDI, Göd – tűzeseti feszültségmentesítés",
+      "country_code": "HU",
+      "city": "Göd",
+      "address": "Schenek István utca 1.",
+      "parcel_id": null,
+      "location_precision": "Cím vagy projektterület; koordináta ellenőrizendő",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "Samsung SDI, Göd – tűzeseti feszültségmentesítés, Göd, Schenek István utca 1., Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=Samsung%20SDI%2C%20G%C3%B6d%20%E2%80%93%20t%C5%B1zeseti%20fesz%C3%BClts%C3%A9gmentes%C3%ADt%C3%A9s%2C%20G%C3%B6d%2C%20Schenek%20Istv%C3%A1n%20utca%201.%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-035-A",
+      "project_id": "GAUT-REF-035",
+      "campus_id": null,
+      "name": "Tiszaligeti Élményfürdő, Szolnok",
+      "country_code": "HU",
+      "city": "Szolnok",
+      "address": "Tiszaligeti sétány 8.",
+      "parcel_id": null,
+      "location_precision": "Cím vagy projektterület; koordináta ellenőrizendő",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "Tiszaligeti Élményfürdő, Szolnok, Szolnok, Tiszaligeti sétány 8., Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=Tiszaligeti%20%C3%89lm%C3%A9nyf%C3%BCrd%C5%91%2C%20Szolnok%2C%20Szolnok%2C%20Tiszaligeti%20s%C3%A9t%C3%A1ny%208.%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-036-A",
+      "project_id": "GAUT-REF-036",
+      "campus_id": null,
+      "name": "BakerStreet I irodaház",
+      "country_code": "HU",
+      "city": "Budapest XI.",
+      "address": "Hengermalom út 18.",
+      "parcel_id": null,
+      "location_precision": "Cím vagy projektterület; koordináta ellenőrizendő",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "BakerStreet I irodaház, Budapest XI., Hengermalom út 18., Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=BakerStreet%20I%20irodah%C3%A1z%2C%20Budapest%20XI.%2C%20Hengermalom%20%C3%BAt%2018.%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-037-A",
+      "project_id": "GAUT-REF-037",
+      "campus_id": "CAMPUS-CITY-PEARL",
+      "name": "City Pearl – I. ütem, hő- és füstmentesítés",
+      "country_code": "HU",
+      "city": "Budapest IX.",
+      "address": "Soroksári út 58. – fejlesztési terület",
+      "parcel_id": null,
+      "location_precision": "Cím vagy projektterület; koordináta ellenőrizendő",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "City Pearl – I. ütem, hő- és füstmentesítés, Budapest IX., Soroksári út 58. – fejlesztési terület, Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=City%20Pearl%20%E2%80%93%20I.%20%C3%BCtem%2C%20h%C5%91-%20%C3%A9s%20f%C3%BCstmentes%C3%ADt%C3%A9s%2C%20Budapest%20IX.%2C%20Soroks%C3%A1ri%20%C3%BAt%2058.%20%E2%80%93%20fejleszt%C3%A9si%20ter%C3%BClet%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-038-A",
+      "project_id": "GAUT-REF-038",
+      "campus_id": null,
+      "name": "RUBIN / GKN autóalkatrészgyártó üzem, Felsőzsolca",
+      "country_code": "HU",
+      "city": "Felsőzsolca",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Település/telephely; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "RUBIN / GKN autóalkatrészgyártó üzem, Felsőzsolca, Felsőzsolca, , Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=RUBIN%20%2F%20GKN%20aut%C3%B3alkatr%C3%A9szgy%C3%A1rt%C3%B3%20%C3%BCzem%2C%20Fels%C5%91zsolca%2C%20Fels%C5%91zsolca%2C%20%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-039-A",
+      "project_id": "GAUT-REF-039",
+      "campus_id": null,
+      "name": "RiverPark irodák – DDC-csere",
+      "country_code": "HU",
+      "city": "Budapest IX.",
+      "address": "Közraktár utca 30–32.",
+      "parcel_id": null,
+      "location_precision": "Cím vagy projektterület; koordináta ellenőrizendő",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "RiverPark irodák – DDC-csere, Budapest IX., Közraktár utca 30–32., Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=RiverPark%20irod%C3%A1k%20%E2%80%93%20DDC-csere%2C%20Budapest%20IX.%2C%20K%C3%B6zrakt%C3%A1r%20utca%2030%E2%80%9332.%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-040-A",
+      "project_id": "GAUT-REF-040",
+      "campus_id": null,
+      "name": "W-Scope Hungary – nyíregyházi gyár",
+      "country_code": "HU",
+      "city": "Nyíregyháza",
+      "address": null,
+      "parcel_id": null,
+      "location_precision": "Település/telephely; pontos cím hiányzik",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "W-Scope Hungary – nyíregyházi gyár, Nyíregyháza, , Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=W-Scope%20Hungary%20%E2%80%93%20ny%C3%ADregyh%C3%A1zi%20gy%C3%A1r%2C%20Ny%C3%ADregyh%C3%A1za%2C%20%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-041-A",
+      "project_id": "GAUT-REF-041",
+      "campus_id": "CAMPUS-CITY-PEARL",
+      "name": "City Pearl – II. ütem, gépészeti automatika",
+      "country_code": "HU",
+      "city": "Budapest IX.",
+      "address": "Soroksári út 58. – fejlesztési terület",
+      "parcel_id": null,
+      "location_precision": "Cím vagy projektterület; koordináta ellenőrizendő",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "City Pearl – II. ütem, gépészeti automatika, Budapest IX., Soroksári út 58. – fejlesztési terület, Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=City%20Pearl%20%E2%80%93%20II.%20%C3%BCtem%2C%20g%C3%A9p%C3%A9szeti%20automatika%2C%20Budapest%20IX.%2C%20Soroks%C3%A1ri%20%C3%BAt%2058.%20%E2%80%93%20fejleszt%C3%A9si%20ter%C3%BClet%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-042-1",
+      "project_id": "GAUT-REF-042",
+      "campus_id": null,
+      "name": "Mérleg utca 4. és 6. – szállodák – Mérleg utca 4.",
+      "country_code": "HU",
+      "city": "Budapest V.",
+      "address": "Mérleg utca 4.",
+      "parcel_id": null,
+      "location_precision": "Cím; koordináta ellenőrizendő",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "Budapest Mérleg utca 4.",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=Budapest%20M%C3%A9rleg%20utca%204.",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-042-2",
+      "project_id": "GAUT-REF-042",
+      "campus_id": null,
+      "name": "Mérleg utca 4. és 6. – szállodák – Mérleg utca 6.",
+      "country_code": "HU",
+      "city": "Budapest V.",
+      "address": "Mérleg utca 6.",
+      "parcel_id": null,
+      "location_precision": "Cím; koordináta ellenőrizendő",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "Budapest Mérleg utca 6.",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=Budapest%20M%C3%A9rleg%20utca%206.",
+      "verified_on": "2026-10-19"
+    },
+    {
+      "location_id": "LOC-043-A",
+      "project_id": "GAUT-REF-043",
+      "campus_id": null,
+      "name": "Ranolder iskola és Reischl-sörház – fejlesztés",
+      "country_code": "HU",
+      "city": "Keszthely",
+      "address": "Deák Ferenc utca / Sörház utca – fejlesztési tömb",
+      "parcel_id": null,
+      "location_precision": "Cím vagy projektterület; koordináta ellenőrizendő",
+      "latitude": null,
+      "longitude": null,
+      "coordinate_system": "EPSG:4326",
+      "coordinate_status": "Nincs hitelesített koordináta",
+      "geocode_query": "Ranolder iskola és Reischl-sörház – fejlesztés, Keszthely, Deák Ferenc utca / Sörház utca – fejlesztési tömb, Magyarország",
+      "map_search_url": "https://www.google.com/maps/search/?api=1&query=Ranolder%20iskola%20%C3%A9s%20Reischl-s%C3%B6rh%C3%A1z%20%E2%80%93%20fejleszt%C3%A9s%2C%20Keszthely%2C%20De%C3%A1k%20Ferenc%20utca%20%2F%20S%C3%B6rh%C3%A1z%20utca%20%E2%80%93%20fejleszt%C3%A9si%20t%C3%B6mb%2C%20Magyarorsz%C3%A1g",
+      "verified_on": "2026-10-19"
+    }
+  ]
+}

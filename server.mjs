@@ -1,4 +1,5 @@
 import http from 'node:http';
+import { referenceStore } from './references.mjs';
 import { DatabaseSync } from 'node:sqlite';
 import { readFileSync, writeFileSync, mkdirSync, existsSync, unlinkSync, createReadStream } from 'node:fs';
 import { join, resolve, dirname, extname } from 'node:path';
@@ -37,6 +38,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
     CREATE TABLE IF NOT EXISTS sessions (token TEXT PRIMARY KEY, user_id TEXT NOT NULL, expires INTEGER NOT NULL);
     CREATE INDEX IF NOT EXISTS versions_item ON versions(item_id, number);
   `);
+  const references = referenceStore(db);
   const attempts = new Map();
   const json = (res, status, body) => { res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(JSON.stringify(body)); };
   const cleanUser = user => ({ id: user.id, name: user.name });
@@ -113,6 +115,12 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
       if (path === '/api/health' && req.method === 'GET') return json(res, 200, { ok: true });
       if (path.startsWith('/api/')) {
         const user = session(req); if (!user) fail(401, 'A folytatáshoz jelentkezz be.');
+        if (path === '/api/references' && req.method === 'GET') return json(res, 200, { references: references.list() });
+        if (path === '/api/references' && req.method === 'POST') return json(res, 201, { reference: references.create(await body(req, 1024*1024)) });
+        if (path === '/api/references/export' && req.method === 'GET') return json(res, 200, references.bundle());
+        if (path === '/api/references/import' && req.method === 'POST') return json(res, 200, references.import(await body(req, 5*1024*1024)));
+        const referenceMatch = /^\/api\/references\/([a-zA-Z0-9_-]{1,100})$/.exec(path);
+        if (referenceMatch && req.method === 'PUT') return json(res, 200, { reference: references.update(referenceMatch[1], await body(req, 1024*1024)) });
         if (path === '/api/me' && req.method === 'GET') return json(res, 200, { user: cleanUser(user), sections: SECTIONS, categories: CATEGORIES, maxFileSize: MAX_FILE });
         if (path === '/api/logout' && req.method === 'POST') {
           const token = /(?:^|;\s*)gaut_session=([a-zA-Z0-9_-]+)/.exec(req.headers.cookie || '')?.[1];
@@ -164,7 +172,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         }
         fail(404, 'Ismeretlen művelet.');
       }
-      const assets = { '/': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'], '/favicon.svg': ['favicon.svg', 'image/svg+xml'] };
+      const assets = { '/referenciak': ['references.html', 'text/html'], '/references.js': ['references.js', 'text/javascript'], '/references.css': ['references.css', 'text/css'], '/': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'], '/favicon.svg': ['favicon.svg', 'image/svg+xml'] };
       if (!assets[path] || !['GET', 'HEAD'].includes(req.method)) fail(404, 'Az oldal nem található.');
       const [name, type] = assets[path];
       res.setHeader('Content-Type', `${type}; charset=utf-8`);

@@ -1,6 +1,6 @@
 const $ = selector => document.querySelector(selector);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const state = { user: null, sections: {}, categories: [], items: [], section: 'common', trash: false, detail: null, busy: false };
+const state = { user: null, sections: {}, categories: [], items: [], section: location.hash === '#krisztian' ? 'krisztian' : 'common', trash: false, detail: null, busy: false };
 const descriptions = {
   common: 'A weboldal közös alapjai: bemutatkozás, arculat és minden, ami összeköt.',
   misi: 'Misi gyűjtőrésze: referenciák, projektfotók, leírások és ötletek.',
@@ -30,6 +30,7 @@ function fillSelects() {
 }
 async function enter() {
   const info = await api('/api/me'); Object.assign(state, info);
+  if (new URLSearchParams(location.search).get('next') === 'references') { location.replace('/referenciak'); return; }
   $('#user-name').textContent = 'GAUT'; $('#avatar').textContent = 'G';
   fillSelects(); await reload();
   $('#login-screen').hidden = true; $('#workspace').hidden = false;
@@ -43,6 +44,9 @@ function render() {
   $('#section-eyebrow').textContent = state.trash ? 'MEGŐRIZVE, VISSZAÁLLÍTHATÓAN' : 'KÖZÖS MUNKA, RENDEZETTEN';
   $('#page-description').textContent = state.trash ? 'A kukába helyezett anyagok minden korábbi verziójukkal együtt visszaállíthatók.' : descriptions[state.section];
   $('#upload-button').hidden = state.trash;
+  let referenceLink = $('#reference-link');
+  if (!referenceLink) { referenceLink = document.createElement('div'); referenceLink.id = 'reference-link'; referenceLink.className = 'notice'; referenceLink.innerHTML = '<strong>Szűrhető referencialista</strong><p>Projektek, források, fotólinkek és helyszínek. Új referencia felvétele, importálás és szerkesztés.</p><a class="primary" href="/referenciak">Referencia-kezelő megnyitása →</a>'; $('.page-heading').after(referenceLink); }
+  referenceLink.hidden = state.trash || state.section !== 'krisztian';
   $('#collection-title').firstChild.textContent = state.trash ? 'Kukába helyezett anyagok ' : 'Feltöltött anyagok ';
   $('#stat-files').textContent = active.length;
   $('#stat-versions').textContent = active.reduce((sum, i) => sum + i.version_count, 0);
