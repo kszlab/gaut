@@ -1,0 +1,16 @@
+services:
+  gaut:
+    build: .
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      GAUT_PASSWORD: ${GAUT_PASSWORD:?Állítsd be a közös GAUT_PASSWORD jelszót}
+      DATA_DIR: /app/data
+      HOST: 0.0.0.0
+      PORT: 3000
+      COOKIE_SECURE: "false"
+    volumes:
+      - gaut-data:/app/data
+    restart: unless-stopped
+volumes:
+  gaut-data:
