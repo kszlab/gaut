@@ -91,6 +91,15 @@ npm test
 A tesztek ideiglenes mappában ellenőrzik a közös belépést, több munkamenetet, feltöltést, adatszerkesztést, verzióletöltést, kukát, visszaállítást, újraindítás utáni adatmegőrzést, jelszócsere utáni belépésérvénytelenítést, eredetellenőrzést és belépési próbálkozáskorlátot. Az éles adatokat nem érintik.
 # Közös referencia-kezelő
 
+## Projektfotók és képernyőkivágások
+
+Az adatlap „Feltöltött képek és képernyőkivágások” részébe fájlválasztással, behúzással vagy Ctrl+V-vel lehet képet tenni. PNG, JPG, WEBP és GIF támogatott, képenként legfeljebb 20 MB. Új, még nem mentett referenciához is előkészíthetők képek. A feltöltés, képfeliratok, szerző, forrás, licenc és a kukaműveletek a „Referencia mentése” gombbal mentődnek. A képre kattintva a teljes kép külön lapon nyitható meg.
+
+A képek projektfüggő kukába kerülnek, a „Kukába helyezett képek mutatása” jelölővel visszaállíthatók. A képfájlok csak belépéssel érhetők el, és a `DATA_DIR/reference-photos` könyvtárban maradnak meg; metaadataik ugyanabban az SQLite adatbázisban vannak. A JSON mentés a fotómetaadatokat tartalmazza, a képfájlokat nem: teljes biztonsági mentéshez a teljes DATA_DIR mentése szükséges.
+
+Az adatgyűjtés eredményeit a belépés után elérhető referencia-JSON importtal és „Képcsomag feltöltése” gombbal lehet a szerverre tölteni. A képcsomag JSON `photos` tömbje referenciánként képmetaadatokat, `reference_id`, `import_key`, `filename` és base64 `content` mezőket tartalmaz; opcionális `research` tömbje a képgyűjtés állapotait. A csomag legfeljebb 28 MB. Az importkulcs megakadályozza a duplázást, a kukába tett képek újbóli importáláskor is kukában maradnak. A személyes referencialistákat és fotócsomagokat a nyilvános kódtártól elkülönítve, a hitelesített API-n kell tárolni.
+
+
 Mind az öt gyűjtőrész „Referencia-kezelő megnyitása” hivatkozása a `/referenciak` oldalra vezet. A közös jelszavas belépés itt is szükséges. Az első induláskor 43 projekt és 50 helyszín kerül az adatbázisba; későbbi indulások és telepítések nem írják felül a szerkesztéseket.
 
 A kereső mellett kategória-, azonosítási állapot-, tervév- és fotólinkszűrő használható. A projektek adatlapján szerkeszthetők a leírások, forrás- és fotólinkek, címkék, helyszínek és koordináták. Új projektek és helyszínek felvehetők. Az archiválás visszafordítható: az „Archiváltak” szűrővel megnyitva törölhető az archiválás jelölése. Az egyidejű módosításokat verzióellenőrzés védi.

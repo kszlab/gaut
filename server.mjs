@@ -1,5 +1,6 @@
 import http from 'node:http';
 import { referenceStore } from './references.mjs';
+import { photoStore } from './photos.mjs';
 import { DatabaseSync } from 'node:sqlite';
 import { readFileSync, writeFileSync, mkdirSync, existsSync, unlinkSync, createReadStream } from 'node:fs';
 import { join, resolve, dirname, extname } from 'node:path';
@@ -39,6 +40,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
     CREATE INDEX IF NOT EXISTS versions_item ON versions(item_id, number);
   `);
   const references = referenceStore(db);
+  const photos = photoStore(db, dataDir);
   const attempts = new Map();
   const json = (res, status, body) => { res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(JSON.stringify(body)); };
   const cleanUser = user => ({ id: user.id, name: user.name });
@@ -112,12 +114,23 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         res.setHeader('Set-Cookie', `gaut_session=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=604800${secureCookies ? '; Secure' : ''}`);
         return json(res, 200, { user: cleanUser(user) });
       }
-      if (path === '/api/health' && req.method === 'GET') return json(res, 200, { ok: true });
+      if (path === '/api/health' && req.method === 'GET') return json(res, 200, { ok: true, version: '1.3.0' });
       if (path.startsWith('/api/')) {
         const user = session(req); if (!user) fail(401, 'A folytatáshoz jelentkezz be.');
-        if (path === '/api/references' && req.method === 'GET') return json(res, 200, { references: references.list() });
+        if (path === '/api/reference-photos/import' && req.method === 'POST') return json(res,200,photos.import(await body(req)));
+        if (path === '/api/references' && req.method === 'GET') return json(res, 200, { references: references.list().map(r=>{const active=photos.list(r.id).filter(p=>!p.deleted_at);return {...r,photo_count:active.length,photo_cover_id:active[0]?.id||null,photo_research:photos.research(r.id)};}) });
         if (path === '/api/references' && req.method === 'POST') return json(res, 201, { reference: references.create(await body(req, 1024*1024)) });
-        if (path === '/api/references/export' && req.method === 'GET') return json(res, 200, references.bundle());
+        if (path === '/api/references/export' && req.method === 'GET') return json(res, 200, {...references.bundle(),photos:photos.all(),photo_export_note:'A JSON a képek metaadatait tartalmazza. A képfájlok külön tölthetők le az adatlapokról; teljes mentéshez a DATA_DIR könyvtár is szükséges.'});
+        const photoUpload = /^\/api\/references\/([a-zA-Z0-9_-]{1,100})\/photos$/.exec(path);
+        if (photoUpload && req.method === 'GET') return json(res, 200, {photos:photos.list(photoUpload[1])});
+        if (photoUpload && req.method === 'POST') return json(res, 201, {photo:photos.add(photoUpload[1],await body(req))});
+        const photoAction = /^\/api\/reference-photos\/([a-f0-9-]{36})(?:\/(trash|restore))?$/.exec(path);
+        if (photoAction) {
+          const [,id,action]=photoAction;
+          if (!action && req.method==='PATCH') return json(res,200,{photo:photos.update(id,await body(req,16384))});
+          if (action && req.method==='POST') return json(res,200,{photo:photos.trash(id,action==='restore')});
+          if (!action && req.method==='GET') { const p=photos.file(id);res.setHeader('Content-Type',p.mime);res.setHeader('Content-Disposition',`inline; filename="photo.${p.mime.split('/')[1]}"`);return createReadStream(p.path).pipe(res); }
+        }
         if (path === '/api/references/import' && req.method === 'POST') return json(res, 200, references.import(await body(req, 5*1024*1024)));
         const referenceMatch = /^\/api\/references\/([a-zA-Z0-9_-]{1,100})$/.exec(path);
         if (referenceMatch && req.method === 'PUT') return json(res, 200, { reference: references.update(referenceMatch[1], await body(req, 1024*1024)) });
@@ -172,7 +185,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         }
         fail(404, 'Ismeretlen művelet.');
       }
-      const assets = { '/referenciak': ['references.html', 'text/html'], '/references.js': ['references.js', 'text/javascript'], '/references.css': ['references.css', 'text/css'], '/': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'], '/favicon.svg': ['favicon.svg', 'image/svg+xml'] };
+      const assets = { '/reference-photos.js': ['reference-photos.js', 'text/javascript'], '/referenciak': ['references.html', 'text/html'], '/references.js': ['references.js', 'text/javascript'], '/references.css': ['references.css', 'text/css'], '/': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'], '/favicon.svg': ['favicon.svg', 'image/svg+xml'] };
       if (!assets[path] || !['GET', 'HEAD'].includes(req.method)) fail(404, 'Az oldal nem található.');
       const [name, type] = assets[path];
       res.setHeader('Content-Type', `${type}; charset=utf-8`);

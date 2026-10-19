@@ -4,3 +4,6 @@ node_modules
 .env
 test
 *.zip
+seed/nandi-references.json
+seed/photo-research.json
+seed/photos/

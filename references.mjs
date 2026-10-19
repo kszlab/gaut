@@ -9,7 +9,7 @@ export function referenceStore(db) {
   const get = id => { const r = db.prepare('SELECT * FROM reference_records WHERE id=?').get(id); if (!r) fail(404,'A referencia nem található.'); return { ...JSON.parse(r.payload), revision:r.revision, updated_at:r.updated_at }; };
   function validate(p) {
     if (!p || typeof p !== 'object' || Array.isArray(p)) fail(400,'Hibás referencia.');
-    const r = structuredClone(p); delete r.revision; delete r.updated_at;
+    const r = structuredClone(p); delete r.revision; delete r.updated_at; delete r.photo_count; delete r.photo_cover_id; delete r.photo_research;
     if (r.section === undefined) r.section = 'common';
     if (!OWNERS.includes(r.section)) fail(400,'Válassz érvényes referencia-gyűjtőrészt.');
     if (!/^[a-zA-Z0-9_-]{1,100}$/.test(r.id || '')) fail(400,'Érvénytelen azonosító.');
@@ -52,7 +52,7 @@ export function referenceStore(db) {
       db.prepare('INSERT INTO reference_meta VALUES(?,?)').run('owners-v1','1'); db.exec('COMMIT');
     } catch(e) { db.exec('ROLLBACK'); throw e; }
   }
-  return {
+  const store = {
     list:()=>db.prepare('SELECT id FROM reference_records ORDER BY id').all().map(r=>get(r.id)),
     create(p) { const r=validate({...p,id:`GAUT-REF-${randomUUID()}`}); uniqueLocations(r); insert.run(r.id,JSON.stringify(r),new Date().toISOString()); return get(r.id); },
     update(id,p) { const old=get(id); if(p.revision!==old.revision) fail(409,'Közben valaki módosította ezt a referenciát. Nyisd meg újra a friss adatokat; a mentés nem írta felül őket.'); const r=validate({...p,id}); uniqueLocations(r); db.prepare('UPDATE reference_records SET payload=?,revision=revision+1,updated_at=? WHERE id=?').run(JSON.stringify(r),new Date().toISOString(),id); return get(id); },
@@ -65,4 +65,5 @@ export function referenceStore(db) {
     },
     bundle() { const records=this.list(); return {...seed,exported_at:new Date().toISOString(),projects:records.map(p=>{const {locations,...rest}=p;return rest;}),locations:records.flatMap(p=>p.locations)}; }
   };
+  return store;
 }
