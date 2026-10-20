@@ -114,7 +114,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         res.setHeader('Set-Cookie', `gaut_session=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=604800${secureCookies ? '; Secure' : ''}`);
         return json(res, 200, { user: cleanUser(user) });
       }
-      if (path === '/api/health' && req.method === 'GET') return json(res, 200, { ok: true, version: '1.3.0' });
+      if (path === '/api/health' && req.method === 'GET') return json(res, 200, { ok: true, version: '1.3.1' });
       if (path.startsWith('/api/')) {
         const user = session(req); if (!user) fail(401, 'A folytatáshoz jelentkezz be.');
         if (path === '/api/reference-photos/import' && req.method === 'POST') return json(res,200,photos.import(await body(req)));

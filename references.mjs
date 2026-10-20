@@ -6,10 +6,12 @@ export function referenceStore(db) {
   const seed = JSON.parse(readFileSync(new URL('./seed/references.json', import.meta.url), 'utf8'));
   db.exec('CREATE TABLE IF NOT EXISTS reference_records(id TEXT PRIMARY KEY,payload TEXT NOT NULL,revision INTEGER NOT NULL,updated_at TEXT NOT NULL); CREATE TABLE IF NOT EXISTS reference_meta(key TEXT PRIMARY KEY,value TEXT NOT NULL)');
   const insert = db.prepare('INSERT INTO reference_records VALUES(?,?,1,?)');
-  const get = id => { const r = db.prepare('SELECT * FROM reference_records WHERE id=?').get(id); if (!r) fail(404,'A referencia nem található.'); return { ...JSON.parse(r.payload), revision:r.revision, updated_at:r.updated_at }; };
+  const get = id => { const r = db.prepare('SELECT * FROM reference_records WHERE id=?').get(id); if (!r) fail(404,'A referencia nem található.'); return { website_publishable:false, ...JSON.parse(r.payload), revision:r.revision, updated_at:r.updated_at }; };
   function validate(p) {
     if (!p || typeof p !== 'object' || Array.isArray(p)) fail(400,'Hibás referencia.');
     const r = structuredClone(p); delete r.revision; delete r.updated_at; delete r.photo_count; delete r.photo_cover_id; delete r.photo_research;
+    if (r.website_publishable === undefined) r.website_publishable = false;
+    if (typeof r.website_publishable !== 'boolean') fail(400,'Invalid website publication flag.');
     if (r.section === undefined) r.section = 'common';
     if (!OWNERS.includes(r.section)) fail(400,'Válassz érvényes referencia-gyűjtőrészt.');
     if (!/^[a-zA-Z0-9_-]{1,100}$/.test(r.id || '')) fail(400,'Érvénytelen azonosító.');

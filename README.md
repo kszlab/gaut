@@ -109,3 +109,5 @@ A JSON biztonsági mentés az aktuális teljes listát tartalmazza. A JSON impor
 A referenciaadatok a meglévő `DATA_DIR/gaut.sqlite` adatbázisban tárolódnak. Az adatbázis és a feltöltött fájlok rendszeres külső biztonsági mentése továbbra is ajánlott.
 
 Minden referencia a Közös, Misi, Nándi, Attila vagy Krisztián gyűjtőrészhez rendelhető, és erre külön szűrő is rendelkezésre áll. Mindenki minden referenciát láthat és szerkeszthet a közös belépéssel. A meglévő rekordok egyszeri migrációval Krisztián jelölést kapnak, az összes korábbi módosításuk megőrzésével. Régebbi, gyűjtőrész nélküli JSON importnál az új rekordok a Közös részbe kerülnek.
+
+A cím melletti „Honlapon megjeleníthető referencia” jelölés külön jóváhagyási adat (`website_publishable`, boolean). Alapból minden referencia jelöletlen. Mentéssel rögzül, szűrhető, a JSON export/import megőrzi. A későbbi honlapreferencia-gyűjtés a megjelölt, nem archivált rekordokra épül.
