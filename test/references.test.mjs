@@ -17,13 +17,21 @@ test('Referenciák: belépés, import, módosítás, ütközés és újraindít�
  assert.equal((await request('/api/references','POST',{...old,sources:[{url:'javascript:alert(1)'}]})).status,400);assert.equal((await request('/api/references','POST',{...old,locations:[{...old.locations[0],latitude:95,longitude:19}]})).status,400);
  assert.equal((await request('/api/references','POST',{...old,website_publishable:'true',locations:[]})).status,400);
  const created=await request('/api/references','POST',{...old,name:'Új projekt',locations:[]});assert.equal(created.status,201);assert.notEqual(created.data.reference.id,old.id);
- const bundle=(await request('/api/references/export')).data;assert.equal(bundle.projects.length,44);assert.equal(bundle.projects.find(r=>r.id===old.id).website_publishable,true);assert.equal((await request('/api/references/import','POST',bundle)).data.skipped,44);
+
+ const trashId=created.data.reference.id;
+ const deleted=await request('/api/references/'+trashId,'DELETE',{revision:created.data.reference.revision});assert.equal(deleted.status,200);assert.ok(deleted.data.reference.deleted_at);
+ assert.equal((await request('/api/references/'+trashId,'DELETE',{revision:created.data.reference.revision})).status,409);
+ assert.equal((await request('/api/references/'+trashId,'PUT',created.data.reference)).status,409);
+ const restored=await request('/api/references/'+trashId+'/restore','POST',{revision:deleted.data.reference.revision});assert.equal(restored.status,200);assert.equal(restored.data.reference.deleted_at,null);assert.equal(restored.data.reference.name,created.data.reference.name);
+ const deletedAgain=await request('/api/references/'+trashId,'DELETE',{revision:restored.data.reference.revision});assert.equal(deletedAgain.status,200);
+ const savedCookie=cookie;cookie='';assert.equal((await request('/api/references/'+trashId+'/restore','POST',{revision:deletedAgain.data.reference.revision})).status,401);cookie=savedCookie;
+ const bundle=(await request('/api/references/export')).data;assert.equal(bundle.projects.length,44);assert.ok(bundle.projects.find(p=>p.id===trashId).deleted_at);assert.equal(bundle.projects.find(r=>r.id===old.id).website_publishable,true);assert.equal((await request('/api/references/import','POST',bundle)).data.skipped,44);
  const p={...bundle.projects[0],id:'GAUT-REF-IMPORT',section:'nandi',website_publishable:true};const imported=await request('/api/references/import','POST',{projects:[p],locations:[]});assert.equal(imported.data.added,1);
  await new Promise(r=>server.close(r));
  // Simulate an existing deployment with edited records but no owner migration yet.
  const legacy=new DatabaseSync(join(dataDir,'gaut.sqlite'));
  const legacyId='GAUT-REF-002', legacyRow=legacy.prepare('SELECT payload FROM reference_records WHERE id=?').get(legacyId), legacyData=JSON.parse(legacyRow.payload); delete legacyData.section;legacyData.name='Korábbi szerkesztés megőrizve';legacy.prepare('UPDATE reference_records SET payload=? WHERE id=?').run(JSON.stringify(legacyData),legacyId);legacy.prepare("DELETE FROM reference_meta WHERE key='owners-v1'").run();legacy.close();
- await start();rows=(await request('/api/references')).data.references;assert.equal(rows.length,45);assert.equal(rows.find(r=>r.id===old.id).website_publishable,true);assert.equal(rows.find(r=>r.id==='GAUT-REF-IMPORT').website_publishable,true);assert.equal(rows.find(r=>r.id===legacyId).website_publishable,false);assert.equal(rows.find(r=>r.id===old.id).name,'Módosított referencia');assert.equal(rows.find(r=>r.id===old.id).section,'misi');assert.equal(rows.find(r=>r.id===old.id).locations[0].latitude,47.5);assert.equal(rows.find(r=>r.id===legacyId).section,'krisztian');assert.equal(rows.find(r=>r.id===legacyId).name,'Korábbi szerkesztés megőrizve');
+ await start();rows=(await request('/api/references')).data.references;assert.equal(rows.length,45);assert.ok(rows.find(p=>p.id===trashId).deleted_at);assert.equal(rows.find(r=>r.id===old.id).website_publishable,true);assert.equal(rows.find(r=>r.id==='GAUT-REF-IMPORT').website_publishable,true);assert.equal(rows.find(r=>r.id===legacyId).website_publishable,false);assert.equal(rows.find(r=>r.id===old.id).name,'Módosított referencia');assert.equal(rows.find(r=>r.id===old.id).section,'misi');assert.equal(rows.find(r=>r.id===old.id).locations[0].latitude,47.5);assert.equal(rows.find(r=>r.id===legacyId).section,'krisztian');assert.equal(rows.find(r=>r.id===legacyId).name,'Korábbi szerkesztés megőrizve');
  const html=await fetch(base+'/referenciak');assert.equal(html.status,200);assert.ok((await html.text()).includes('/references.js'));
  }finally{if(server?.listening)await new Promise(r=>server.close(r));rmSync(dataDir,{recursive:true,force:true});}
 });

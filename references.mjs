@@ -6,10 +6,12 @@ export function referenceStore(db) {
   const seed = JSON.parse(readFileSync(new URL('./seed/references.json', import.meta.url), 'utf8'));
   db.exec('CREATE TABLE IF NOT EXISTS reference_records(id TEXT PRIMARY KEY,payload TEXT NOT NULL,revision INTEGER NOT NULL,updated_at TEXT NOT NULL); CREATE TABLE IF NOT EXISTS reference_meta(key TEXT PRIMARY KEY,value TEXT NOT NULL)');
   const insert = db.prepare('INSERT INTO reference_records VALUES(?,?,1,?)');
-  const get = id => { const r = db.prepare('SELECT * FROM reference_records WHERE id=?').get(id); if (!r) fail(404,'A referencia nem található.'); return { website_publishable:false, ...JSON.parse(r.payload), revision:r.revision, updated_at:r.updated_at }; };
+  const get = id => { const r = db.prepare('SELECT * FROM reference_records WHERE id=?').get(id); if (!r) fail(404,'A referencia nem található.'); return { deleted_at:null, website_publishable:false, ...JSON.parse(r.payload), revision:r.revision, updated_at:r.updated_at }; };
   function validate(p) {
     if (!p || typeof p !== 'object' || Array.isArray(p)) fail(400,'Hibás referencia.');
     const r = structuredClone(p); delete r.revision; delete r.updated_at; delete r.photo_count; delete r.photo_cover_id; delete r.photo_research;
+    if (r.deleted_at === undefined) r.deleted_at=null;
+    if (r.deleted_at!==null && (typeof r.deleted_at!=='string'||!Number.isFinite(Date.parse(r.deleted_at)))) fail(400,'Érvénytelen törlési dátum.');
     if (r.website_publishable === undefined) r.website_publishable = false;
     if (typeof r.website_publishable !== 'boolean') fail(400,'Invalid website publication flag.');
     if (r.section === undefined) r.section = 'common';
@@ -56,8 +58,16 @@ export function referenceStore(db) {
   }
   const store = {
     list:()=>db.prepare('SELECT id FROM reference_records ORDER BY id').all().map(r=>get(r.id)),
-    create(p) { const r=validate({...p,id:`GAUT-REF-${randomUUID()}`}); uniqueLocations(r); insert.run(r.id,JSON.stringify(r),new Date().toISOString()); return get(r.id); },
-    update(id,p) { const old=get(id); if(p.revision!==old.revision) fail(409,'Közben valaki módosította ezt a referenciát. Nyisd meg újra a friss adatokat; a mentés nem írta felül őket.'); const r=validate({...p,id}); uniqueLocations(r); db.prepare('UPDATE reference_records SET payload=?,revision=revision+1,updated_at=? WHERE id=?').run(JSON.stringify(r),new Date().toISOString(),id); return get(id); },
+    create(p) { const r=validate({...p,deleted_at:null,id:`GAUT-REF-${randomUUID()}`}); uniqueLocations(r); insert.run(r.id,JSON.stringify(r),new Date().toISOString()); return get(r.id); },
+    update(id,p) { const old=get(id); if(p.revision!==old.revision) fail(409,'Közben valaki módosította ezt a referenciát. Nyisd meg újra a friss adatokat; a mentés nem írta felül őket.'); const r=validate({...p,id,deleted_at:old.deleted_at}); uniqueLocations(r); db.prepare('UPDATE reference_records SET payload=?,revision=revision+1,updated_at=? WHERE id=?').run(JSON.stringify(r),new Date().toISOString(),id); return get(id); },
+    trash(id,revision,restore=false) {
+      const old=get(id);
+      if(revision!==old.revision) fail(409,'Közben módosult a referencia. Frissítsd a listát, és próbáld újra.');
+      const {revision:ignoredRevision,updated_at:ignoredUpdated,...p}=old;
+      p.deleted_at=restore?null:new Date().toISOString();
+      db.prepare('UPDATE reference_records SET payload=?,revision=revision+1,updated_at=? WHERE id=?').run(JSON.stringify(p),new Date().toISOString(),id);
+      return get(id);
+    },
     import(bundle) {
       if (!Array.isArray(bundle.projects)||bundle.projects.length>1000||!Array.isArray(bundle.locations)) fail(400,'GAUT referencia JSON fájlt válassz.');
       const entries=bundle.projects.map(p=>validate({...p,locations:bundle.locations.filter(l=>l.project_id===p.id)}));

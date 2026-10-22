@@ -114,7 +114,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         res.setHeader('Set-Cookie', `gaut_session=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=604800${secureCookies ? '; Secure' : ''}`);
         return json(res, 200, { user: cleanUser(user) });
       }
-      if (path === '/api/health' && req.method === 'GET') return json(res, 200, { ok: true, version: '1.3.2' });
+      if (path === '/api/health' && req.method === 'GET') return json(res, 200, { ok: true, version: '1.4.0' });
       if (path.startsWith('/api/')) {
         const user = session(req); if (!user) fail(401, 'A folytatáshoz jelentkezz be.');
         if (path === '/api/reference-photos/import' && req.method === 'POST') return json(res,200,photos.import(await body(req)));
@@ -132,7 +132,10 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
           if (!action && req.method==='GET') { const p=photos.file(id);res.setHeader('Content-Type',p.mime);res.setHeader('Content-Disposition',`inline; filename="photo.${p.mime.split('/')[1]}"`);return createReadStream(p.path).pipe(res); }
         }
         if (path === '/api/references/import' && req.method === 'POST') return json(res, 200, references.import(await body(req, 5*1024*1024)));
+        const referenceRestore = /^\/api\/references\/([a-zA-Z0-9_-]{1,100})\/restore$/.exec(path);
+        if(referenceRestore && req.method==='POST') {const data=await body(req,1024);return json(res,200,{reference:references.trash(referenceRestore[1],data.revision,true)});}
         const referenceMatch = /^\/api\/references\/([a-zA-Z0-9_-]{1,100})$/.exec(path);
+        if(referenceMatch && req.method==='DELETE') {const data=await body(req,1024);return json(res,200,{reference:references.trash(referenceMatch[1],data.revision)});}
         if (referenceMatch && req.method === 'PUT') return json(res, 200, { reference: references.update(referenceMatch[1], await body(req, 1024*1024)) });
         if (path === '/api/me' && req.method === 'GET') return json(res, 200, { user: cleanUser(user), sections: SECTIONS, categories: CATEGORIES, maxFileSize: MAX_FILE });
         if (path === '/api/logout' && req.method === 'POST') {
