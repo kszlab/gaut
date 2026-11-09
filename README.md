@@ -100,7 +100,7 @@ A képek projektfüggő kukába kerülnek, a „Kukába helyezett képek mutatá
 Az adatgyűjtés eredményeit a belépés után elérhető referencia-JSON importtal és „Képcsomag feltöltése” gombbal lehet a szerverre tölteni. A képcsomag JSON `photos` tömbje referenciánként képmetaadatokat, `reference_id`, `import_key`, `filename` és base64 `content` mezőket tartalmaz; opcionális `research` tömbje a képgyűjtés állapotait. A csomag legfeljebb 28 MB. Az importkulcs megakadályozza a duplázást, a kukába tett képek újbóli importáláskor is kukában maradnak. A személyes referencialistákat és fotócsomagokat a nyilvános kódtártól elkülönítve, a hitelesített API-n kell tárolni.
 
 
-Mind az öt gyűjtőrész „Referencia-kezelő megnyitása” hivatkozása a `/referenciak` oldalra vezet. A közös jelszavas belépés itt is szükséges. Az első induláskor 43 projekt és 50 helyszín kerül az adatbázisba; későbbi indulások és telepítések nem írják felül a szerkesztéseket.
+Mind az öt gyűjtőrész „Referencia-kezelő megnyitása” hivatkozása a `/munkater/referenciak` oldalra vezet. A közös jelszavas belépés itt is szükséges. Az első induláskor 43 projekt és 50 helyszín kerül az adatbázisba; későbbi indulások és telepítések nem írják felül a szerkesztéseket.
 
 A kereső mellett kategória-, azonosítási állapot-, tervév- és fotólinkszűrő használható. A projektek adatlapján szerkeszthetők a leírások, forrás- és fotólinkek, címkék, helyszínek és koordináták. Új projektek és helyszínek felvehetők. Az archiválás visszafordítható: az „Archiváltak” szűrővel megnyitva törölhető az archiválás jelölése. Az egyidejű módosításokat verzióellenőrzés védi.
 
@@ -118,7 +118,7 @@ Referencia törlése: a kártya Törlés gombja vagy az adatlap Referencia törl
 
 ## Nyilvános honlap (előnézet)
 
-A `/hu` és `/en` címen elérhető, belépés nélkül, kétnyelvű egyoldalas bemutatkozó oldal. Jelenleg **nem éles**: a keresők elől rejtett (`noindex`), a belső munkatér továbbra is a `/` címen van. A három arculati vázlat (Rendszer, Struktúra, Szinkron) az oldalon váltható, vagy a `?tema=1|2|3` paraméterrel linkelhető. A választás után a váltót és a két többi témát el kell távolítani.
+A gyökércímen (`/`, magyarul) és az `/en` címen (angolul) elérhető, belépés nélkül, kétnyelvű egyoldalas bemutatkozó oldal; a `/hu` a gyökér másik neve. Jelenleg **nem éles**: a keresők elől rejtett (`noindex`), és a témaváltó is bent van. **A belső munkatér a `/munkater` címen van** (közös jelszavas belépéssel), a referencia-kezelő a `/munkater/referenciak`, a honlap-szerkesztő a `/munkater/honlap`. A régi `/referenciak` és `/honlap` címek átirányítanak. Az API (`/api/...`) címei nem változtak. A három arculati vázlat (Rendszer, Struktúra, Szinkron) az oldalon váltható, vagy a `?tema=1|2|3` paraméterrel linkelhető. A választás után a váltót és a két többi témát el kell távolítani.
 
 - `site/site.mjs`: szerveroldali HTML-render (szövegek HU/EN, szekciók, referenciakártyák).
 - `site/art.mjs`: generált SVG-k (három ideiglenes logóváltozat és az izometrikus épületillusztrációk, CSS-változókkal színezve).
@@ -132,14 +132,14 @@ A honlap egyetlen forrásból kapja a referenciákat (`sampleReferences()`). Ös
 
 Szükséges bővítések a referenciaadatlapon: honlapos cím és leírás magyarul és angolul (`website_title_hu/en`, `website_copy_hu/en`), valamint egy „kiadásra kész" feltétel (szerep megerősítve, képhasználati engedély). A kapcsoló csak ennek teljesülésekor legyen bekapcsolható.
 
-Élesítéskor: `/` a nyilvános oldalra mutat, a munkatér `/munkater` alá költözik, az egyéni domain a Render szolgáltatáshoz kötődik, az `noindex` és a témaváltó kikerül, a statikus fájlok hosszú gyorsítótárat kapnak.
+A gyökércím átállítása megtörtént. A végleges élesítésből még hátravan: az egyéni domain (gaut.hu) bekötése a Render szolgáltatáshoz, az `noindex` és a témaváltó kivétele az arculat kiválasztása után, a statikus fájlok hosszú gyorsítótárazása.
 
-### Honlap-szerkesztő (`/honlap`)
+### Honlap-szerkesztő (`/munkater/honlap`)
 
 A munkatérből (közös jelszóval) szerkeszthetők a nyilvános honlap szövegei magyarul és angolul. A szerkeszthető mezők listája a `site/content.mjs`-ben van (`FIELDS`); az elrendezés, a menü és a felületi szövegek kódban maradnak. Üres mező esetén az alapszöveg jelenik meg.
 
 - **Vázlat és közzététel:** a mentés csak a vázlatot módosítja. A „Közzététel" gomb a vázlatról verziót készít, és csak az látszik a látogatóknak (`site_versions` tábla, a legújabb az élő). A korábbi verziók „Vázlatba töltéssel" visszahozhatók, utána újra közzé kell tenni.
-- **Előnézet:** `/hu?elonezet=1` és `/en?elonezet=1` a mentett vázlatot mutatja, de csak belépett munkatérfelhasználónak. Mindenki más az élő változatot kapja.
+- **Előnézet:** `/?elonezet=1` (vagy `/hu?elonezet=1`) és `/en?elonezet=1` a mentett vázlatot mutatja, de csak belépett munkatérfelhasználónak. Mindenki más az élő változatot kapja.
 - **Ütközés:** a vázlatnak revíziószáma van, egyidejű szerkesztésnél a második mentés 409-et kap, és nem írja felül a másikét.
 - **Biztonság:** minden érték egyszerű szöveg, a megjelenítés mindenhol escape-elt. Az e-mail és a telefonszám formátumát a szerver ellenőrzi.
 - **API:** `GET/PUT /api/site/content`, `POST /api/site/publish`, `POST /api/site/versions/:id/restore` (belépés kell hozzá).
@@ -148,7 +148,7 @@ Következő lépések: képkezelés (nyitóképek, portrék, automatikus átmér
 
 ### Képek a honlap-szerkesztőben
 
-A `/honlap` oldal tetején a három nyitókép cserélhető (`HERO_SLOTS` a `site/content.mjs`-ben; a csapatfotók és referenciafotók ugyanezt a mechanizmust használják majd). A feltöltést a `site/media.mjs` dolgozza fel a `sharp` könyvtárral:
+A `/munkater/honlap` oldal tetején a három nyitókép cserélhető (`HERO_SLOTS` a `site/content.mjs`-ben; a csapatfotók és referenciafotók ugyanezt a mechanizmust használják majd). A feltöltést a `site/media.mjs` dolgozza fel a `sharp` könyvtárral:
 
 - JPG, PNG vagy WebP, legalább 200 px széles (nyitóképhez legalább 1600 px ajánlott), legfeljebb 20 MB. A kép 800, 1600 és 2400 px széles WebP változatokká alakul (amelyik kisebb az eredetinél, kimarad). Az eredeti fájl nem marad meg, ezért az EXIF-adatok (pl. GPS) is törlődnek.
 - A fájlok a `DATA_DIR/site-media` könyvtárban vannak, a táblázat a `site_media` (méret, képleírás magyarul és angolul). A teljes mentéshez ezért a teljes `DATA_DIR` kell.
@@ -159,7 +159,7 @@ A `/honlap` oldal tetején a három nyitókép cserélhető (`HERO_SLOTS` a `sit
 
 ### Csapat a honlap-szerkesztőben
 
-A `/honlap` oldal „Csapat" szekciója a nyilvános oldal csapatlistáját kezeli (`team` a vázlat és a közzétett verziók tartalmában, `cleanTeam` a `site/content.mjs`-ben):
+A `/munkater/honlap` oldal „Csapat" szekciója a nyilvános oldal csapatlistáját kezeli (`team` a vázlat és a közzétett verziók tartalmában, `cleanTeam` a `site/content.mjs`-ben):
 
 - Három állapot: **nincs csapatlista** (a „Minta" jelzésű mintacsapat látszik), **saját lista** (legfeljebb 12 tag), **üres lista** (a Csapat szekció és menüpontja rejtett).
 - Tagonként: név, szerepkör, bemutatkozás (700 karakter) és legfeljebb 4 szakterület-címke magyarul és angolul, fénykép, sorrend (↑ ↓), törlés. Az angol mezők üresen maradhatnak, ilyenkor a magyar szöveg jelenik meg.

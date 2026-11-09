@@ -30,7 +30,7 @@ function fillSelects() {
 }
 async function enter() {
   const info = await api('/api/me'); Object.assign(state, info);
-  if (new URLSearchParams(location.search).get('next') === 'references') { location.replace('/referenciak'); return; }
+  if (new URLSearchParams(location.search).get('next') === 'references') { location.replace('/munkater/referenciak'); return; }
   $('#user-name').textContent = 'GAUT'; $('#avatar').textContent = 'G';
   fillSelects(); await reload();
   $('#login-screen').hidden = true; $('#workspace').hidden = false;
@@ -45,12 +45,12 @@ function render() {
   $('#page-description').textContent = state.trash ? 'A kukába helyezett anyagok minden korábbi verziójukkal együtt visszaállíthatók.' : descriptions[state.section];
   $('#upload-button').hidden = state.trash;
   let referenceLink = $('#reference-link');
-  if (!referenceLink) { referenceLink = document.createElement('div'); referenceLink.id = 'reference-link'; referenceLink.className = 'notice'; referenceLink.innerHTML = '<strong>Szűrhető referencialista</strong><p>Projektek, források, fotólinkek és helyszínek. Új referencia felvétele, importálás és szerkesztés.</p><a class="primary" href="/referenciak">Referencia-kezelő megnyitása →</a>'; $('.page-heading').after(referenceLink); }
-  if (!$('#site-link')) { const siteLink = document.createElement('div'); siteLink.id = 'site-link'; siteLink.className = 'notice'; siteLink.innerHTML = '<strong>Nyilvános honlap</strong><p>A honlap szövegeinek szerkesztése magyarul és angolul, vázlattal és közzététellel.</p><a class="primary" href="/honlap">Honlap-szerkesztő megnyitása →</a>'; $('#reference-link').after(siteLink); }
+  if (!referenceLink) { referenceLink = document.createElement('div'); referenceLink.id = 'reference-link'; referenceLink.className = 'notice'; referenceLink.innerHTML = '<strong>Szűrhető referencialista</strong><p>Projektek, források, fotólinkek és helyszínek. Új referencia felvétele, importálás és szerkesztés.</p><a class="primary" href="/munkater/referenciak">Referencia-kezelő megnyitása →</a>'; $('.page-heading').after(referenceLink); }
+  if (!$('#site-link')) { const siteLink = document.createElement('div'); siteLink.id = 'site-link'; siteLink.className = 'notice'; siteLink.innerHTML = '<strong>Nyilvános honlap</strong><p>A honlap szövegeinek szerkesztése magyarul és angolul, vázlattal és közzététellel.</p><a class="primary" href="/munkater/honlap">Honlap-szerkesztő megnyitása →</a>'; $('#reference-link').after(siteLink); }
   referenceLink.hidden = state.trash; $('#site-link').hidden = state.trash;
   if (!$('#backup-link')) { const backupLink = document.createElement('div'); backupLink.id = 'backup-link'; backupLink.className = 'notice'; backupLink.innerHTML = '<strong>Teljes mentés</strong><p>Az adatbázis, a feltöltött fájlok, a referenciafotók és a honlap képei egyetlen .tar.gz fájlban. Rendszeresen töltsd le, és tárold a szerveren kívül.</p><a class="secondary" href="/api/backup" download>Teljes mentés letöltése ↓</a>'; $('#site-link').after(backupLink); }
   $('#backup-link').hidden = state.trash;
-  referenceLink.querySelector('a').href = `/referenciak?section=${state.section}`;
+  referenceLink.querySelector('a').href = `/munkater/referenciak?section=${state.section}`;
   $('#collection-title').firstChild.textContent = state.trash ? 'Kukába helyezett anyagok ' : 'Feltöltött anyagok ';
   $('#stat-files').textContent = active.length;
   $('#stat-versions').textContent = active.reduce((sum, i) => sum + i.version_count, 0);

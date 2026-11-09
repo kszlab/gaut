@@ -115,7 +115,7 @@ test('workspace API requires login; public pages show only published text; draft
     // bad input
     assert.equal((await call(base, cookie, '/api/site/content', 'PUT', { revision: (await restore.json()).draft.revision, overrides: { hu: { 'nincs': 'x' }, en: {} } })).status, 400);
     // the editor page and its assets are served
-    assert.equal((await fetch(`${base}/honlap`)).status, 200);
+    assert.equal((await fetch(`${base}/munkater/honlap`)).status, 200);
     assert.equal((await fetch(`${base}/site-editor.js`)).status, 200);
   });
 });

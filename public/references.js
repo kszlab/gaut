@@ -9,7 +9,7 @@ $('#filter-owners').innerHTML=Object.entries(sections).map(([id,name])=>`<label>
 const selectedOwners=()=>[...document.querySelectorAll('#filter-owners input:checked')].map(i=>i.value);
 $('#edit-sections').innerHTML+='<div class=owner-options>'+Object.entries(sections).map(([id,name])=>`<label><input type=checkbox name=sections value="${id}">${name}</label>`).join('')+'</div><p class=field-hint>A Közös önálló jelölés; a nevek mellett is kiválasztható.</p>';
 const owners=r=>r.sections||[r.section||'common'];
-if(Object.hasOwn(sections,initialSection)){ document.querySelector('#filter-owners input[value="'+initialSection+'"]').checked=true; $('#back').href=`/#${initialSection}`; $('#back').textContent=`← ${sections[initialSection]} anyagai`; }
+if(Object.hasOwn(sections,initialSection)){ document.querySelector('#filter-owners input[value="'+initialSection+'"]').checked=true; $('#back').href=`/munkater#${initialSection}`; $('#back').textContent=`← ${sections[initialSection]} anyagai`; }
 let records=[], editing=null, busy=false, dirty=false;
 setupPhotos(()=>{dirty=true;});
 const fields={name:'Projekt neve *',design_year:'Tervév / időszak',category:'Kategória',identification_status:'Azonosítás állapota',city:'Település',address:'Cím',tags:'Címkék (vesszővel elválasztva)',publication_status:'Publikálás állapota',scope_from_pdf:'Tervezési feladat / közreműködés',background:'Az épület és projekt leírása',technical_detail:'Műszaki részletek',questions:'Bizonytalanságok, hiányzó adatok',website_copy_draft:'Honlapra szánt leírástervezet',attribution:'Közreműködés és forrásmegjelölés'};

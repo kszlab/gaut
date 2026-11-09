@@ -21,7 +21,7 @@ test('Teljes közös munkafolyamat, jogosultság és tartós tárolás', async (
   try {
     assert.equal((await req('/api/items')).status, 401);
     assert.equal((await req('/api/health')).status, 200);
-    assert.equal((await req('/')).status, 200);
+    assert.equal((await req('/munkater')).status, 200);
     assert.equal((await req('/api/login', 'POST', { user: 'misi', password: 'wrong' })).status, 401);
     const session = await login();
     assert.match(session.headers.get('set-cookie'), /HttpOnly; SameSite=Strict/);
