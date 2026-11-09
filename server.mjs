@@ -2,6 +2,7 @@ import http from 'node:http';
 import { referenceStore } from './references.mjs';
 import { renderSite, parseTheme, defaultText, toPublicReference, publicReferences } from './site/site.mjs';
 import { websiteWarnings } from './public/site-readiness.js';
+import { renderConcept, renderConceptIndex } from './site/concepts.mjs';
 import { contentStore, defaultsFor, FIELDS, HERO_SLOTS } from './site/content.mjs';
 import { mediaStore } from './site/media.mjs';
 import { photoStore } from './photos.mjs';
@@ -251,7 +252,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         fail(404, 'Ismeretlen művelet.');
       }
       // Public site preview. Pages are rendered from sample data; nothing here reads the private stores.
-      const siteAssets = { '/site/site.css': ['site/site.css', 'text/css'], '/site/site.js': ['site/site.js', 'text/javascript'] };
+      const siteAssets = { '/site/concept-base.css': ['site/concept-base.css', 'text/css'], '/site/concept-a.css': ['site/concept-a.css', 'text/css'], '/site/concept-b.css': ['site/concept-b.css', 'text/css'], '/site/concept-c.css': ['site/concept-c.css', 'text/css'], '/site/concept-index.css': ['site/concept-index.css', 'text/css'], '/site/site.css': ['site/site.css', 'text/css'], '/site/site.js': ['site/site.js', 'text/javascript'] };
       // The workspace lives under /munkater; the root is the public site. Old workspace page addresses keep working through redirects.
       const moved = { '/referenciak': '/munkater/referenciak', '/honlap': '/munkater/honlap', '/munkater/': '/munkater', '/munkater/referenciak/': '/munkater/referenciak', '/munkater/honlap/': '/munkater/honlap' };
       if (['GET', 'HEAD'].includes(req.method) && moved[path]) { res.writeHead(302, { Location: moved[path] + url.search }); return res.end(); }
@@ -284,6 +285,12 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         res.setHeader('Cache-Control', published ? 'public, max-age=31536000, immutable' : 'private, no-cache');
         res.setHeader('Content-Type', 'image/webp');
         return res.end(req.method === 'HEAD' ? undefined : readFileSync(file));
+      }
+      // Design concept previews (hidden from search engines): /koncepcio and /koncepcio/a|b|c
+      if (['GET', 'HEAD'].includes(req.method) && (path === '/koncepcio' || /^\/koncepcio\/[abc]$/.test(path))) {
+        const html = path === '/koncepcio' ? renderConceptIndex() : renderConcept(path.slice(-1));
+        res.setHeader('Cache-Control', 'no-cache'); res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        return res.end(req.method === 'HEAD' ? undefined : html);
       }
       const mediaMatch = /^\/site\/(img|fonts)\/([a-z0-9-]+)\.(png|jpg|webp|woff2)$/.exec(path);
       if (mediaMatch && ['GET', 'HEAD'].includes(req.method)) {
