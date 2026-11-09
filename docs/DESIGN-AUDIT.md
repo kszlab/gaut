@@ -1,6 +1,6 @@
 # GAUT honlap: tervezői audit és három koncepció
 
-Állapot: **előkészítés, jóváhagyásra vár.** A három koncepció a `/koncepcio` címen nézhető meg (előnézetek, mintatartalommal, a keresők elől rejtve). A jelenlegi oldal ettől nem változott, csak a kontrasztja javult (lásd lent).
+Állapot: **előkészítés, jóváhagyásra vár.** A három koncepció a `/koncepcio` címen nézhető meg (előnézetek, a keresők elől rejtve). **A honlap-szerkesztőben mentett és közzétett tartalmat mutatják** (a vázlatot belépve a `?elonezet=1` címzéssel); ahol nincs mentett tartalom, mintaadat látszik „Minta" jelzéssel. A jelenlegi oldal ettől nem változott, csak a kontrasztja javult (lásd lent).
 
 ## 1. Mit vizsgáltam, és mit mértem
 

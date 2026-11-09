@@ -65,6 +65,17 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
     const media = await siteMedia.add({ filename: photo.filename, bytes: readFileSync(photo.path), alt_hu: old.name.slice(0, 190), alt_en: '' });
     data.website_cover_media = media.id;
   }
+  // What a visitor sees: the published version, or the saved draft (with the current reference store) for a signed-in preview.
+  // References: the live version shows the list frozen at publication; without any publishable reference the sample projects stay.
+  // The public site and the design concept previews share this, so the concepts show the content saved in the editor.
+  function siteView(draft) {
+    const shown = draft ? siteContent.draft().overrides : siteContent.live()?.overrides ?? null;
+    const media = resolveMedia(shown?.media);
+    const team = shown?.team?.map(m => ({ ...m, sample: false, photoMedia: media[`team.${m.id}`] }));
+    const frozen = draft ? publicReferences(references.list()) : siteContent.live()?.overrides.references;
+    const refs = frozen?.length ? frozen.map(r => ({ ...r, coverMedia: r.cover ? siteMedia.get(r.cover) ?? undefined : undefined })) : undefined;
+    return { content: shown, media, team, references: refs, hasLive: Boolean(siteContent.live()) };
+  }
   const siteState = () => {
     const live = siteContent.live();
     return { fields: FIELDS, slots: HERO_SLOTS.map(([slot, label, fallback]) => ({ slot, label, fallback })), defaults: { hu: defaultsFor(defaultText('hu')), en: defaultsFor(defaultText('en')) }, draft: siteContent.draft(), live: live && { id: live.id, created_at: live.created_at, note: live.note, changes: live.changes }, versions: siteContent.versions(), media: siteMedia.list(), references: referenceOverview() };
@@ -259,13 +270,8 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
       if (['GET', 'HEAD'].includes(req.method) && (path === '/' || path === '/hu' || path === '/en')) {
         // ?elonezet=1 shows the unpublished draft, but only to a signed-in workspace user; everyone else gets the live version.
         const draft = url.searchParams.get('elonezet') === '1' && Boolean(session(req));
-        const shown = draft ? siteContent.draft().overrides : siteContent.live()?.overrides ?? null;
-        const mediaMap = resolveMedia(shown?.media);
-        const team = shown?.team?.map(m => ({ ...m, sample: false, photoMedia: mediaMap[`team.${m.id}`] }));
-        // References: the live version shows the list frozen at publication; the draft preview shows the current reference store. Without any publishable reference the sample projects stay.
-        const frozen = draft ? publicReferences(references.list()) : siteContent.live()?.overrides.references;
-        const refs = frozen?.length ? frozen.map(r => ({ ...r, coverMedia: r.cover ? siteMedia.get(r.cover) ?? undefined : undefined })) : undefined;
-        const html = renderSite({ lang: path === '/en' ? 'en' : 'hu', theme: parseTheme(url.searchParams.get('tema')), content: shown, draft, media: mediaMap, ...(team ? { team } : {}), ...(refs ? { references: refs } : {}) });
+        const view = siteView(draft);
+        const html = renderSite({ lang: path === '/en' ? 'en' : 'hu', theme: parseTheme(url.searchParams.get('tema')), content: view.content, draft, media: view.media, ...(view.team ? { team: view.team } : {}), ...(view.references ? { references: view.references } : {}) });
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         return res.end(req.method === 'HEAD' ? undefined : html);
@@ -288,7 +294,8 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
       }
       // Design concept previews (hidden from search engines): /koncepcio and /koncepcio/a|b|c
       if (['GET', 'HEAD'].includes(req.method) && (path === '/koncepcio' || /^\/koncepcio\/[abc]$/.test(path))) {
-        const html = path === '/koncepcio' ? renderConceptIndex() : renderConcept(path.slice(-1));
+        const draft = url.searchParams.get('elonezet') === '1' && Boolean(session(req));
+        const html = path === '/koncepcio' ? renderConceptIndex() : renderConcept(path.slice(-1), { ...siteView(draft), draft });
         res.setHeader('Cache-Control', 'no-cache'); res.setHeader('Content-Type', 'text/html; charset=utf-8');
         return res.end(req.method === 'HEAD' ? undefined : html);
       }

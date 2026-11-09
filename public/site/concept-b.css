@@ -76,3 +76,10 @@
   .cb .nav { display: none; } .cb .top { padding-inline: 20px; } .cb .logo svg { height: 44px; }
   .cb .hero { min-height: 78vh; }
 }
+
+/* Content from the editor: cover photos, portraits, chamber register line, contact links */
+.cb .tile img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; margin-bottom: 18px; }
+.cb .person .photo { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; margin-bottom: 16px; }
+.cb .chamber { margin-top: 8px; font-size: 14px; color: var(--muted); }
+.cb .chamber a { color: var(--accent); font-weight: 600; text-underline-offset: 3px; }
+.cb .contact dd a { color: #fff; text-underline-offset: 4px; }
