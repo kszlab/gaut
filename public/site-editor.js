@@ -70,7 +70,7 @@ function renderRefs() {
 
 // ---- Team list ----
 const TEAM_MAX = 12;
-const newMember = () => ({ id: `tag-${Math.random().toString(36).slice(2, 8)}`, name: { hu: '', en: '' }, role: { hu: '', en: '' }, bio: { hu: '', en: '' }, focus: { hu: [], en: [] } });
+const newMember = () => ({ id: `tag-${Math.random().toString(36).slice(2, 8)}`, name: { hu: '', en: '' }, role: { hu: '', en: '' }, bio: { hu: '', en: '' }, focus: { hu: [], en: [] }, chamber_no: '', chamber_url: '' });
 function renderTeam() {
   const team = state.values.team;
   let body;
@@ -95,13 +95,16 @@ function memberHtml(m, i, n) {
       <div class="slot-actions"><label class="secondary file-btn">${src ? 'Fénykép cseréje' : 'Fénykép feltöltése'}<input type="file" accept="image/jpeg,image/png,image/webp" data-upload="${esc(slot)}" hidden></label>${src ? `<button type="button" class="secondary" data-reset-slot="${esc(slot)}">Törlés</button>` : ''}</div></div>
     <div class="member-fields"><div class="two">${cell('hu', 'name', 'Név')}${cell('en', 'name', 'Név')}</div><div class="two">${cell('hu', 'role', 'Szerepkör')}${cell('en', 'role', 'Szerepkör')}</div>
       <div class="two">${cell('hu', 'bio', 'Bemutatkozás', 'textarea', 700)}${cell('en', 'bio', 'Bemutatkozás', 'textarea', 700)}</div><div class="two">${cell('hu', 'focus', 'Szakterület-címkék (vesszővel, legfeljebb 4)')}${cell('en', 'focus', 'Szakterület-címkék (vesszővel, legfeljebb 4)')}</div>
+      <div class="two"><label>Kamarai azonosító szám<input data-member="${esc(m.id)}" data-mf="chamber_no" maxlength="40" value="${esc(m.chamber_no || '')}"></label><label>Link a mérnöki kamara névjegyzékére<input data-member="${esc(m.id)}" data-mf="chamber_url" maxlength="300" placeholder="https://mernokvagyok.hu/nevjegyzek/?id=…" value="${esc(m.chamber_url || '')}"></label></div>
+      <p class="field-hint">A kamarai adatok nem kötelezők, mindkét nyelven ugyanúgy jelennek meg. A link csak https:// címmel kezdődő mernokvagyok.hu vagy mmk.hu oldal lehet.</p>
       <div class="slot-actions"><button type="button" class="secondary" data-team-action="up" data-member-id="${esc(m.id)}" ${i === 0 ? 'disabled' : ''}>↑ Feljebb</button><button type="button" class="secondary" data-team-action="down" data-member-id="${esc(m.id)}" ${i === n - 1 ? 'disabled' : ''}>↓ Lejjebb</button><button type="button" class="danger" data-team-action="remove" data-member-id="${esc(m.id)}">Törlés</button></div></div></div>`;
 }
 $('#team').addEventListener('input', e => {
   const t = e.target; if (!t.dataset.mf) return;
   const m = state.values.team.find(x => x.id === t.dataset.member); if (!m) return;
   const [key, lang] = t.dataset.mf.split('.');
-  if (key === 'focus') m.focus[lang] = t.value.split(',').map(s => s.trim()).filter(Boolean).slice(0, 4); else m[key][lang] = t.value;
+  if (!lang) m[key] = t.value; // language-independent fields (chamber number and link)
+  else if (key === 'focus') m.focus[lang] = t.value.split(',').map(s => s.trim()).filter(Boolean).slice(0, 4); else m[key][lang] = t.value;
   state.dirty = true; renderStatus();
 });
 $('#team').addEventListener('click', e => {

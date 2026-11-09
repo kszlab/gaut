@@ -1,6 +1,6 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { buildingSvg, LOGOS, ICONS } from './art.mjs';
-import { applyContent } from './content.mjs';
+import { applyContent, isChamberUrl } from './content.mjs';
 
 // Hero render for concept n: a high-resolution file (hero-N.webp or hero-N.jpg) wins over the interim
 // crop from the concept board (heroN.png). See docs/HERO-IMAGES.md.
@@ -89,6 +89,7 @@ const TEXT = {
     nav: [['szakteruletek', 'Szakterületek'], ['szemlelet', 'Szemlélet'], ['referenciak', 'Referenciák'], ['csapat', 'Csapat'], ['kapcsolat', 'Kapcsolat']],
     teamKicker: 'Csapat', teamTitle: 'A tervezők, akikkel dolgozhat',
     teamNote: 'Helyőrző bemutatkozások. A fotók és a szövegek a kollégáktól érkeznek majd.', photoSoon: 'Fotó hamarosan',
+    chamberLabel: 'Mérnöki kamarai névjegyzék', chamberOpen: 'megnyitás',
     skip: 'Ugrás a tartalomra', descriptor: 'Mérnökiroda', other: 'EN', otherName: 'English',
     hero: { rendszer: 'Összehangolt rendszerek.', struktura: 'Átgondolt tervezés. Biztos működés.', szinkron: 'Intelligens épületek. Összhangban.' },
     sub: 'Gépészeti automatika és épületfelügyelet', cta: 'Kapcsolat', cta2: 'Referenciák',
@@ -127,6 +128,7 @@ const TEXT = {
     nav: [['szakteruletek', 'Services'], ['szemlelet', 'Approach'], ['referenciak', 'Projects'], ['csapat', 'Team'], ['kapcsolat', 'Contact']],
     teamKicker: 'Team', teamTitle: 'The engineers you will work with',
     teamNote: 'Placeholder introductions. Photos and texts will come from the colleagues.', photoSoon: 'Photo coming soon',
+    chamberLabel: 'Chamber of Engineers register', chamberOpen: 'open',
     skip: 'Skip to content', descriptor: 'Engineering', other: 'HU', otherName: 'Magyar',
     hero: { rendszer: 'Coordinated systems.', struktura: 'Considered design. Reliable operation.', szinkron: 'Intelligent buildings. In harmony.' },
     sub: 'Building automation and building management', cta: 'Contact', cta2: 'Projects',
@@ -199,11 +201,16 @@ function teamCard(m, lang, t) {
   const tags = m.focus?.[lang]?.length ? m.focus[lang] : (m.focus?.hu || []);
   const focus = tags.map(x => `<li>${esc(x)}</li>`).join('');
   const role = pick(m.role, lang), bio = pick(m.bio, lang);
+  // Chamber of Engineers register: the number, linked to the register when a (validated) address is set.
+  const link = m.chamber_url && isChamberUrl(m.chamber_url) ? m.chamber_url : '';
+  const chamber = m.chamber_no || link
+    ? `<p class="chamber">${esc(t.chamberLabel)}: ${link ? `<a href="${esc(link)}" target="_blank" rel="noopener noreferrer">${esc(m.chamber_no || t.chamberOpen)}</a>` : esc(m.chamber_no)}</p>` : '';
   return `<article class="member">
   <div class="portrait">${photo}${m.sample ? `<span class="badge">${esc(t.sample)}</span>` : ''}</div>
   <h3>${esc(name)}</h3>
   ${role ? `<p class="role">${esc(role)}</p>` : ''}
   ${bio ? `<p class="bio">${esc(bio)}</p>` : ''}
+  ${chamber}
   ${focus ? `<ul class="tags">${focus}</ul>` : ''}
 </article>`;
 }

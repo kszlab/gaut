@@ -74,6 +74,17 @@ const oneLine = (value, max, label, required = false) => {
   if (required && !v) fail(400, `Hiányzik: ${label}.`);
   return v;
 };
+// A team member can link to the public register of the Hungarian Chamber of Engineers. Only https links to the
+// chamber's own sites are accepted, so the public page never links to arbitrary addresses.
+const CHAMBER_HOSTS = ['mernokvagyok.hu', 'mmk.hu'];
+export const isChamberUrl = value => {
+  try { const u = new URL(value); return u.protocol === 'https:' && !u.username && !u.password && CHAMBER_HOSTS.some(h => u.hostname === h || u.hostname.endsWith(`.${h}`)); } catch { return false; }
+};
+function chamberUrl(value, i) {
+  const v = oneLine(value, 300, `${i + 1}. tag kamarai linkje`);
+  if (v && !isChamberUrl(v)) fail(400, `A kamarai link https:// címmel kezdődjön, és a ${CHAMBER_HOSTS.join(' vagy ')} oldalra mutasson.`);
+  return v ? new URL(v).href : '';
+}
 export function cleanTeam(list) {
   if (!Array.isArray(list) || list.length > TEAM_MAX) fail(400, `A csapatlista legfeljebb ${TEAM_MAX} tagot tartalmazhat.`);
   const ids = new Set();
@@ -99,7 +110,9 @@ export function cleanTeam(list) {
       if (!Array.isArray(tags) || tags.length > 4) fail(400, 'Legfeljebb 4 szakterület-címke adható meg.');
       focus[lang] = tags.map(t => oneLine(t, 40, `címke (${lang.toUpperCase()})`)).filter(Boolean);
     }
-    return { id: m.id, name: pair(m.name, 'name', 80, `${i + 1}. tag neve`, true), role: pair(m.role, 'role', 80, `${i + 1}. tag szerepköre`), bio, focus };
+    const chamberNo = oneLine(m.chamber_no ?? '', 40, `${i + 1}. tag kamarai azonosítója`);
+    if (!/^[\p{L}\p{N} ./\-]*$/u.test(chamberNo)) fail(400, 'A kamarai azonosító csak betűt, számot, szóközt, pontot, kötőjelet és perjelet tartalmazhat.');
+    return { id: m.id, name: pair(m.name, 'name', 80, `${i + 1}. tag neve`, true), role: pair(m.role, 'role', 80, `${i + 1}. tag szerepköre`), bio, focus, chamber_no: chamberNo, chamber_url: chamberUrl(m.chamber_url ?? '', i) };
   });
 }
 
