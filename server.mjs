@@ -1,6 +1,7 @@
 import http from 'node:http';
 import { referenceStore } from './references.mjs';
-import { renderSite, parseTheme } from './site/site.mjs';
+import { renderSite, parseTheme, defaultText } from './site/site.mjs';
+import { contentStore, defaultsFor, FIELDS } from './site/content.mjs';
 import { photoStore } from './photos.mjs';
 import { DatabaseSync } from 'node:sqlite';
 import { readFileSync, writeFileSync, mkdirSync, existsSync, unlinkSync, createReadStream } from 'node:fs';
@@ -41,6 +42,11 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
     CREATE INDEX IF NOT EXISTS versions_item ON versions(item_id, number);
   `);
   const references = referenceStore(db);
+  const siteContent = contentStore(db);
+  const siteState = () => {
+    const live = siteContent.live();
+    return { fields: FIELDS, defaults: { hu: defaultsFor(defaultText('hu')), en: defaultsFor(defaultText('en')) }, draft: siteContent.draft(), live: live && { id: live.id, created_at: live.created_at, note: live.note, changes: live.changes }, versions: siteContent.versions() };
+  };
   const photos = photoStore(db, dataDir);
   const attempts = new Map();
   const json = (res, status, body) => { res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(JSON.stringify(body)); };
@@ -142,6 +148,11 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         const referenceMatch = /^\/api\/references\/([a-zA-Z0-9_-]{1,100})$/.exec(path);
         if(referenceMatch && req.method==='DELETE') {const data=await body(req,1024);return json(res,200,{reference:references.trash(referenceMatch[1],data.revision)});}
         if (referenceMatch && req.method === 'PUT') return json(res, 200, { reference: references.update(referenceMatch[1], await body(req, 1024*1024)) });
+        if (path === '/api/site/content' && req.method === 'GET') return json(res, 200, siteState());
+        if (path === '/api/site/content' && req.method === 'PUT') { const b = await body(req, 512 * 1024); siteContent.saveDraft(b.revision, b.overrides); return json(res, 200, siteState()); }
+        if (path === '/api/site/publish' && req.method === 'POST') { const b = await body(req, 4096); siteContent.publish(b.revision, b.note ?? ''); return json(res, 200, siteState()); }
+        const siteRestore = /^\/api\/site\/versions\/([a-f0-9-]{36})\/restore$/.exec(path);
+        if (siteRestore && req.method === 'POST') { const b = await body(req, 4096); siteContent.restore(siteRestore[1], b.revision); return json(res, 200, siteState()); }
         if (path === '/api/me' && req.method === 'GET') return json(res, 200, { user: cleanUser(user), sections: SECTIONS, categories: CATEGORIES, maxFileSize: MAX_FILE });
         if (path === '/api/logout' && req.method === 'POST') {
           const token = /(?:^|;\s*)gaut_session=([a-zA-Z0-9_-]+)/.exec(req.headers.cookie || '')?.[1];
@@ -196,7 +207,9 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
       // Public site preview. Pages are rendered from sample data; nothing here reads the private stores.
       const siteAssets = { '/site/site.css': ['site/site.css', 'text/css'], '/site/site.js': ['site/site.js', 'text/javascript'] };
       if (['GET', 'HEAD'].includes(req.method) && (path === '/hu' || path === '/en')) {
-        const html = renderSite({ lang: path.slice(1), theme: parseTheme(url.searchParams.get('tema')) });
+        // ?elonezet=1 shows the unpublished draft, but only to a signed-in workspace user; everyone else gets the live version.
+        const draft = url.searchParams.get('elonezet') === '1' && Boolean(session(req));
+        const html = renderSite({ lang: path.slice(1), theme: parseTheme(url.searchParams.get('tema')), content: draft ? siteContent.draft().overrides : siteContent.live()?.overrides ?? null, draft });
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         return res.end(req.method === 'HEAD' ? undefined : html);
@@ -216,7 +229,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         res.setHeader('Content-Type', types[mediaMatch[3]]);
         return res.end(req.method === 'HEAD' ? undefined : readFileSync(file));
       }
-      const assets = { '/reference-search.js': ['reference-search.js', 'text/javascript'], '/reference-photos.js': ['reference-photos.js', 'text/javascript'], '/referenciak': ['references.html', 'text/html'], '/references.js': ['references.js', 'text/javascript'], '/references.css': ['references.css', 'text/css'], '/': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'], '/favicon.svg': ['favicon.svg', 'image/svg+xml'] };
+      const assets = { '/honlap': ['site-editor.html', 'text/html'], '/site-editor.js': ['site-editor.js', 'text/javascript'], '/site-editor.css': ['site-editor.css', 'text/css'], '/reference-search.js': ['reference-search.js', 'text/javascript'], '/reference-photos.js': ['reference-photos.js', 'text/javascript'], '/referenciak': ['references.html', 'text/html'], '/references.js': ['references.js', 'text/javascript'], '/references.css': ['references.css', 'text/css'], '/': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'], '/favicon.svg': ['favicon.svg', 'image/svg+xml'] };
       if (!assets[path] || !['GET', 'HEAD'].includes(req.method)) fail(404, 'Az oldal nem található.');
       const [name, type] = assets[path];
       res.setHeader('Content-Type', `${type}; charset=utf-8`);

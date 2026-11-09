@@ -1,0 +1,22 @@
+.site-editor .editor-bar { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; background: #fff; border: 1px solid var(--line); border-radius: 7px; padding: 12px 16px; margin: 22px 0 8px; box-shadow: 0 4px 18px #102a4310; }
+.site-editor .editor-status { font-size: 13px; line-height: 1.5; }
+.site-editor .editor-status strong { color: var(--teal); }
+.site-editor .editor-status .dirty { color: #a35a00; font-weight: 700; }
+.site-editor .editor-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.site-editor .note-field { max-width: 520px; margin: 14px 0 26px; }
+.site-editor .group { background: #fff; border: 1px solid var(--line); border-radius: 7px; padding: 22px 24px; margin-bottom: 18px; }
+.site-editor .group h2 { margin: 0 0 4px; }
+.site-editor .row { display: grid; grid-template-columns: 170px minmax(0, 1fr) minmax(0, 1fr); gap: 14px; padding: 14px 0; border-top: 1px solid #edf1f3; align-items: start; }
+.site-editor .row:first-of-type { border-top: 0; }
+.site-editor .row-label { font-size: 12px; font-weight: 650; padding-top: 11px; }
+.site-editor .row-label small { display: block; font-weight: 400; color: var(--muted); font-size: 10px; margin-top: 4px; }
+.site-editor .cell span { display: block; font-size: 9px; letter-spacing: 1.6px; color: var(--muted); margin-bottom: 5px; font-weight: 700; }
+.site-editor .cell input, .site-editor .cell textarea { margin-top: 0; }
+.site-editor .cell textarea { min-height: 84px; }
+.site-editor .cell.changed input, .site-editor .cell.changed textarea { border-color: var(--teal); background: #f6fbfb; }
+.site-editor .hide-toggle { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 500; margin-top: 6px; }
+.site-editor .hide-toggle input { width: auto; margin: 0; display: inline-block; }
+.site-editor .versions { margin-top: 34px; }
+.site-editor .version-row .secondary { padding: 8px 12px; min-height: 0; font-size: 11px; }
+.site-editor .current-tag { font-size: 9px; letter-spacing: 1.4px; background: var(--teal); color: #fff; padding: 3px 7px; border-radius: 3px; margin-left: 8px; vertical-align: middle; }
+@media (max-width: 900px) { .site-editor .row { grid-template-columns: 1fr; gap: 8px; } .site-editor .row-label { padding-top: 0; } }

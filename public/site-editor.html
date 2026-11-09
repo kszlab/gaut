@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="hu"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>GAUT · Honlap-szerkesztő</title><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/references.css"><link rel="stylesheet" href="/site-editor.css"><script type="module" src="/site-editor.js"></script></head>
+<body class="reference-page site-editor">
+<header class="reference-header"><a href="/">← Anyaggyűjtő</a><strong>GAUT / HONLAP</strong></header>
+<main class="reference-main">
+  <p class="eyebrow">NYILVÁNOS HONLAP · SZÖVEGEK</p>
+  <h1>Honlap-szerkesztő<span>.</span></h1>
+  <p class="muted">A szövegek vázlatban módosulnak. A látogatók csak a közzétett változatot látják. Üresen hagyott mező esetén az alapszöveg jelenik meg (halványan látszik a mezőben).</p>
+  <p id="message" role="status"></p>
+  <div id="tools" hidden>
+    <div class="editor-bar">
+      <div class="editor-status" id="status" aria-live="polite"></div>
+      <div class="editor-actions">
+        <a class="secondary" id="preview-hu" href="/hu?elonezet=1" target="_blank" rel="noopener">Vázlat előnézete (HU) ↗</a>
+        <a class="secondary" id="preview-en" href="/en?elonezet=1" target="_blank" rel="noopener">Vázlat előnézete (EN) ↗</a>
+        <button id="save" class="secondary" type="button">Mentés a vázlatba</button>
+        <button id="publish" class="primary" type="button">Közzététel</button>
+      </div>
+    </div>
+    <p class="field-hint">Az előnézet a mentett vázlatot mutatja. Közzététel előtt mindig nézd meg mindkét nyelven.</p>
+    <label class="note-field">Megjegyzés a közzétételhez <span class="optional">(nem kötelező)</span><input id="note" maxlength="200" placeholder="pl. Új elérhetőségek"></label>
+    <div id="groups"></div>
+    <section class="versions">
+      <h2>Közzétett verziók</h2>
+      <p class="field-hint">A „Vázlatba töltés" nem módosítja az élő oldalt; csak a vázlatot cseréli le. Utána a Közzététellel lehet újra élesíteni.</p>
+      <div id="versions"></div>
+    </section>
+  </div>
+</main>
+</body></html>
