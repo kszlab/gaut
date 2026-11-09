@@ -1,0 +1,66 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { makeServer } from '../server.mjs';
+import { renderSite, toPublicReference, sampleReferences } from '../site/site.mjs';
+import { buildingSvg, SCENES } from '../site/art.mjs';
+
+async function withServer(fn) {
+  const dataDir = mkdtempSync(join(tmpdir(), 'gaut-site-'));
+  const server = makeServer({ dataDir, password: 'teszt-jelszo-123456' });
+  await new Promise(r => server.listen(0, '127.0.0.1', r));
+  try { await fn(`http://127.0.0.1:${server.address().port}`); }
+  finally { await new Promise(r => server.close(r)); rmSync(dataDir, { recursive: true, force: true }); }
+}
+
+test('public site pages need no login and respect language and theme', async () => {
+  await withServer(async base => {
+    const hu = await fetch(`${base}/hu?tema=3`); const html = await hu.text();
+    assert.equal(hu.status, 200);
+    assert.match(html, /<html lang="hu" data-theme="szinkron">/);
+    assert.match(html, /Összehangolt rendszerek\./);
+    assert.match(html, /name="robots" content="noindex, nofollow"/);
+    const en = await (await fetch(`${base}/en?tema=2`)).text();
+    assert.match(en, /<html lang="en" data-theme="struktura">/);
+    assert.match(en, /Coordinated systems\./);
+    assert.match(await (await fetch(`${base}/hu?tema=nincs`)).text(), /data-theme="rendszer"/);
+  });
+});
+
+test('site assets are served, the private API stays closed', async () => {
+  await withServer(async base => {
+    assert.equal((await fetch(`${base}/site/site.css`)).headers.get('content-type'), 'text/css; charset=utf-8');
+    assert.equal((await fetch(`${base}/site/site.js`)).status, 200);
+    assert.equal((await fetch(`${base}/site/../server.mjs`)).status, 404);
+    assert.equal((await fetch(`${base}/api/references`)).status, 401);
+    assert.equal((await fetch(`${base}/hu`, { method: 'POST', headers: { 'x-gaut-request': '1' } })).status, 404);
+  });
+});
+
+test('sample references render and are marked as samples', () => {
+  const html = renderSite({ lang: 'hu' });
+  for (const r of sampleReferences()) assert.ok(html.includes(r.title.hu), r.id);
+  assert.equal((html.match(/class="badge"/g) || []).length, sampleReferences().length);
+  assert.ok(!html.includes('<script>'));
+});
+
+test('building art exists for every sample kind', () => {
+  for (const r of sampleReferences()) assert.ok(SCENES[r.kind], r.kind);
+  assert.match(buildingSvg('tower'), /^<svg class="building" viewBox="-?\d+ -?\d+ \d+ \d+"/);
+});
+
+test('only approved, active references reach the public shape and internal fields never do', () => {
+  const base = { id: 'GAUT-REF-1', name: 'Teszt iroda', category: 'Iroda', city: 'Budapest', design_year: '2022', website_publishable: true, website_copy_draft: 'Nyilvános leírás.', attribution: 'BELSŐ szerepjegyzet', questions: 'BELSŐ kérdés', sources: [{ url: 'https://pelda.hu' }], sections: ['krisztian'] };
+  const pub = toPublicReference(base);
+  assert.equal(pub.title.hu, 'Teszt iroda');
+  assert.equal(pub.summary.hu, 'Nyilvános leírás.');
+  assert.ok(!JSON.stringify(pub).includes('BELSŐ'));
+  assert.ok(!JSON.stringify(pub).includes('pelda.hu'));
+  assert.equal(toPublicReference({ ...base, website_publishable: false }), null);
+  assert.equal(toPublicReference({ ...base, deleted_at: '2026-01-01' }), null);
+  assert.equal(toPublicReference({ ...base, archived: true }), null);
+  assert.equal(toPublicReference({ ...base, merged_into: 'X' }), null);
+  assert.equal(toPublicReference({ ...base, website_copy_draft: '' }), null);
+});
