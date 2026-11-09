@@ -133,3 +133,15 @@ A honlap egyetlen forrásból kapja a referenciákat (`sampleReferences()`). Ös
 Szükséges bővítések a referenciaadatlapon: honlapos cím és leírás magyarul és angolul (`website_title_hu/en`, `website_copy_hu/en`), valamint egy „kiadásra kész" feltétel (szerep megerősítve, képhasználati engedély). A kapcsoló csak ennek teljesülésekor legyen bekapcsolható.
 
 Élesítéskor: `/` a nyilvános oldalra mutat, a munkatér `/munkater` alá költözik, az egyéni domain a Render szolgáltatáshoz kötődik, az `noindex` és a témaváltó kikerül, a statikus fájlok hosszú gyorsítótárat kapnak.
+
+### Honlap-szerkesztő (`/honlap`)
+
+A munkatérből (közös jelszóval) szerkeszthetők a nyilvános honlap szövegei magyarul és angolul. A szerkeszthető mezők listája a `site/content.mjs`-ben van (`FIELDS`); az elrendezés, a menü és a felületi szövegek kódban maradnak. Üres mező esetén az alapszöveg jelenik meg.
+
+- **Vázlat és közzététel:** a mentés csak a vázlatot módosítja. A „Közzététel" gomb a vázlatról verziót készít, és csak az látszik a látogatóknak (`site_versions` tábla, a legújabb az élő). A korábbi verziók „Vázlatba töltéssel" visszahozhatók, utána újra közzé kell tenni.
+- **Előnézet:** `/hu?elonezet=1` és `/en?elonezet=1` a mentett vázlatot mutatja, de csak belépett munkatérfelhasználónak. Mindenki más az élő változatot kapja.
+- **Ütközés:** a vázlatnak revíziószáma van, egyidejű szerkesztésnél a második mentés 409-et kap, és nem írja felül a másikét.
+- **Biztonság:** minden érték egyszerű szöveg, a megjelenítés mindenhol escape-elt. Az e-mail és a telefonszám formátumát a szerver ellenőrzi.
+- **API:** `GET/PUT /api/site/content`, `POST /api/site/publish`, `POST /api/site/versions/:id/restore` (belépés kell hozzá).
+
+Következő lépések: képkezelés (nyitóképek, portrék, automatikus átméretezéssel), csapatszerkesztő, a referenciatár bekötése, majd az élesítés.

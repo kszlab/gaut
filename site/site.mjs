@@ -1,5 +1,6 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { buildingSvg, LOGOS, ICONS } from './art.mjs';
+import { applyContent } from './content.mjs';
 
 // Hero render for concept n: a high-resolution file (hero-N.webp or hero-N.jpg) wins over the interim
 // crop from the concept board (heroN.png). See docs/HERO-IMAGES.md.
@@ -95,7 +96,8 @@ const TEXT = {
     contactPending: 'Az elérhetőségek a végleges adatok megérkezése után kerülnek ide.',
     contactLabels: ['Cím', 'E-mail', 'Telefon'], pending: 'hamarosan',
     footer: 'GAUT Kft. Gépészeti automatika és épületfelügyelet tervezése.', preview: 'Előnézet. Az oldal még nem végleges, és a keresők elől rejtve van.',
-    themeLabel: 'Arculat'
+    themeLabel: 'Arculat', contact: { address: '', email: '', phone: '' },
+    draftPreview: 'Vázlat előnézete. Ezt a változatot a látogatók még nem látják.'
   },
   en: {
     htmlLang: 'en', title: 'GAUT Engineering | Building automation and building management design',
@@ -132,9 +134,13 @@ const TEXT = {
     contactPending: 'Contact details will be added when the final information arrives.',
     contactLabels: ['Address', 'Email', 'Phone'], pending: 'coming soon',
     footer: 'GAUT Ltd. Design of building automation and building management systems.', preview: 'Preview. This page is not final and is hidden from search engines.',
-    themeLabel: 'Identity'
+    themeLabel: 'Identity', contact: { address: '', email: '', phone: '' },
+    draftPreview: 'Draft preview. Visitors do not see this version yet.'
   }
 };
+
+// Default text of one language (used by the editor to show what an empty field falls back to).
+export const defaultText = lang => structuredClone(TEXT[lang]);
 
 const arrow = '<svg class="arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
 
@@ -166,10 +172,10 @@ function teamCard(m, lang, t) {
 </article>`;
 }
 
-export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampleReferences(), team = sampleTeam() } = {}) {
+export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampleReferences(), team = sampleTeam(), content = null, draft = false } = {}) {
   lang = LANGS.includes(lang) ? lang : 'hu';
   theme = parseTheme(theme);
-  const t = TEXT[lang];
+  const t = applyContent(TEXT[lang], content?.[lang]);
   const cats = [...new Set(references.map(r => r.category))];
   const home = `/${lang}`;
   const otherLang = lang === 'hu' ? 'en' : 'hu';
@@ -188,7 +194,7 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
 </head>
 <body>
 <a class="skip" href="#tartalom">${esc(t.skip)}</a>
-<div class="preview-bar">${esc(t.preview)}</div>
+<div class="preview-bar${draft ? ' draft' : ''}">${esc(draft ? t.draftPreview : t.preview)}</div>
 <header class="top">
   <a class="brand" href="${home}" aria-label="GAUT Mérnökiroda">
     ${Object.entries(LOGOS).map(([k, svg]) => `<span class="logo logo-${k}">${svg}</span>`).join('')}
@@ -235,7 +241,7 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
 <section id="referenciak" class="block">
   <div class="wrap">
     <p class="kicker">${esc(t.refsKicker)}</p><h2>${esc(t.refsTitle)}</h2>
-    <p class="note">${esc(t.refsNote)}</p>
+    ${t.refsNote ? `<p class="note">${esc(t.refsNote)}</p>` : ''}
     <div class="filters" role="group" aria-label="${esc(t.refsKicker)}">
       <button type="button" class="chip on" data-filter="*">${esc(t.all)}</button>
       ${cats.map(c => `<button type="button" class="chip" data-filter="${esc(c)}">${esc(CATEGORIES[lang][c] || c)}</button>`).join('')}
@@ -247,7 +253,7 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
 <section id="csapat" class="block alt">
   <div class="wrap">
     <p class="kicker">${esc(t.teamKicker)}</p><h2>${esc(t.teamTitle)}</h2>
-    <p class="note">${esc(t.teamNote)}</p>
+    ${t.teamNote ? `<p class="note">${esc(t.teamNote)}</p>` : ''}
     <div class="team">${team.map(m => teamCard(m, lang, t)).join('')}</div>
   </div>
 </section>
@@ -256,8 +262,13 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
   <div class="wrap split">
     <div><p class="kicker">${esc(t.contactKicker)}</p><h2>${esc(t.contactTitle)}</h2><p class="body">${esc(t.contactText)}</p></div>
     <div class="contact-card">
-      <dl>${t.contactLabels.map(l => `<div><dt>${esc(l)}</dt><dd class="pending">${esc(t.pending)}</dd></div>`).join('')}</dl>
-      <p class="note">${esc(t.contactPending)}</p>
+      <dl>${t.contactLabels.map((l, i) => {
+        const key = ['address', 'email', 'phone'][i], value = t.contact[key];
+        if (!value) return `<div><dt>${esc(l)}</dt><dd class="pending">${esc(t.pending)}</dd></div>`;
+        const shown = key === 'email' ? `<a href="mailto:${esc(value)}">${esc(value)}</a>` : key === 'phone' ? `<a href="tel:${esc(value.replace(/[^0-9+]/g, ''))}">${esc(value)}</a>` : esc(value);
+        return `<div><dt>${esc(l)}</dt><dd>${shown}</dd></div>`;
+      }).join('')}</dl>
+      ${Object.values(t.contact).every(Boolean) ? '' : `<p class="note">${esc(t.contactPending)}</p>`}
     </div>
   </div>
 </section>

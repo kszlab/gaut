@@ -46,7 +46,8 @@ function render() {
   $('#upload-button').hidden = state.trash;
   let referenceLink = $('#reference-link');
   if (!referenceLink) { referenceLink = document.createElement('div'); referenceLink.id = 'reference-link'; referenceLink.className = 'notice'; referenceLink.innerHTML = '<strong>Szűrhető referencialista</strong><p>Projektek, források, fotólinkek és helyszínek. Új referencia felvétele, importálás és szerkesztés.</p><a class="primary" href="/referenciak">Referencia-kezelő megnyitása →</a>'; $('.page-heading').after(referenceLink); }
-  referenceLink.hidden = state.trash;
+  if (!$('#site-link')) { const siteLink = document.createElement('div'); siteLink.id = 'site-link'; siteLink.className = 'notice'; siteLink.innerHTML = '<strong>Nyilvános honlap</strong><p>A honlap szövegeinek szerkesztése magyarul és angolul, vázlattal és közzététellel.</p><a class="primary" href="/honlap">Honlap-szerkesztő megnyitása →</a>'; $('#reference-link').after(siteLink); }
+  referenceLink.hidden = state.trash; $('#site-link').hidden = state.trash;
   referenceLink.querySelector('a').href = `/referenciak?section=${state.section}`;
   $('#collection-title').firstChild.textContent = state.trash ? 'Kukába helyezett anyagok ' : 'Feltöltött anyagok ';
   $('#stat-files').textContent = active.length;
