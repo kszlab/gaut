@@ -60,10 +60,23 @@ export function applyContent(root, overrides = {}) {
   return copy;
 }
 
-// Validates and normalises overrides for both languages: {hu: {path: value}, en: {...}}.
+// Image slots: a slot holds the id of an uploaded image. Hero slots exist per identity draft; team slots (team.<member id>) follow with the team editor.
+export const HERO_SLOTS = [['hero.rendszer', 'Nyitókép · 01 Rendszer', '/site/img/hero-1.webp'], ['hero.struktura', 'Nyitókép · 02 Struktúra', '/site/img/hero-2.webp'], ['hero.szinkron', 'Nyitókép · 03 Szinkron', '/site/img/hero-3.webp']];
+export const isSlot = slot => HERO_SLOTS.some(([s]) => s === slot) || /^team\.[a-z0-9-]{1,40}$/.test(slot);
+const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
+
+// Validates and normalises overrides: {hu: {path: value}, en: {...}, media: {slot: imageId}}.
 export function cleanOverrides(input) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) fail(400, 'Hibás tartalom.');
-  const out = { hu: {}, en: {} };
+  const out = { hu: {}, en: {}, media: {} };
+  const media = input.media ?? {};
+  if (typeof media !== 'object' || Array.isArray(media)) fail(400, 'Hibás képhozzárendelés.');
+  for (const [slot, id] of Object.entries(media)) {
+    if (!isSlot(slot)) fail(400, `Ismeretlen képhely: ${slot}`);
+    if (id === null) continue; // null clears the slot
+    if (typeof id !== 'string' || !UUID.test(id)) fail(400, 'Érvénytelen képazonosító.');
+    out.media[slot] = id;
+  }
   for (const lang of ['hu', 'en']) {
     const values = input[lang] ?? {};
     if (typeof values !== 'object' || Array.isArray(values)) fail(400, 'Hibás tartalom.');
@@ -87,15 +100,16 @@ export function contentStore(db) {
   db.exec(`CREATE TABLE IF NOT EXISTS site_draft(id INTEGER PRIMARY KEY CHECK(id=1), payload TEXT NOT NULL, revision INTEGER NOT NULL, updated_at TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS site_versions(seq INTEGER PRIMARY KEY AUTOINCREMENT, id TEXT NOT NULL UNIQUE, payload TEXT NOT NULL, note TEXT NOT NULL, created_at TEXT NOT NULL)`);
   const now = () => new Date().toISOString();
-  const empty = () => ({ hu: {}, en: {} });
+  const empty = () => ({ hu: {}, en: {}, media: {} });
+  const parse = payload => ({ hu: {}, en: {}, media: {}, ...JSON.parse(payload) });
   let liveCache; // undefined = not loaded
   function draftRow() {
     let row = db.prepare('SELECT * FROM site_draft WHERE id=1').get();
     if (!row) { db.prepare('INSERT INTO site_draft VALUES(1,?,0,?)').run(JSON.stringify(empty()), now()); row = db.prepare('SELECT * FROM site_draft WHERE id=1').get(); }
     return row;
   }
-  const draftView = row => ({ overrides: JSON.parse(row.payload), revision: row.revision, updated_at: row.updated_at });
-  const meta = row => ({ id: row.id, created_at: row.created_at, note: row.note, changes: ['hu', 'en'].reduce((n, l) => n + Object.keys(JSON.parse(row.payload)[l] || {}).length, 0) });
+  const draftView = row => ({ overrides: parse(row.payload), revision: row.revision, updated_at: row.updated_at });
+  const meta = row => ({ id: row.id, created_at: row.created_at, note: row.note, changes: ['hu', 'en', 'media'].reduce((n, l) => n + Object.keys(parse(row.payload)[l]).length, 0) });
   const store = {
     draft: () => draftView(draftRow()),
     saveDraft(revision, overrides) {
@@ -117,7 +131,7 @@ export function contentStore(db) {
     live() {
       if (liveCache === undefined) {
         const row = db.prepare('SELECT * FROM site_versions ORDER BY seq DESC LIMIT 1').get();
-        liveCache = row ? { ...meta(row), overrides: JSON.parse(row.payload) } : null;
+        liveCache = row ? { ...meta(row), overrides: parse(row.payload) } : null;
       }
       return liveCache;
     },

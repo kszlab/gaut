@@ -9,6 +9,15 @@ function heroImage(n) {
   return `/site/img/hero${n}.png`;
 }
 
+// One hero <img>: an uploaded image (with srcset over its stored widths) or the bundled default for that identity draft.
+function heroImg(key, n, active, custom, lang) {
+  const loading = active ? 'eager' : 'lazy';
+  if (!custom) return `<img class="hero-img hero-${key}" src="${heroImage(n)}" alt="" loading="${loading}" decoding="async">`;
+  const widths = custom.widths, best = widths.includes(1600) ? 1600 : widths.at(-1);
+  const srcset = widths.map(w => `/media/${custom.id}/${w}.webp ${w}w`).join(', ');
+  return `<img class="hero-img hero-${key}" src="/media/${custom.id}/${best}.webp" srcset="${srcset}" sizes="(max-width: 860px) 100vw, 720px" width="${custom.width}" height="${custom.height}" alt="${esc(custom.alt?.[lang] || '')}" loading="${loading}" decoding="async">`;
+}
+
 // Splits the headline into sentences so the last one (and its full stop) can be accented by the theme.
 function heroTitle(key, text) {
   const sentences = text.split(/(?<=\.)\s+/);
@@ -172,7 +181,7 @@ function teamCard(m, lang, t) {
 </article>`;
 }
 
-export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampleReferences(), team = sampleTeam(), content = null, draft = false } = {}) {
+export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampleReferences(), team = sampleTeam(), content = null, draft = false, media = {} } = {}) {
   lang = LANGS.includes(lang) ? lang : 'hu';
   theme = parseTheme(theme);
   const t = applyContent(TEXT[lang], content?.[lang]);
@@ -215,7 +224,7 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
       <div class="actions"><a class="btn" href="#kapcsolat">${esc(t.cta)} ${arrow}</a><a class="btn ghost" href="#referenciak">${esc(t.cta2)}</a></div>
     </div>
     <div class="hero-art">
-      ${[['rendszer', 1], ['struktura', 2], ['szinkron', 3]].map(([k, n]) => `<img class="hero-img hero-${k}" src="${heroImage(n)}" alt="" loading="${k === theme ? 'eager' : 'lazy'}" decoding="async">`).join('')}
+      ${[['rendszer', 1], ['struktura', 2], ['szinkron', 3]].map(([k, n]) => heroImg(k, n, k === theme, media[`hero.${k}`], lang)).join('')}
       <ul class="sys-icons" aria-hidden="true">${['fan', 'thermo', 'bulb', 'panel', 'monitor'].map(i => `<li>${ICONS[i]}</li>`).join('')}</ul>
     </div>
   </div>

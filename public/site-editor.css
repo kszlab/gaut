@@ -16,6 +16,15 @@
 .site-editor .cell.changed input, .site-editor .cell.changed textarea { border-color: var(--teal); background: #f6fbfb; }
 .site-editor .hide-toggle { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 500; margin-top: 6px; }
 .site-editor .hide-toggle input { width: auto; margin: 0; display: inline-block; }
+.site-editor .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; margin-top: 14px; }
+.site-editor .slot { border: 1px solid var(--line); border-radius: 7px; overflow: hidden; background: #fff; }
+.site-editor .slot-preview { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; background: #e8eef1; }
+.site-editor .slot-body { padding: 14px 16px 16px; }
+.site-editor .slot-body small { display: block; color: var(--muted); font-size: 11px; margin: 4px 0 10px; overflow-wrap: anywhere; }
+.site-editor .slot-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+.site-editor .slot-actions .secondary { padding: 8px 12px; min-height: 0; font-size: 11px; cursor: pointer; }
+.site-editor .slot-body label { font-size: 11px; margin-top: 10px; }
+.site-editor .slot-body label input { margin-top: 5px; }
 .site-editor .versions { margin-top: 34px; }
 .site-editor .version-row .secondary { padding: 8px 12px; min-height: 0; font-size: 11px; }
 .site-editor .current-tag { font-size: 9px; letter-spacing: 1.4px; background: var(--teal); color: #fff; padding: 3px 7px; border-radius: 3px; margin-left: 8px; vertical-align: middle; }
