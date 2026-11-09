@@ -111,7 +111,8 @@ export function cleanTeam(list) {
       focus[lang] = tags.map(t => oneLine(t, 40, `címke (${lang.toUpperCase()})`)).filter(Boolean);
     }
     const chamberNo = oneLine(m.chamber_no ?? '', 40, `${i + 1}. tag kamarai azonosítója`);
-    if (!/^[\p{L}\p{N} ./\-]*$/u.test(chamberNo)) fail(400, 'A kamarai azonosító csak betűt, számot, szóközt, pontot, kötőjelet és perjelet tartalmazhat.');
+    // Registration numbers come in many formats, so only markup characters are refused (the output is escaped anyway).
+    if (/[<>"]/.test(chamberNo)) fail(400, 'A kamarai azonosító nem tartalmazhat <, > vagy idézőjel karaktert.');
     return { id: m.id, name: pair(m.name, 'name', 80, `${i + 1}. tag neve`, true), role: pair(m.role, 'role', 80, `${i + 1}. tag szerepköre`), bio, focus, chamber_no: chamberNo, chamber_url: chamberUrl(m.chamber_url ?? '', i) };
   });
 }
