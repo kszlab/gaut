@@ -94,6 +94,7 @@ test('chamber register number and link: validated, normalised and rendered safel
     assert.throws(() => cleanTeam([member('b', 'B', { chamber_url: bad })]), /kamarai link/, bad);
   }
   assert.throws(() => cleanTeam([member('b', 'B', { chamber_no: '<script>' })]), /kamarai azonosító/);
+  for (const fine of ['01-15009 (É1)', 'MMK 01-15009', 'É/01:15009', '15009']) assert.equal(cleanTeam([member('c', 'C', { chamber_no: fine })])[0].chamber_no, fine, fine);
   assert.throws(() => cleanTeam([member('b', 'B', { chamber_no: 'x'.repeat(50) })]), /túl hosszú/i);
 
   const team = cleanTeam([member('anna', 'Kiss Anna', { chamber_no: '01-15009', chamber_url: 'https://mernokvagyok.hu/nevjegyzek/?id=15009' }), member('bela', 'Nagy Béla', { chamber_no: '02-777' }), member('cili', 'Tóth Cili', { chamber_url: 'https://mernokvagyok.hu/nevjegyzek/?id=1' }), member('dani', 'Szabó Dani')]).map(m => ({ ...m, sample: false }));

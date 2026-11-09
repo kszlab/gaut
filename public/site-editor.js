@@ -10,6 +10,15 @@ async function api(path, method = 'GET', data) {
   if (!r.ok) { const e = new Error(r.status === 401 ? 'A szerkesztéshez jelentkezz be az anyaggyűjtőben, majd frissítsd ezt az oldalt.' : b.error || 'A művelet nem sikerült.'); e.status = r.status; throw e; }
   return b;
 }
+// In-page confirmation. The browser's own confirm() can be switched off by the user ("do not allow this page to create more
+// dialogs"), after which it silently answers "no" and buttons seem to do nothing; this dialog cannot be suppressed.
+const askConfirm = (text, okLabel = 'Igen') => new Promise(resolve => {
+  const dialog = $('#confirm-dialog');
+  $('#confirm-text').textContent = text; $('#confirm-ok').textContent = okLabel; dialog.returnValue = '';
+  dialog.addEventListener('close', () => resolve(dialog.returnValue === 'ok'), { once: true });
+  dialog.showModal();
+});
+
 // Messages appear next to the page heading and in the sticky bar, which stays in view while scrolling through a long form.
 const message = (text, bad = false) => {
   const el = $('#message'); el.textContent = text; el.className = bad ? 'error' : 'muted';
@@ -107,14 +116,14 @@ $('#team').addEventListener('input', e => {
   else if (key === 'focus') m.focus[lang] = t.value.split(',').map(s => s.trim()).filter(Boolean).slice(0, 4); else m[key][lang] = t.value;
   state.dirty = true; renderStatus();
 });
-$('#team').addEventListener('click', e => {
+$('#team').addEventListener('click', async e => {
   const b = e.target.closest('[data-team-action]'); if (!b) return;
   const act = b.dataset.teamAction, team = state.values.team, idx = team?.findIndex(x => x.id === b.dataset.memberId);
   if (act === 'start') state.values.team = [newMember()];
   else if (act === 'hide') state.values.team = [];
   else if (act === 'add' && team.length < TEAM_MAX) team.push(newMember());
-  else if (act === 'sample') { if (!confirm('Visszaáll a mintacsapat, a saját csapatlista elveszik a vázlatból. Folytatod?')) return; delete state.values.team; }
-  else if (act === 'remove') { if (!confirm('Törlöd ezt a csapattagot?')) return; delete state.values.media[`team.${team[idx].id}`]; team.splice(idx, 1); }
+  else if (act === 'sample') { if (!await askConfirm('Visszaáll a mintacsapat, a saját csapatlista elveszik a vázlatból. Folytatod?', 'Visszaállítás')) return; delete state.values.team; }
+  else if (act === 'remove') { if (!await askConfirm('Törlöd ezt a csapattagot?', 'Törlés')) return; delete state.values.media[`team.${team[idx].id}`]; team.splice(idx, 1); }
   else if (act === 'up' && idx > 0) [team[idx - 1], team[idx]] = [team[idx], team[idx - 1]];
   else if (act === 'down' && idx < team.length - 1) [team[idx + 1], team[idx]] = [team[idx], team[idx + 1]];
   state.dirty = true; renderTeam(); renderStatus();
@@ -177,17 +186,17 @@ $('#groups').addEventListener('change', e => {
 });
 
 $('#save').onclick = () => run(save, 'A vázlat mentve. Az élő oldal még nem változott.');
-$('#publish').onclick = () => {
-  if (!confirm('Közzéteszed a vázlatot? A látogatók ezután az új szövegeket látják, magyarul és angolul is.')) return;
+$('#publish').onclick = async () => {
+  if (!await askConfirm(`Közzéteszed a vázlatot${state.dirty ? ' (a mentetlen változtatásokat is elmentem)' : ''}? A látogatók ezután az új szövegeket, képeket, csapatot és referenciákat látják, magyarul és angolul is.`, 'Közzététel')) return;
   run(async () => {
     if (state.dirty) await save();
     load(await api('/api/site/publish', 'POST', { revision: state.revision, note: $('#note').value.trim() }));
     $('#note').value = ''; renderAll();
-  }, 'Közzétéve. Az élő oldal frissült.');
+  }, () => `Közzétéve (${date(state.live.created_at)}). Az élő oldal frissült, nézd meg: a gyökércím (magyar) és az /en (angol). Ha nem látod a változást, frissítsd a lapot.`);
 };
-$('#versions').addEventListener('click', e => {
+$('#versions').addEventListener('click', async e => {
   const b = e.target.closest('[data-restore]'); if (!b) return;
-  if (state.dirty && !confirm('A mentetlen változtatások elvesznek. Folytatod?')) return;
+  if (state.dirty && !await askConfirm('A mentetlen változtatások elvesznek. Folytatod?', 'Folytatás')) return;
   run(async () => { load(await api(`/api/site/versions/${encodeURIComponent(b.dataset.restore)}/restore`, 'POST', { revision: state.revision })); renderAll(); }, 'A verzió a vázlatba került. Az élő oldal nem változott; a Közzététellel élesítheted.');
 });
 document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); if (state.dirty && !state.busy) $('#save').click(); } });
