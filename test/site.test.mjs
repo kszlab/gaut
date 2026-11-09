@@ -86,7 +86,7 @@ test('traced logos, hero renders and self-hosted fonts are part of the page and 
   for (const k of ['rendszer', 'struktura', 'szinkron']) assert.match(html, new RegExp(String.raw`class="logo logo-${k}"><svg[^>]*viewBox="0 0 \d+ \d+"`));
   assert.match(html, /class="hero-img hero-rendszer" src="\/site\/img\/hero-1\.webp"/);
   assert.equal((html.match(/class="sys-icons"/g) || []).length, 1);
-  assert.equal((html.match(/<text class="logo-desc"[^>]*>MÉRNÖKIRODA</text>/g) || []).length, 3, 'the small descriptor is live text in every logo, not a traced raster');
+  assert.equal((html.match(/<text class="logo-desc"[^>]*>MÉRNÖKIRODA<\/text>/g) || []).length, 3, 'the small descriptor is live text in every logo, not a traced raster');
   assert.match(html, /<h1 class="hero-title t-szinkron"><span class="line">Intelligens épületek\.<\/span> <span class="line last">Összhangban<span class="dot">\.<\/span><\/span><\/h1>/);
   await withServer(async base => {
     const img = await fetch(`${base}/site/img/hero-1.webp`);
