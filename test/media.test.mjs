@@ -48,7 +48,10 @@ test('upload resizes to WebP, rejects bad files, and strips metadata', async () 
     assert.equal(meta.format, 'webp'); assert.equal(meta.width, 1600);
     assert.equal((await call(base, cookie, `/media/${media.id}/999.webp`)).status, 404, 'only stored widths exist');
     // too narrow, not an image, wrong type
-    assert.equal((await upload(base, cookie, 'tul-kicsi.png', await png(300, 300))).status, 400);
+    const tooSmall = await upload(base, cookie, 'tul-kicsi.png', await png(150, 150));
+    assert.equal(tooSmall.status, 400); assert.match((await tooSmall.json()).error, /túl kicsi \(150 px/);
+    const portrait = await upload(base, cookie, 'portre.png', await png(200, 250));
+    assert.equal(portrait.status, 201, 'a small portrait (200 px wide) is accepted'); assert.deepEqual((await portrait.json()).media.widths, [200]);
     assert.equal((await upload(base, cookie, 'szoveg.png', Buffer.from('ez nem kep'))).status, 400);
     assert.equal((await upload(base, cookie, 'rajz.svg', Buffer.from('<svg xmlns="http://www.w3.org/2000/svg"/>'))).status, 400);
     assert.equal((await upload(base, cookie, 'kep.png', await png(1200, 800), { alt_hu: 'x'.repeat(300) })).status, 400);

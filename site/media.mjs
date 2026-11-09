@@ -8,7 +8,7 @@ const fail = (status, message) => { throw Object.assign(new Error(message), { st
 // camera metadata such as GPS location. The sharp module is loaded on first use, so a problem with the
 // native library only disables image upload and never prevents the workspace from starting.
 const WIDTHS = [800, 1600, 2400];
-const MIN_WIDTH = 600;
+const MIN_WIDTH = 200; // enough for a small portrait; the editor warns about low resolution
 const FORMATS = new Set(['jpeg', 'png', 'webp']);
 let sharpModule;
 async function loadSharp() {
@@ -49,7 +49,7 @@ export function mediaStore(db, dataDir) {
       const swap = (meta.orientation ?? 1) >= 5;
       const width = swap ? meta.height : meta.width, height = swap ? meta.width : meta.height;
       if (!width || !height) fail(400, 'A kép mérete nem állapítható meg.');
-      if (width < MIN_WIDTH) fail(400, `A kép legalább ${MIN_WIDTH} px széles legyen.`);
+      if (width < MIN_WIDTH) fail(400, `A kép túl kicsi (${width} px széles). Legalább ${MIN_WIDTH} px szélesre van szükség, a nyitóképhez ajánlott legalább 1600 px.`);
       let widths = WIDTHS.filter(w => w <= width);
       if (!widths.length) widths = [width]; // narrower than the smallest preset: keep the original width
       const id = randomUUID();
