@@ -15,6 +15,11 @@ export const parseTheme = value => THEMES.includes(value) ? value : THEME_ALIASE
 const SAMPLE = JSON.parse(readFileSync(new URL('./sample-references.json', import.meta.url), 'utf8'));
 export const sampleReferences = () => SAMPLE.references.map(r => ({ ...r, sample: true }));
 
+// Team members: placeholders for now (names from the workspace sections, sample role and bio text).
+// Later the same shape comes from an editable team list in the workspace, with portrait photos.
+const TEAM = JSON.parse(readFileSync(new URL('./sample-team.json', import.meta.url), 'utf8'));
+export const sampleTeam = () => TEAM.members.map(m => ({ ...m, sample: true }));
+
 // Whitelist mapping from an internal reference record to the public shape.
 // Only fields listed here can ever reach the public site. Not wired up yet.
 export function toPublicReference(record) {
@@ -40,7 +45,9 @@ const TEXT = {
   hu: {
     htmlLang: 'hu', title: 'GAUT Mérnökiroda | Gépészeti automatika és épületfelügyelet',
     description: 'A GAUT gépészeti automatika- és épületfelügyeleti rendszereket tervező mérnökiroda.',
-    nav: [['szakteruletek', 'Szakterületek'], ['szemlelet', 'Szemlélet'], ['referenciak', 'Referenciák'], ['kapcsolat', 'Kapcsolat']],
+    nav: [['szakteruletek', 'Szakterületek'], ['szemlelet', 'Szemlélet'], ['referenciak', 'Referenciák'], ['csapat', 'Csapat'], ['kapcsolat', 'Kapcsolat']],
+    teamKicker: 'Csapat', teamTitle: 'A tervezők, akikkel dolgozhat',
+    teamNote: 'Helyőrző bemutatkozások. A fotók és a szövegek a kollégáktól érkeznek majd.', photoSoon: 'Fotó hamarosan',
     skip: 'Ugrás a tartalomra', descriptor: 'Mérnökiroda', other: 'EN', otherName: 'English',
     hero: { rendszer: 'Összehangolt rendszerek.', struktura: 'Átgondolt tervezés. Biztos működés.', szinkron: 'Intelligens épületek. Összhangban.' },
     sub: 'Gépészeti automatika és épületfelügyelet', cta: 'Kapcsolat', cta2: 'Referenciák',
@@ -75,7 +82,9 @@ const TEXT = {
   en: {
     htmlLang: 'en', title: 'GAUT Engineering | Building automation and building management design',
     description: 'GAUT is an engineering consultancy designing mechanical automation and building management systems.',
-    nav: [['szakteruletek', 'Services'], ['szemlelet', 'Approach'], ['referenciak', 'Projects'], ['kapcsolat', 'Contact']],
+    nav: [['szakteruletek', 'Services'], ['szemlelet', 'Approach'], ['referenciak', 'Projects'], ['csapat', 'Team'], ['kapcsolat', 'Contact']],
+    teamKicker: 'Team', teamTitle: 'The engineers you will work with',
+    teamNote: 'Placeholder introductions. Photos and texts will come from the colleagues.', photoSoon: 'Photo coming soon',
     skip: 'Skip to content', descriptor: 'Engineering', other: 'HU', otherName: 'Magyar',
     hero: { rendszer: 'Coordinated systems.', struktura: 'Considered design. Reliable operation.', szinkron: 'Intelligent buildings. In harmony.' },
     sub: 'Building automation and building management', cta: 'Contact', cta2: 'Projects',
@@ -124,7 +133,22 @@ function card(ref, lang, t) {
 </article>`;
 }
 
-export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampleReferences() } = {}) {
+function teamCard(m, lang, t) {
+  const name = m.name[lang];
+  const photo = m.photo
+    ? `<img src="${esc(m.photo)}" alt="${esc(name)}" loading="lazy">`
+    : `<div class="portrait-empty" role="img" aria-label="${esc(t.photoSoon)}"><span class="initial">${esc(name.slice(0, 1).toUpperCase())}</span><span class="soon">${esc(t.photoSoon)}</span></div>`;
+  const focus = (m.focus?.[lang] || []).map(x => `<li>${esc(x)}</li>`).join('');
+  return `<article class="member">
+  <div class="portrait">${photo}${m.sample ? `<span class="badge">${esc(t.sample)}</span>` : ''}</div>
+  <h3>${esc(name)}</h3>
+  <p class="role">${esc(m.role[lang])}</p>
+  <p class="bio">${esc(m.bio[lang])}</p>
+  ${focus ? `<ul class="tags">${focus}</ul>` : ''}
+</article>`;
+}
+
+export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampleReferences(), team = sampleTeam() } = {}) {
   lang = LANGS.includes(lang) ? lang : 'hu';
   theme = parseTheme(theme);
   const t = TEXT[lang];
@@ -197,6 +221,14 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
       ${cats.map(c => `<button type="button" class="chip" data-filter="${esc(c)}">${esc(CATEGORIES[lang][c] || c)}</button>`).join('')}
     </div>
     <div class="refs">${references.map(r => card(r, lang, t)).join('')}</div>
+  </div>
+</section>
+
+<section id="csapat" class="block alt">
+  <div class="wrap">
+    <p class="kicker">${esc(t.teamKicker)}</p><h2>${esc(t.teamTitle)}</h2>
+    <p class="note">${esc(t.teamNote)}</p>
+    <div class="team">${team.map(m => teamCard(m, lang, t)).join('')}</div>
   </div>
 </section>
 
