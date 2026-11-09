@@ -1,5 +1,23 @@
-import { readFileSync } from 'node:fs';
-import { buildingSvg, LOGOS } from './art.mjs';
+import { readFileSync, existsSync } from 'node:fs';
+import { buildingSvg, LOGOS, ICONS } from './art.mjs';
+
+// Hero render for concept n: a high-resolution file (hero-N.webp or hero-N.jpg) wins over the interim
+// crop from the concept board (heroN.png). See docs/HERO-IMAGES.md.
+function heroImage(n) {
+  for (const ext of ['webp', 'jpg']) if (existsSync(new URL(`../public/site/img/hero-${n}.${ext}`, import.meta.url))) return `/site/img/hero-${n}.${ext}`;
+  return `/site/img/hero${n}.png`;
+}
+
+// Splits the headline into sentences so the last one (and its full stop) can be accented by the theme.
+function heroTitle(key, text) {
+  const sentences = text.split(/(?<=\.)\s+/);
+  const html = sentences.map((s, i) => {
+    const last = i === sentences.length - 1;
+    const body = last && s.endsWith('.') ? `${esc(s.slice(0, -1))}<span class="dot">.</span>` : esc(s);
+    return `<span class="line${last ? ' last' : ''}">${body}</span>`;
+  }).join(' ');
+  return `<h1 class="hero-title t-${key}">${html}</h1>`;
+}
 
 export const THEMES = ['rendszer', 'struktura', 'szinkron'];
 export const LANGS = ['hu', 'en'];
@@ -172,9 +190,8 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
 <a class="skip" href="#tartalom">${esc(t.skip)}</a>
 <div class="preview-bar">${esc(t.preview)}</div>
 <header class="top">
-  <a class="brand" href="${home}" aria-label="GAUT ${esc(t.descriptor)}">
-    <span class="mark-wrap">${Object.entries(LOGOS).map(([k, svg]) => `<span class="mark-${k}">${svg}</span>`).join('')}</span>
-    <span class="brand-text"><span class="wordmark">GAUT</span><span class="descriptor">${esc(t.descriptor.toUpperCase())}</span></span>
+  <a class="brand" href="${home}" aria-label="GAUT Mérnökiroda">
+    ${Object.entries(LOGOS).map(([k, svg]) => `<span class="logo logo-${k}">${svg}</span>`).join('')}
   </a>
   <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav" aria-label="Menu"><span></span><span></span></button>
   <nav id="nav" class="nav" aria-label="${lang === 'hu' ? 'Főmenü' : 'Main'}">
@@ -186,19 +203,22 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
 <section class="hero">
   <div class="wrap hero-grid">
     <div class="hero-copy">
-      ${Object.entries(t.hero).map(([k, v]) => `<h1 class="hero-title t-${k}">${esc(v)}</h1>`).join('')}
+      ${Object.entries(t.hero).map(([k, v]) => heroTitle(k, v)).join('')}
       <p class="sub">${esc(t.sub)}</p>
       <p class="lead">${esc(t.lead)}</p>
       <div class="actions"><a class="btn" href="#kapcsolat">${esc(t.cta)} ${arrow}</a><a class="btn ghost" href="#referenciak">${esc(t.cta2)}</a></div>
     </div>
-    <div class="hero-art">${buildingSvg('hero', { ground: true })}</div>
+    <div class="hero-art">
+      ${[['rendszer', 1], ['struktura', 2], ['szinkron', 3]].map(([k, n]) => `<img class="hero-img hero-${k}" src="${heroImage(n)}" alt="" loading="${k === theme ? 'eager' : 'lazy'}" decoding="async">`).join('')}
+      <ul class="sys-icons" aria-hidden="true">${['fan', 'thermo', 'bulb', 'panel', 'monitor'].map(i => `<li>${ICONS[i]}</li>`).join('')}</ul>
+    </div>
   </div>
 </section>
 
 <section id="szakteruletek" class="block">
   <div class="wrap">
     <p class="kicker">${esc(t.areasKicker)}</p><h2>${esc(t.areasTitle)}</h2>
-    <div class="areas">${t.areas.map(([h, p], i) => `<article class="area"><span class="num">0${i + 1}</span><h3>${esc(h)}</h3><p>${esc(p)}</p></article>`).join('')}</div>
+    <div class="areas">${t.areas.map(([h, p], i) => `<article class="area"><span class="area-icon">${ICONS[['fan', 'switches', 'monitor'][i]]}</span><span class="num">0${i + 1}</span><h3>${esc(h)}</h3><p>${esc(p)}</p></article>`).join('')}</div>
     <p class="sectors-label">${esc(t.sectorsLabel)}</p>
     <ul class="chips">${t.sectors.map(s => `<li>${esc(s)}</li>`).join('')}</ul>
   </div>

@@ -1,4 +1,5 @@
-// Generated vector art for the public site: logos and isometric building illustrations.
+import { readFileSync } from 'node:fs';
+// Generated vector art for the public site: logos, line icons and isometric building illustrations.
 // Everything is inline SVG that is coloured through CSS variables, so every theme restyles it.
 
 const COS = Math.cos(Math.PI / 6), SIN = Math.sin(Math.PI / 6);
@@ -86,9 +87,18 @@ export function buildingSvg(kind, { label = '', ground = false } = {}) {
   return `<svg class="building" viewBox="${vb}" ${aria} xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">${body}</svg>`;
 }
 
-// Three logo marks (draft redraws of the concept boards, not final identity artwork).
-export const LOGOS = {
-  rendszer: '<svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><path d="M54 14H16v36h38V32H34" fill="none" stroke="currentColor" stroke-width="11" stroke-linejoin="miter"/><rect class="mark-accent" x="30" y="27" width="10" height="10"/></svg>',
-  struktura: '<svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><polygon points="4,20 30,5 30,56 4,56" fill="currentColor"/><polygon points="12,34 22,28 22,48 12,48" fill="var(--bg)"/><polygon class="mark-accent" points="30,5 60,22 60,56 40,56 40,32 30,26"/></svg>',
-  szinkron: '<svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><rect x="22" y="6" width="38" height="12" fill="currentColor"/><rect x="6" y="26" width="38" height="12" fill="currentColor"/><rect class="mark-accent" x="14" y="46" width="38" height="12"/><rect x="48" y="6" width="12" height="52" fill="currentColor"/></svg>'
+// Logo lockups (mark, wordmark and descriptor) traced to vector from the first-round concept boards.
+// These are working copies for the preview; the final logo comes from the designer's vector files.
+const logoFile = name => readFileSync(new URL(`./logos/${name}.svg`, import.meta.url), 'utf8').trim();
+export const LOGOS = { rendszer: logoFile('logo1'), struktura: logoFile('logo2'), szinkron: logoFile('logo3') };
+
+// Line icons (24px grid) used in the hero system column and the service cards.
+const icon = body => `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
+export const ICONS = {
+  fan: icon('<circle cx="12" cy="12" r="1.6"/><path d="M12 10.4C12 6 10 4 8 4.6c-2 .7-1.2 3.6 1.6 5M13.6 12c4.4 0 6.4-2 5.8-4-.7-2-3.6-1.2-5 1.6M12 13.6c0 4.4 2 6.4 4 5.8 2-.7 1.2-3.6-1.6-5M10.4 12C6 12 4 14 4.6 16c.7 2 3.6 1.2 5-1.6"/>'),
+  thermo: icon('<path d="M10 14.5V5a2 2 0 0 1 4 0v9.5a4 4 0 1 1-4 0z"/><path d="M12 9v7"/>'),
+  bulb: icon('<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>'),
+  panel: icon('<rect x="4" y="3.5" width="16" height="17" rx="1.5"/><path d="M8 8h3M8 12h3M8 16h3M14 8h2M14 12h2M14 16h2"/>'),
+  monitor: icon('<rect x="3" y="4.5" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16.5V20"/>'),
+  switches: icon('<rect x="4" y="3.5" width="16" height="17" rx="1.5"/><path d="M8 8h8M8 12h8M8 16h8"/><circle cx="10" cy="8" r="1.1"/><circle cx="14" cy="12" r="1.1"/><circle cx="9" cy="16" r="1.1"/>')
 };

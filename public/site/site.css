@@ -1,6 +1,16 @@
 /* GAUT public site. Three identity drafts share one layout and differ through the variables below. */
+/* Self-hosted variable fonts (SIL Open Font License). Only the active theme's files are downloaded. */
+@font-face { font-family: "GAUT Inter"; font-weight: 100 900; font-display: swap; src: url(/site/fonts/inter-latin-ext-wght-normal.woff2) format("woff2"); unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+@font-face { font-family: "GAUT Inter"; font-weight: 100 900; font-display: swap; src: url(/site/fonts/inter-latin-wght-normal.woff2) format("woff2"); unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family: "GAUT Newsreader"; font-weight: 200 800; font-display: swap; src: url(/site/fonts/newsreader-latin-ext-wght-normal.woff2) format("woff2"); unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+@font-face { font-family: "GAUT Newsreader"; font-weight: 200 800; font-display: swap; src: url(/site/fonts/newsreader-latin-wght-normal.woff2) format("woff2"); unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family: "GAUT Jost"; font-weight: 100 900; font-display: swap; src: url(/site/fonts/jost-latin-ext-wght-normal.woff2) format("woff2"); unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+@font-face { font-family: "GAUT Jost"; font-weight: 100 900; font-display: swap; src: url(/site/fonts/jost-latin-wght-normal.woff2) format("woff2"); unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family: "GAUT Jakarta"; font-weight: 200 800; font-display: swap; src: url(/site/fonts/plus-jakarta-sans-latin-ext-wght-normal.woff2) format("woff2"); unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+@font-face { font-family: "GAUT Jakarta"; font-weight: 200 800; font-display: swap; src: url(/site/fonts/plus-jakarta-sans-latin-wght-normal.woff2) format("woff2"); unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+
 :root {
-  --font-body: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-body: "GAUT Inter", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   --font-head: var(--font-body);
   --wrap: 1160px;
 }
@@ -14,7 +24,8 @@
 [data-theme="struktura"] {
   --bg: #F2EFE9; --surface: #FBF9F5; --alt: #E8E3DA; --ink: #252B2F; --muted: #5A5F61; --line: #D6CFC3;
   --accent: #B36C45; --accent-strong: #9A5733; --on-accent: #FFFFFF; --link: #9A5733;
-  --font-head: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --font-head: "GAUT Newsreader", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --font-body: "GAUT Jost", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
   --bt: #D9D4CA; --bl: #4A5257; --br: #2F363A; --bline: #6A7378; --bwin: #7E888D; --ground: #E4DED3; --grid: #D6CFC3;
   --radius: 0px; --head-weight: 500; --head-track: -0.015em; --hero-bg: var(--bg);
   --wordmark-track: 0.16em; --wordmark-weight: 500;
@@ -22,6 +33,7 @@
 [data-theme="szinkron"] {
   --bg: #0F2244; --surface: #152C52; --alt: #122650; --ink: #F6F8FB; --muted: #B6C3D8; --line: #2B4570;
   --accent: #C5E64A; --accent-strong: #C5E64A; --on-accent: #0F2244; --link: #C5E64A;
+  --font-body: "GAUT Jakarta", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
   --bt: #2A4676; --bl: #1D3A6B; --br: #16305C; --bline: #3B5A8E; --bwin: #4C6EA4; --ground: #132B52; --grid: #1F3A68;
   --radius: 6px; --head-weight: 750; --head-track: -0.02em; --hero-bg: radial-gradient(1000px 520px at 80% 20%, #1C3A6E, #0F2244);
   --wordmark-track: 0.01em; --wordmark-weight: 800;
@@ -42,13 +54,11 @@ h1, h2, h3 { font-family: var(--font-head); font-weight: var(--head-weight); let
 /* Header */
 .top { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 14px 28px; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
 .brand { display: flex; align-items: center; gap: 12px; color: var(--ink); text-decoration: none; }
-.mark-wrap span { display: none; }
-[data-theme="rendszer"] .mark-rendszer, [data-theme="struktura"] .mark-struktura, [data-theme="szinkron"] .mark-szinkron { display: block; }
-.mark { width: 40px; height: 40px; display: block; color: var(--ink); }
-.mark-accent { fill: var(--accent); }
-.brand-text { display: flex; flex-direction: column; line-height: 1; }
-.wordmark { font-family: var(--font-head); font-size: 26px; font-weight: var(--wordmark-weight); letter-spacing: var(--wordmark-track); }
-.descriptor { font-size: 10px; letter-spacing: 0.34em; margin-top: 5px; color: var(--muted); }
+.logo { display: none; }
+[data-theme="rendszer"] .logo-rendszer, [data-theme="struktura"] .logo-struktura, [data-theme="szinkron"] .logo-szinkron { display: block; }
+.logo svg { display: block; height: 52px; width: auto; }
+.logo-ink { fill: var(--ink); }
+.logo-accent { fill: var(--accent); }
 .nav { display: flex; align-items: center; gap: 28px; }
 .nav a { color: var(--ink); text-decoration: none; font-size: 15px; padding: 6px 0; border-bottom: 2px solid transparent; }
 .nav a:hover { border-color: var(--accent); }
@@ -71,8 +81,23 @@ h1, h2, h3 { font-family: var(--font-head); font-weight: var(--head-weight); let
 .btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
 .btn.ghost:hover { border-color: var(--ink); }
 .arrow { width: 16px; height: 16px; }
-.hero-art { min-width: 0; }
-.hero-art .building { width: 100%; height: auto; max-height: 520px; }
+.hero-title .line { display: block; }
+[data-theme="rendszer"] .hero-title .dot { color: var(--accent); }
+[data-theme="szinkron"] .hero-title .last { color: var(--accent); }
+.hero-art { min-width: 0; position: relative; }
+.hero-img { display: none; width: 100%; height: auto; }
+[data-theme="rendszer"] .hero-rendszer, [data-theme="struktura"] .hero-struktura, [data-theme="szinkron"] .hero-szinkron { display: block; }
+/* The renders fade into the page background instead of sitting in a box. */
+.hero-rendszer { mix-blend-mode: multiply; -webkit-mask-image: radial-gradient(ellipse 72% 70% at 50% 50%, #000 58%, transparent 100%); mask-image: radial-gradient(ellipse 72% 70% at 50% 50%, #000 58%, transparent 100%); }
+.hero-struktura { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 16%); mask-image: linear-gradient(to right, transparent 0, #000 16%); }
+.hero-szinkron { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 10%); mask-image: linear-gradient(to right, transparent 0, #000 10%); }
+/* Subsystem column of the "Szinkron" concept, attached to the lines in the render. */
+.sys-icons { display: none; list-style: none; margin: 0; padding: 0; position: absolute; top: 0; bottom: 0; right: -58px; width: 50px; }
+[data-theme="szinkron"] .sys-icons { display: block; }
+[data-theme="szinkron"] .hero-art { margin-right: 58px; }
+.sys-icons li { position: absolute; left: 0; width: 50px; height: 50px; margin-top: -25px; display: grid; place-items: center; border: 1px solid var(--accent); border-radius: 8px; color: var(--ink); background: var(--surface); }
+.sys-icons li:nth-child(1) { top: 22.7%; } .sys-icons li:nth-child(2) { top: 38.7%; } .sys-icons li:nth-child(3) { top: 55%; } .sys-icons li:nth-child(4) { top: 72.8%; } .sys-icons li:nth-child(5) { top: 90.7%; }
+.icon { width: 26px; height: 26px; }
 
 /* Building illustrations */
 .b-top { fill: var(--bt); } .b-fl { fill: var(--bl); } .b-fr { fill: var(--br); }
@@ -94,7 +119,11 @@ h3 { font-size: 21px; }
 .note { color: var(--muted); font-size: 14px; margin: -14px 0 24px; max-width: 70ch; }
 .areas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .area { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 30px 28px; }
-.area .num { display: block; font-size: 13px; letter-spacing: .2em; color: var(--accent-strong); font-weight: 700; margin-bottom: 40px; }
+.area { position: relative; }
+.area-icon { display: block; color: var(--accent-strong); margin-bottom: 36px; }
+[data-theme="szinkron"] .area-icon { color: var(--accent); }
+.area-icon .icon { width: 34px; height: 34px; }
+.area .num { position: absolute; right: 28px; top: 30px; font-size: 13px; letter-spacing: .2em; color: var(--muted); font-weight: 600; }
 [data-theme="szinkron"] .area .num { color: var(--accent); }
 .area h3 { margin-bottom: 12px; } .area p { color: var(--muted); margin: 0; font-size: 16px; }
 .sectors-label { margin: 44px 0 12px; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
@@ -163,6 +192,8 @@ h3 { font-size: 21px; }
 @media (max-width: 1040px) { .refs, .team { grid-template-columns: repeat(2, 1fr); } .areas { grid-template-columns: 1fr; } .split { grid-template-columns: 1fr; gap: 32px; } }
 @media (max-width: 860px) {
   .hero-grid { grid-template-columns: 1fr; } .hero { padding: 40px 0 32px; }
+  [data-theme="szinkron"] .hero-art { margin-right: 0; } [data-theme="szinkron"] .sys-icons { display: none; }
+  .logo svg { height: 38px; }
   .menu-btn { display: block; }
   .nav { display: none; position: absolute; left: 0; right: 0; top: 100%; flex-direction: column; align-items: flex-start; gap: 4px; padding: 14px 28px 22px; background: var(--bg); border-bottom: 1px solid var(--line); }
   .nav.open { display: flex; } .nav a { padding: 10px 0; font-size: 17px; }
