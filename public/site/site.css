@@ -1,4 +1,4 @@
-/* GAUT public site. Three identity drafts share one layout and differ through the variables below. */
+﻿/* GAUT public site. Three identity drafts share one layout and differ through the variables below. */
 /* Self-hosted variable fonts (SIL Open Font License). Only the active theme's files are downloaded. */
 @font-face { font-family: "GAUT Inter"; font-weight: 100 900; font-display: swap; src: url(/site/fonts/inter-latin-ext-wght-normal.woff2) format("woff2"); unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
 @font-face { font-family: "GAUT Inter"; font-weight: 100 900; font-display: swap; src: url(/site/fonts/inter-latin-wght-normal.woff2) format("woff2"); unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
@@ -91,16 +91,15 @@ h1, h2, h3 { font-family: var(--font-head); font-weight: var(--head-weight); let
 /* The renders fade into the page background instead of sitting in a box. */
 .hero-rendszer { mix-blend-mode: multiply; -webkit-mask-image: radial-gradient(ellipse 72% 70% at 50% 50%, #000 58%, transparent 100%); mask-image: radial-gradient(ellipse 72% 70% at 50% 50%, #000 58%, transparent 100%); }
 .hero-struktura { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 16%); mask-image: linear-gradient(to right, transparent 0, #000 16%); }
-.hero-szinkron { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 12%), linear-gradient(to bottom, transparent 0, #000 14%, #000 78%, transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 12%), linear-gradient(to bottom, transparent 0, #000 14%, #000 78%, transparent 100%); -webkit-mask-composite: source-in; mask-composite: intersect; }
+.hero-szinkron { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 10%), linear-gradient(to bottom, transparent 0, #000 12%, #000 72%, transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 10%), linear-gradient(to bottom, transparent 0, #000 12%, #000 72%, transparent 100%); -webkit-mask-composite: source-in; mask-composite: intersect; }
 [data-theme="szinkron"] .hero-title { font-size: clamp(34px, 4.6vw, 58px); }
-/* Subsystem column of the "Szinkron" concept, attached to the lines in the render. */
-.sys-icons { display: none; list-style: none; margin: 0; padding: 0; position: absolute; top: 0; bottom: 0; right: -58px; width: 50px; }
+/* Subsystem column of the "Szinkron" concept: small icon boxes over the dark right edge of the render, each with a short lime connector towards the building. */
+.sys-icons { display: none; list-style: none; margin: 0; padding: 0; position: absolute; top: 0; bottom: 0; right: 0; width: 44px; }
 [data-theme="szinkron"] .sys-icons { display: block; }
-[data-theme="szinkron"] .hero-art { margin-right: 58px; }
-.sys-icons li { position: absolute; left: 0; width: 50px; height: 50px; margin-top: -25px; display: grid; place-items: center; border: 1px solid var(--accent); border-radius: 8px; color: var(--ink); background: var(--surface); }
-/* Heights match the five lime lines in hero-3.webp (15.5%, 30.9%, 46.1%, 61.3%, 77.8% of the image height). */
-.sys-icons li:nth-child(1) { top: 15.5%; } .sys-icons li:nth-child(2) { top: 30.9%; } .sys-icons li:nth-child(3) { top: 46.1%; } .sys-icons li:nth-child(4) { top: 61.3%; } .sys-icons li:nth-child(5) { top: 77.8%; }
-@media (min-width: 861px) { [data-theme="szinkron"] .hero-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr); gap: 24px; } }
+.sys-icons li { position: absolute; left: 0; width: 44px; height: 44px; margin-top: -22px; display: grid; place-items: center; border: 1px solid var(--accent); border-radius: 8px; color: var(--ink); background: var(--surface); }
+.sys-icons li::before { content: ""; position: absolute; right: 100%; top: 50%; width: 14px; height: 2px; margin-top: -1px; background: var(--accent); }
+.sys-icons li:nth-child(1) { top: 22%; } .sys-icons li:nth-child(2) { top: 37%; } .sys-icons li:nth-child(3) { top: 52%; } .sys-icons li:nth-child(4) { top: 67%; } .sys-icons li:nth-child(5) { top: 81%; }
+@media (min-width: 861px) { [data-theme="szinkron"] .hero-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 32px; } }
 .icon { width: 26px; height: 26px; }
 
 /* Building illustrations */
