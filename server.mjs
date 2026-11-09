@@ -5,6 +5,7 @@ import { websiteWarnings } from './public/site-readiness.js';
 import { contentStore, defaultsFor, FIELDS, HERO_SLOTS } from './site/content.mjs';
 import { mediaStore } from './site/media.mjs';
 import { photoStore } from './photos.mjs';
+import { streamBackup, backupFileName } from './backup.mjs';
 import { DatabaseSync } from 'node:sqlite';
 import { readFileSync, writeFileSync, mkdirSync, existsSync, unlinkSync, createReadStream } from 'node:fs';
 import { join, resolve, dirname, extname } from 'node:path';
@@ -25,7 +26,7 @@ const textField = (value, max, required = false) => {
   return value.trim();
 };
 
-export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), secureCookies = process.env.COOKIE_SECURE === 'true', password = process.env.GAUT_PASSWORD } = {}) {
+export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), secureCookies = process.env.COOKIE_SECURE === 'true', password = process.env.GAUT_PASSWORD, backupToken = process.env.GAUT_BACKUP_TOKEN } = {}) {
   mkdirSync(join(dataDir, 'files'), { recursive: true });
   if (typeof password !== 'string' || password.length < 12 || password.length > 1024) throw new Error('Állítsd be a GAUT_PASSWORD változót egy legalább 12, legfeljebb 1024 karakteres közös jelszóra.');
   const passwordSalt = 'gaut-shared-access-v1';
@@ -69,6 +70,9 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
   };
   const photos = photoStore(db, dataDir);
   const attempts = new Map();
+  // An optional long random token lets an unattended job (e.g. a nightly task on the owner's PC) download the backup without the shared password.
+  if (backupToken && backupToken.length < 32) { console.error('GAUT_BACKUP_TOKEN is shorter than 32 characters and is ignored.'); backupToken = undefined; }
+  const tokenHash = backupToken ? hash(backupToken) : null;
   const json = (res, status, body) => { res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(JSON.stringify(body)); };
   const cleanUser = user => ({ id: user.id, name: user.name });
   function session(req) {
@@ -142,6 +146,21 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         return json(res, 200, { user: cleanUser(user) });
       }
       if (path === '/api/health' && req.method === 'GET') return json(res, 200, { ok: true, version: '1.5.1' });
+      if (path === '/api/backup' && req.method === 'GET') {
+        let allowed = Boolean(session(req));
+        const bearer = /^Bearer\s+(\S{1,512})$/.exec(req.headers.authorization || '')?.[1];
+        if (!allowed && bearer) {
+          const key = `backup:${req.socket.remoteAddress}`, timestamp = Date.now();
+          for (const [k, val] of attempts) if (val.until < timestamp) attempts.delete(k);
+          const entry = attempts.get(key) || { count: 0, until: timestamp + 15 * 60 * 1000 };
+          if (entry.count >= 10) fail(429, 'Túl sok próbálkozás. Próbáld újra 15 perc múlva.');
+          if (tokenHash && timingSafeEqual(Buffer.from(hash(bearer)), Buffer.from(tokenHash))) { allowed = true; attempts.delete(key); } else { entry.count++; attempts.set(key, entry); }
+        }
+        if (!allowed) fail(401, 'A mentés letöltéséhez jelentkezz be.');
+        res.writeHead(200, { 'Content-Type': 'application/gzip', 'Content-Disposition': `attachment; filename="${backupFileName()}"`, 'Cache-Control': 'no-store' });
+        await streamBackup(db, dataDir, res, '1.5.1');
+        return;
+      }
       if (path.startsWith('/api/')) {
         const user = session(req); if (!user) fail(401, 'A folytatáshoz jelentkezz be.');
         if (path === '/api/reference-photos/import' && req.method === 'POST') return json(res,200,photos.import(await body(req)));

@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "gaut-anyaggyujto",
   "version": "1.5.1",
   "private": true,
@@ -10,7 +10,7 @@
   "scripts": {
     "start": "node server.mjs",
     "test": "node --test test/*.test.mjs",
-    "check": "node --check server.mjs && node --check references.mjs && node --check photos.mjs && node --check public/reference-photos.js && node --check public/app.js && node --check public/references.js && node --check public/site/site.js && node --check site/site.mjs && node --check site/art.mjs && node --check site/content.mjs && node --check public/site-editor.js && node --check site/media.mjs && node --check public/site-readiness.js"
+    "check": "node --check server.mjs && node --check references.mjs && node --check photos.mjs && node --check public/reference-photos.js && node --check public/app.js && node --check public/references.js && node --check public/site/site.js && node --check site/site.mjs && node --check site/art.mjs && node --check site/content.mjs && node --check public/site-editor.js && node --check site/media.mjs && node --check public/site-readiness.js && node --check backup.mjs"
   },
   "dependencies": {
     "sharp": "^0.35.5"
