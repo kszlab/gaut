@@ -180,3 +180,7 @@ A referenciatár és a honlap össze van kötve. A „Honlapon megjeleníthető 
 ## Mentés és visszaállítás
 
 A teljes adat (adatbázis, fájlok, referenciafotók, honlapképek) egyetlen `.tar.gz` fájlban tölthető le: belépve a munkatér főoldalán, vagy a `/api/backup` címen. Automatikus napi mentéshez a `GAUT_BACKUP_TOKEN` környezeti változó (legalább 32 karakter) és a `tools/backup-gaut.ps1` használható; ellenőrzéshez és visszaállításhoz a `tools/backup-tools.mjs`. Részletek, ütemezés és a visszaállítás lépései: [docs/BACKUP.md](docs/BACKUP.md).
+
+#### Kamarai névjegyzék a csapattagoknál
+
+Tagonként megadható a mérnöki kamarai azonosító szám és egy link a névjegyzékre (mindkettő nem kötelező, nyelvfüggetlen). A kártyán „Mérnöki kamarai névjegyzék: <szám>" sor jelenik meg, a szám a linkre mutat; csak szám esetén sima szöveg, csak link esetén „megnyitás" felirattal. A link biztonsági okból csak `https://` címmel kezdődő `mernokvagyok.hu` vagy `mmk.hu` (és aldomainjeik) oldalra mutathat (`isChamberUrl` a `site/content.mjs`-ben); a megjelenítéskor is ellenőrzi az oldal, így egy tárolt, nem engedélyezett cím sosem lesz link. A link `target="_blank" rel="noopener noreferrer"`.

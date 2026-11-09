@@ -83,3 +83,27 @@ test('team editing end to end: draft, preview, publish, portrait upload', async 
     assert.ok(!hidden.includes('id="csapat"') && !hidden.includes('Kiss Anna'));
   } finally { await new Promise(r => server.close(r)); rmSync(dataDir, { recursive: true, force: true }); }
 });
+
+test('chamber register number and link: validated, normalised and rendered safely', () => {
+  const ok = cleanTeam([member('anna', 'Kiss Anna', { chamber_no: ' 01-15009 ', chamber_url: 'https://mernokvagyok.hu/nevjegyzek/?id=15009' })])[0];
+  assert.equal(ok.chamber_no, '01-15009'); assert.equal(ok.chamber_url, 'https://mernokvagyok.hu/nevjegyzek/?id=15009');
+  assert.equal(cleanTeam([member('b')])[0].chamber_no, '', 'the chamber data is optional');
+  assert.equal(cleanTeam([member('b')])[0].chamber_url, '');
+  assert.equal(cleanTeam([member('b', 'B', { chamber_url: 'https://www.mmk.hu/nevjegyzek?x=1' })])[0].chamber_url, 'https://www.mmk.hu/nevjegyzek?x=1', 'subdomains of an allowed site are accepted');
+  for (const bad of ['http://mernokvagyok.hu/x', 'https://evil.example/mernokvagyok.hu', 'https://mernokvagyok.hu.evil.example/x', 'https://user:pw@mernokvagyok.hu/x', 'javascript:alert(1)', 'mernokvagyok.hu/nevjegyzek', 'https://notmernokvagyok.hu/']) {
+    assert.throws(() => cleanTeam([member('b', 'B', { chamber_url: bad })]), /kamarai link/, bad);
+  }
+  assert.throws(() => cleanTeam([member('b', 'B', { chamber_no: '<script>' })]), /kamarai azonosító/);
+  assert.throws(() => cleanTeam([member('b', 'B', { chamber_no: 'x'.repeat(50) })]), /túl hosszú/i);
+
+  const team = cleanTeam([member('anna', 'Kiss Anna', { chamber_no: '01-15009', chamber_url: 'https://mernokvagyok.hu/nevjegyzek/?id=15009' }), member('bela', 'Nagy Béla', { chamber_no: '02-777' }), member('cili', 'Tóth Cili', { chamber_url: 'https://mernokvagyok.hu/nevjegyzek/?id=1' }), member('dani', 'Szabó Dani')]).map(m => ({ ...m, sample: false }));
+  const hu = renderSite({ lang: 'hu', team }), en = renderSite({ lang: 'en', team });
+  assert.ok(hu.includes('<p class="chamber">Mérnöki kamarai névjegyzék: <a href="https://mernokvagyok.hu/nevjegyzek/?id=15009" target="_blank" rel="noopener noreferrer">01-15009</a></p>'));
+  assert.ok(en.includes('Chamber of Engineers register: <a href="https://mernokvagyok.hu/nevjegyzek/?id=15009"'));
+  assert.ok(hu.includes('<p class="chamber">Mérnöki kamarai névjegyzék: 02-777</p>'), 'a number without a link is plain text');
+  assert.ok(hu.includes('>megnyitás</a>'), 'a link without a number gets a generic label');
+  assert.equal((hu.match(/class="chamber"/g) || []).length, 3, 'members without chamber data show no line');
+  // defence in depth: a stored address that is not on the allow list is never linked
+  const tampered = renderSite({ lang: 'hu', team: [{ ...team[0], chamber_url: 'https://evil.example/x' }] });
+  assert.ok(!tampered.includes('evil.example') && tampered.includes('01-15009'));
+});
