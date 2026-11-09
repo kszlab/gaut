@@ -1,6 +1,6 @@
 # Hero-képek előállítása
 
-A honlap nyitóképei most a koncepciótáblákból külön képekre bontott, 2400 px szélességre felskálázott WebP fájlok (`public/site/img/hero-1.webp`, `hero-2.webp`, `hero-3.webp`). Ezek még AI-vizualizációk, nem végleges anyagok. A hero-3 a vízszintes vonalak miatt fix magasságú, az ikonoszlop a `site.css`-ben ehhez igazodik.
+A honlap nyitóképei most a koncepciótáblákból külön képekre bontott, 2400 px szélességre felskálázott WebP fájlok (`public/site/img/hero-1.webp`, `hero-2.webp`, `hero-3.webp`). Ezek még AI-vizualizációk, nem végleges anyagok. A második körben a ChatGPT módosította a képeket (2000×1333, 3:2, mindhárom teljes épületképpel). A hero-3-on már nincsenek jobbra futó vonalak, ezért a Szinkron ikonoszlopa a kép jobb szélén, rövid lime csatlakozóvonalakkal ül.
 
 ## Hogyan kerül be
 
@@ -12,7 +12,7 @@ Tedd a kész fájlt a `public/site/img/` mappába, a következő nevek valamelyi
 | 02 Struktúra | `hero-2.webp` vagy `hero-2.jpg` |
 | 03 Szinkron | `hero-3.webp` vagy `hero-3.jpg` |
 
-Ajánlott méret: legalább 2000 px széles, 4:3 vagy 3:2 arány, 300 KB alatti webp/jpg (érdemes tömöríteni). Az oldal a kép szélét elhalványítja, ezért a háttér legyen egységes, szöveg és felület nélkül.
+Ajánlott méret: legalább 2000 px széles, 4:3 vagy 3:2 arány, 300 KB alatti webp/jpg (érdemes tömöríteni). Az oldal a kép szélét elhalványítja, ezért a háttér legyen egységes, szöveg és felület nélkül. A 03-nál az épület jobb széle után legyen kb. 8% üres sötét sáv az ikonoszlopnak.
 
 ## Kép-promptok (ChatGPT / image_gen, angolul)
 
@@ -33,7 +33,7 @@ Editorial architectural photograph at golden hour of a generic contemporary comm
 **03 Szinkron**
 
 ```
-Technical visualization of a modern multi-storey glass office building in cutaway view on a deep ink blue background (#152C52), interconnected building subsystems drawn as glowing vivid lime (#C5E64A) pipes, ducts and cable paths across the floors, a few small figures for scale, a tree at the lower left. Five thin lime lines run horizontally out of the right edge of the image at about 23%, 39%, 55%, 73% and 91% of its height (they connect to icon boxes added on the website). Dark ink blue background everywhere else. No text, no logo, no UI, no laptop, no border. 16:9 landscape, 2400 px wide.
+Technical visualization of a modern multi-storey glass office building in cutaway view on a deep ink blue background (#152C52), interconnected building subsystems drawn as glowing vivid lime (#C5E64A) pipes, ducts and cable paths across the floors, a few small figures for scale, a tree at the lower left. Leave about 8% empty dark ink blue space at the right edge (icon boxes are added on the website). Dark ink blue background everywhere else. No text, no logo, no UI, no laptop, no border. 3:2 landscape, 2400 px wide.
 ```
 
-A 03-as kép jobb oldali vonalai miatt a weboldal ikonoszlopa a kép szélén illeszkedik. Ha a generált vonalak más magasságban futnak, a magasságokat a `public/site/site.css`-ben a `.sys-icons li:nth-child(n)` szabályokban kell igazítani.
+A Szinkron ikonoszlop függőleges helyzetét a `public/site/site.css`-ben a `.sys-icons li:nth-child(n)` szabályok adják meg; másik kép esetén ott kell igazítani.
