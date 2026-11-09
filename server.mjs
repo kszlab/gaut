@@ -1,5 +1,6 @@
 import http from 'node:http';
 import { referenceStore } from './references.mjs';
+import { renderSite, parseTheme } from './site/site.mjs';
 import { photoStore } from './photos.mjs';
 import { DatabaseSync } from 'node:sqlite';
 import { readFileSync, writeFileSync, mkdirSync, existsSync, unlinkSync, createReadStream } from 'node:fs';
@@ -191,6 +192,20 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
           return createReadStream(file).pipe(res);
         }
         fail(404, 'Ismeretlen művelet.');
+      }
+      // Public site preview. Pages are rendered from sample data; nothing here reads the private stores.
+      const siteAssets = { '/site/site.css': ['site/site.css', 'text/css'], '/site/site.js': ['site/site.js', 'text/javascript'] };
+      if (['GET', 'HEAD'].includes(req.method) && (path === '/hu' || path === '/en')) {
+        const html = renderSite({ lang: path.slice(1), theme: parseTheme(url.searchParams.get('tema')) });
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        return res.end(req.method === 'HEAD' ? undefined : html);
+      }
+      if (siteAssets[path] && ['GET', 'HEAD'].includes(req.method)) {
+        const [name, type] = siteAssets[path];
+        res.setHeader('Cache-Control', 'no-cache'); // preview phase: always revalidate; switch to a fingerprinted long cache before launch
+        res.setHeader('Content-Type', `${type}; charset=utf-8`);
+        return res.end(req.method === 'HEAD' ? undefined : readFileSync(join(ROOT, 'public', name)));
       }
       const assets = { '/reference-search.js': ['reference-search.js', 'text/javascript'], '/reference-photos.js': ['reference-photos.js', 'text/javascript'], '/referenciak': ['references.html', 'text/html'], '/references.js': ['references.js', 'text/javascript'], '/references.css': ['references.css', 'text/css'], '/': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'], '/favicon.svg': ['favicon.svg', 'image/svg+xml'] };
       if (!assets[path] || !['GET', 'HEAD'].includes(req.method)) fail(404, 'Az oldal nem található.');

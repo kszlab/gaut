@@ -115,3 +115,20 @@ A cím melletti „Honlapon megjeleníthető referencia” jelölés külön jó
 Referencia törlése: a kártya Törlés gombja vagy az adatlap Referencia törlése gombja külön kukába helyezi a tételt. A Törölt referenciák (kuka) szűrőben visszaállítható. A képek, lokációk és az archiválás állapota megmaradnak. A JSON mentés a kukát is megőrzi; azonosító szerinti újraimportálás nem állítja vissza véletlenül a törölt tételt. Honlapgyűjtéskor a deleted_at értékkel rendelkező tételeket is ki kell hagyni.
 
 Összevonás: az ellenőrzött JSON lista `groups` tömbjének elemei `name`, `records: [{id, revision}, ...]` mezőket tartalmaznak; az első rekord marad meg. Az opcionális `additional_sections` ismert résztvevőket adhat hozzá. Az egész lista egy tranzakcióban fut, ütközés esetén semmit nem módosít. Az eltérő munkaleírásokat névvel, tervévvel és eredeti azonosítóval megőrzi, a fotófájlokat áthelyezés nélkül hozzárendeli a közös tételhez, a helyszínazonosítókat megtartja. Az eredeti rekordokat és hozzárendeléseket a privát `reference_merges` előzmény és a JSON export `merge_history` mezője őrzi. A felületen visszavonható; későbbi adatlapszerkesztés esetén az ütközésvédelem megakadályozza az új adatok felülírását. Az összevont forrásrekordokat a normál listából és a kukából kizárjuk (`merged_into`), honlapexportnál is ki kell hagyni őket. Az összevont referencia honlapjelölése csak akkor marad jóváhagyott, ha minden egyes eredeti tétel az volt.
+
+## Nyilvános honlap (előnézet)
+
+A `/hu` és `/en` címen elérhető, belépés nélkül, kétnyelvű egyoldalas bemutatkozó oldal. Jelenleg **nem éles**: a keresők elől rejtett (`noindex`), a belső munkatér továbbra is a `/` címen van. A három arculati vázlat (Rendszer, Struktúra, Szinkron) az oldalon váltható, vagy a `?tema=1|2|3` paraméterrel linkelhető. A választás után a váltót és a két többi témát el kell távolítani.
+
+- `site/site.mjs`: szerveroldali HTML-render (szövegek HU/EN, szekciók, referenciakártyák).
+- `site/art.mjs`: generált SVG-k (három ideiglenes logóváltozat és az izometrikus épületillusztrációk, CSS-változókkal színezve).
+- `site/sample-references.json`: **kitalált** mintaprojektek, az oldalon „Minta" jelzéssel. Nem valós referenciák.
+- `public/site/site.css`, `public/site/site.js`: stílus és kis kliensoldali viselkedés (témaváltó, szűrő, mobilmenü).
+
+### Terv a valódi referenciatárral való összekötéshez
+
+A honlap egyetlen forrásból kapja a referenciákat (`sampleReferences()`). Összekötéskor ezt a függvényt kell lecserélni a `referenceStore.list()` eredményére, a `toPublicReference()` fehérlistás leképezésen át. Az csak a `website_publishable` jelölésű, nem törölt, nem archivált, nem összevont tételeket engedi át, és csak a cím, leírás, kategória, város és tervév mezőket adja tovább. A belső mezők (forrás, szerepjegyzet, kérdések, tervezők, fotólinkek) nem kerülhetnek ki. A képek külön, jóváhagyott nyilvános útvonalon jönnek majd.
+
+Szükséges bővítések a referenciaadatlapon: honlapos cím és leírás magyarul és angolul (`website_title_hu/en`, `website_copy_hu/en`), valamint egy „kiadásra kész" feltétel (szerep megerősítve, képhasználati engedély). A kapcsoló csak ennek teljesülésekor legyen bekapcsolható.
+
+Élesítéskor: `/` a nyilvános oldalra mutat, a munkatér `/munkater` alá költözik, az egyéni domain a Render szolgáltatáshoz kötődik, az `noindex` és a témaváltó kikerül, a statikus fájlok hosszú gyorsítótárat kapnak.
