@@ -1,4 +1,4 @@
-﻿name: Ellenőrzés
+name: Ellenőrzés
 on: [push, pull_request]
 permissions:
   contents: read

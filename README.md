@@ -176,3 +176,7 @@ A referenciatár és a honlap össze van kötve. A „Honlapon megjeleníthető 
 - **Közzététel:** a lista a Közzététel pillanatában rögzül a verzióba (`references`). A későbbi szerkesztés a következő közzétételig nem látszik élesben; a vázlat-előnézet a tár aktuális állapotát mutatja. Visszaállításkor a rögzített referenciák nem kerülnek a vázlatba.
 - **Sorrend és megjelenítés:** kiemeltek elöl, utána tervév szerint csökkenő. Az oldal 8 referenciát mutat, a „További referenciák" gomb nyit többet. Kép nélkül egy generált illusztráció jelenik meg.
 - **Mintaprojektek:** ha egyetlen referencia sincs megjelölve, a „Minta" jelzésű mintaprojektek maradnak (a közzététel ilyenkor nem rögzít referencialistát).
+
+## Mentés és visszaállítás
+
+A teljes adat (adatbázis, fájlok, referenciafotók, honlapképek) egyetlen `.tar.gz` fájlban tölthető le: belépve a munkatér főoldalán, vagy a `/api/backup` címen. Automatikus napi mentéshez a `GAUT_BACKUP_TOKEN` környezeti változó (legalább 32 karakter) és a `tools/backup-gaut.ps1` használható; ellenőrzéshez és visszaállításhoz a `tools/backup-tools.mjs`. Részletek, ütemezés és a visszaállítás lépései: [docs/BACKUP.md](docs/BACKUP.md).
