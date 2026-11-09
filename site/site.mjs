@@ -80,7 +80,7 @@ const CATEGORIES = {
 };
 // English names of the categories used in the reference store (anything else is shown as typed).
 const CATEGORY_EN = { 'Ipar és logisztika': 'Industry & logistics', 'Egészségügy': 'Healthcare', 'Iroda és kereskedelem': 'Office & retail', 'Szálloda és turizmus': 'Hotels & tourism', 'Műemlék és kultúra': 'Heritage & culture', 'Energia és infrastruktúra': 'Energy & infrastructure', 'Sport és fürdő': 'Sport & spa', 'Lakóépület': 'Residential', 'Oktatás és középület': 'Education & public buildings' };
-const categoryLabel = (category, lang) => CATEGORIES[lang][category] ?? (lang === 'en' ? CATEGORY_EN[category] : undefined) ?? category;
+export const categoryLabel = (category, lang) => CATEGORIES[lang][category] ?? (lang === 'en' ? CATEGORY_EN[category] : undefined) ?? category;
 
 const TEXT = {
   hu: {

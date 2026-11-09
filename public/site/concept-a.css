@@ -70,3 +70,9 @@
   .ca .index .row { grid-template-columns: 56px 1fr; gap: 4px 16px; } .ca .index .ct, .ca .index .pl { grid-column: 2; }
   .ca .top { padding-inline: 20px; } .ca .logo svg { height: 44px; }
 }
+
+/* Content from the editor: portraits, chamber register line, contact links */
+.ca .people .photo { width: 72px; height: 72px; object-fit: cover; }
+.ca .chamber { margin-top: 8px; font-size: 15px; color: var(--muted); }
+.ca .chamber a { color: var(--accent); font-weight: 500; text-underline-offset: 3px; }
+.ca .facts dd a { color: var(--ink); text-underline-offset: 4px; }
