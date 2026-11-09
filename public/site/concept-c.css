@@ -1,0 +1,78 @@
+/* Concept C: technical precision. Deep navy, one lime signal colour, monospace tags, specification rows, a real architecture diagram. */
+.cc { --bg: #0C1830; --panel: #11213D; --ink: #ECF1F8; --muted: #AAB9CF; --line: #2A3F61; --accent: #C5E64A; --wire: #6C86B3; --body: "GAUT Jakarta", system-ui, sans-serif; --mono: "GAUT Mono", ui-monospace, Consolas, monospace;
+  background: var(--bg); color: var(--ink); font: 400 17px/1.65 var(--body); }
+.cc .logo-ink, .cc .logo-desc { fill: var(--ink); } .cc .logo-accent { fill: var(--accent); }
+.cc .top { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 20px max(32px, calc((100% - 1240px) / 2)); border-bottom: 1px solid var(--line); }
+.cc .nav { display: flex; gap: 28px; font: 400 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.cc .nav a { text-decoration: none; color: var(--muted); }
+.cc .nav a span { color: var(--accent); }
+.cc .nav a:hover { color: var(--ink); }
+.cc .tag { font: 500 12px/1.4 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+
+.cc .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(32px, 5vw, 80px); align-items: center; padding-block: clamp(48px, 7vw, 104px); }
+.cc h1 { font: 700 clamp(40px, 5.6vw, 78px)/1.04 var(--body); letter-spacing: -.035em; margin: 18px 0 24px; }
+.cc h1 em { font-style: normal; color: var(--accent); }
+.cc .lead { color: var(--muted); max-width: 48ch; margin-bottom: 32px; }
+.cc .btn { display: inline-flex; gap: 12px; align-items: center; background: var(--accent); color: #0C1830; font-weight: 700; text-decoration: none; padding: 15px 26px; border-radius: 2px; }
+.cc .btn:hover { background: #fff; }
+.cc .figcap { font: 400 12px var(--mono); color: var(--muted); margin-top: 12px; }
+
+/* Diagram */
+.cc .diagram { width: 100%; height: auto; }
+.cc .diagram .layer rect { fill: none; stroke: var(--line); stroke-width: 1; stroke-dasharray: 3 4; }
+.cc .diagram .tag { font: 500 11px var(--mono); letter-spacing: .1em; fill: var(--muted); text-transform: none; }
+.cc .diagram .node rect { fill: var(--panel); stroke: #3C5686; stroke-width: 1; }
+.cc .diagram .node.strong rect { stroke: var(--ink); }
+.cc .diagram .node text { font: 500 13px var(--body); fill: var(--ink); }
+.cc .diagram .wire path { fill: none; stroke: var(--wire); stroke-width: 1.5; }
+.cc .diagram .wire.hot path { stroke: var(--accent); stroke-width: 2; }
+.cc .diagram .pin rect { fill: var(--accent); }
+
+.cc .sec { padding-block: clamp(48px, 7vw, 96px); border-top: 1px solid var(--line); }
+.cc .sec > .tag { display: block; margin-bottom: 28px; }
+.cc .spec li { display: grid; grid-template-columns: 96px minmax(0, 1fr) minmax(0, 1.4fr); gap: 32px; padding: 26px 0; border-top: 1px solid var(--line); align-items: baseline; }
+.cc .spec li:last-child { border-bottom: 1px solid var(--line); }
+.cc .code { font: 500 13px var(--mono); color: var(--accent); letter-spacing: .08em; }
+.cc h3 { font: 600 22px/1.25 var(--body); letter-spacing: -.015em; }
+.cc .spec p, .cc .principles p, .cc .sec.two > div > p { color: var(--muted); font-size: 16px; }
+.cc .sectors { margin-top: 32px; font-size: 15px; color: var(--muted); }
+.cc .sectors .tag { display: block; margin-bottom: 6px; }
+
+.cc .two { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 96px); }
+.cc .big { font: 600 clamp(26px, 3.2vw, 42px)/1.15 var(--body); letter-spacing: -.025em; margin: 0 0 20px; max-width: 24ch; }
+.cc .vendors { margin-top: 32px; font-size: 14px; color: var(--muted); }
+.cc .vendors .tag { display: block; margin-bottom: 6px; }
+.cc .principles li { display: grid; grid-template-columns: 64px 1fr; column-gap: 16px; padding: 20px 0; border-top: 1px solid var(--line); }
+.cc .principles .code { grid-row: span 2; }
+.cc .principles h3 { font-size: 19px; margin-bottom: 4px; }
+
+.cc .table-wrap { overflow-x: auto; }
+.cc table { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 640px; }
+.cc th { font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); text-align: left; padding: 0 16px 12px 0; border-bottom: 1px solid var(--ink); }
+.cc td { padding: 16px 16px 16px 0; border-bottom: 1px solid var(--line); vertical-align: baseline; }
+.cc td.id, .cc td.yr { font: 400 13px var(--mono); color: var(--accent); }
+.cc td.nm { font-weight: 600; font-size: 17px; }
+.cc tbody tr:hover td { background: rgba(197, 230, 74, .05); }
+.cc .note { margin-top: 20px; font-size: 14px; color: var(--muted); }
+
+.cc .people { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+.cc .people article { border-top: 1px solid var(--ink); padding-top: 16px; }
+.cc .mono { display: grid; place-items: center; width: 56px; height: 56px; border: 1px solid var(--line); font: 500 22px var(--mono); color: var(--accent); margin-bottom: 14px; }
+.cc .role { font: 400 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+
+.cc .contact .big { max-width: 22ch; font-size: clamp(36px, 5vw, 64px); }
+.cc .contact dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: 36px; }
+.cc .contact dl div { border-top: 1px solid var(--line); padding-top: 12px; }
+.cc .contact dt { color: var(--muted); }
+.cc .contact dd { font-size: 19px; color: var(--muted); }
+.cc .foot { display: flex; justify-content: space-between; gap: 16px; padding: 28px 0 48px; border-top: 1px solid var(--line); font: 400 12px var(--mono); color: var(--muted); flex-wrap: wrap; }
+
+@media (max-width: 960px) {
+  .cc .hero, .cc .two { grid-template-columns: 1fr; }
+  .cc .spec li { grid-template-columns: 64px 1fr; } .cc .spec p { grid-column: 2; }
+  .cc .people, .cc .contact dl { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .cc .nav { display: none; } .cc .top { padding-inline: 20px; } .cc .logo svg { height: 44px; }
+  .cc .people, .cc .contact dl { grid-template-columns: 1fr; }
+}

@@ -16,14 +16,14 @@
 }
 [data-theme="rendszer"] {
   --bg: #F4F7F7; --surface: #FFFFFF; --alt: #E9EFEF; --ink: #102A43; --muted: #4A5F73; --line: #CFDADA;
-  --accent: #007F82; --accent-strong: #007F82; --on-accent: #FFFFFF; --link: #007F82;
+  --accent: #007F82; --accent-strong: #007F82; --accent-text: #006B6E; --on-accent: #FFFFFF; --link: #006B6E;
   --bt: #F7FAFA; --bl: #DCE5E8; --br: #C7D3D8; --bline: #AEBFC6; --bwin: #9DB0B8; --ground: #E6EDEE; --grid: #D2DCDF;
   --radius: 2px; --head-weight: 650; --head-track: -0.01em; --hero-bg: linear-gradient(180deg, #EEF3F3, #F4F7F7);
   --wordmark-track: 0.02em; --wordmark-weight: 800;
 }
 [data-theme="struktura"] {
   --bg: #F2EFE9; --surface: #FBF9F5; --alt: #E8E3DA; --ink: #252B2F; --muted: #5A5F61; --line: #D6CFC3;
-  --accent: #B36C45; --accent-strong: #9A5733; --on-accent: #FFFFFF; --link: #9A5733;
+  --accent: #B36C45; --accent-strong: #9A5733; --accent-text: #8C4D2D; --on-accent: #FFFFFF; --link: #8C4D2D;
   --font-head: "GAUT Newsreader", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
   --font-body: "GAUT Jost", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
   --bt: #D9D4CA; --bl: #4A5257; --br: #2F363A; --bline: #6A7378; --bwin: #7E888D; --ground: #E4DED3; --grid: #D6CFC3;
@@ -32,7 +32,7 @@
 }
 [data-theme="szinkron"] {
   --bg: #0F2244; --surface: #152C52; --alt: #122650; --ink: #F6F8FB; --muted: #B6C3D8; --line: #2B4570;
-  --accent: #C5E64A; --accent-strong: #C5E64A; --on-accent: #0F2244; --link: #C5E64A;
+  --accent: #C5E64A; --accent-strong: #C5E64A; --accent-text: #C5E64A; --on-accent: #0F2244; --link: #C5E64A;
   --font-body: "GAUT Jakarta", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
   --bt: #2A4676; --bl: #1D3A6B; --br: #16305C; --bline: #3B5A8E; --bwin: #4C6EA4; --ground: #132B52; --grid: #1F3A68;
   --radius: 6px; --head-weight: 750; --head-track: -0.02em; --hero-bg: radial-gradient(1000px 520px at 80% 20%, #1C3A6E, #0F2244);
@@ -116,7 +116,7 @@ h1, h2, h3 { font-family: var(--font-head); font-weight: var(--head-weight); let
 /* Sections */
 .block { padding: 88px 0; }
 .block.alt { background: var(--alt); }
-.kicker { font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent-strong); font-weight: 700; margin: 0 0 14px; }
+.kicker { font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent-text); font-weight: 700; margin: 0 0 14px; }
 [data-theme="szinkron"] .kicker { color: var(--accent); }
 h2 { font-size: clamp(30px, 3.6vw, 44px); margin-bottom: 36px; max-width: 22ch; }
 h3 { font-size: 21px; }
@@ -125,7 +125,7 @@ h3 { font-size: 21px; }
 .areas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .area { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 30px 28px; }
 .area { position: relative; }
-.area-icon { display: block; color: var(--accent-strong); margin-bottom: 36px; }
+.area-icon { display: block; color: var(--accent-text); margin-bottom: 36px; }
 [data-theme="szinkron"] .area-icon { color: var(--accent); }
 .area-icon .icon { width: 34px; height: 34px; }
 .area .num { position: absolute; right: 28px; top: 30px; font-size: 13px; letter-spacing: .2em; color: var(--muted); font-weight: 600; }
@@ -139,7 +139,7 @@ h3 { font-size: 21px; }
 .split { display: grid; grid-template-columns: 1.1fr 1fr; gap: 64px; align-items: start; }
 .principles { list-style: none; counter-reset: p; margin: 0; padding: 0; display: grid; gap: 18px; }
 .principles li { counter-increment: p; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 24px 22px 70px; position: relative; }
-.principles li::before { content: counter(p, decimal-leading-zero); position: absolute; left: 24px; top: 24px; color: var(--accent-strong); font-weight: 700; letter-spacing: .08em; font-size: 14px; }
+.principles li::before { content: counter(p, decimal-leading-zero); position: absolute; left: 24px; top: 24px; color: var(--accent-text); font-weight: 700; letter-spacing: .08em; font-size: 14px; }
 [data-theme="szinkron"] .principles li::before { color: var(--accent); }
 .principles h3 { font-size: 19px; margin-bottom: 6px; } .principles p { margin: 0; color: var(--muted); font-size: 16px; }
 
@@ -171,7 +171,7 @@ h3 { font-size: 21px; }
 /* Team */
 .team { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px 22px; }
 .member h3 { font-size: 22px; margin: 18px 0 2px; }
-.member .role { margin: 0 0 10px; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-strong); font-weight: 600; }
+.member .role { margin: 0 0 10px; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-text); font-weight: 600; }
 [data-theme="szinkron"] .member .role { color: var(--accent); }
 .member .bio { margin: 0; font-size: 15px; color: var(--muted); }
 .member .chamber { margin: 10px 0 0; font-size: 13px; color: var(--muted); }

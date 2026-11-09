@@ -184,3 +184,7 @@ A teljes adat (adatbázis, fájlok, referenciafotók, honlapképek) egyetlen `.t
 #### Kamarai névjegyzék a csapattagoknál
 
 Tagonként megadható a mérnöki kamarai azonosító szám és egy link a névjegyzékre (mindkettő nem kötelező, nyelvfüggetlen). A kártyán „Mérnöki kamarai névjegyzék: <szám>" sor jelenik meg, a szám a linkre mutat; csak szám esetén sima szöveg, csak link esetén „megnyitás" felirattal. A link biztonsági okból csak `https://` címmel kezdődő `mernokvagyok.hu` vagy `mmk.hu` (és aldomainjeik) oldalra mutathat (`isChamberUrl` a `site/content.mjs`-ben); a megjelenítéskor is ellenőrzi az oldal, így egy tárolt, nem engedélyezett cím sosem lesz link. A link `target="_blank" rel="noopener noreferrer"`.
+
+## Tervezési koncepciók és audit
+
+A honlap vizuális irányának kiválasztásához három, szerkezetében is eltérő koncepció nézhető meg a `/koncepcio` címen (`/koncepcio/a`, `/b`, `/c`): a valódi cégleírással és a mintaadatokkal, a keresők elől rejtve. Az elemzés, a mérések és a döntéshez szükséges kérdések a [docs/DESIGN-AUDIT.md](docs/DESIGN-AUDIT.md) fájlban vannak. A `site/concepts.mjs` rendereli őket, a stílusuk a `public/site/concept-*.css` fájlokban van. Ezek előnézetek, nem a végleges oldal: a kiválasztás után a választott irány a szerkeszthető tartalmat jeleníti majd meg, a másik kettő törlődik.

@@ -1,0 +1,72 @@
+/* Concept A: editorial typography. Warm paper, graphite ink, one copper accent, hairline rules, no boxes. */
+.ca { --bg: #F2EFE9; --alt: #E8E3DA; --ink: #252B2F; --muted: #55595B; --line: #C9C1B3; --accent: #8C4D2D; --body: "GAUT Jost", system-ui, sans-serif; --head: "GAUT Newsreader", Georgia, serif;
+  background: var(--bg); color: var(--ink); font: 400 18px/1.65 var(--body); }
+.ca .logo-accent { fill: #B36C45; }
+.ca .top { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 22px max(32px, calc((100% - 1240px) / 2)); border-bottom: 1px solid var(--line); }
+.ca .nav { display: flex; gap: 32px; font-size: 15px; }
+.ca .nav a { text-decoration: none; padding: 4px 0; }
+.ca .nav a:hover { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
+
+.ca .hero { padding: clamp(56px, 9vw, 128px) 0 clamp(48px, 7vw, 96px); }
+.ca .meta { font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin-bottom: clamp(24px, 4vw, 48px); }
+.ca .meta span { margin: 0 .5em; color: var(--accent); }
+.ca h1 { font: 400 clamp(48px, 9vw, 132px)/.98 var(--head); letter-spacing: -.025em; max-width: 12ch; }
+.ca .hero-foot { display: grid; grid-template-columns: minmax(0, 560px) auto; justify-content: space-between; align-items: end; gap: 32px; margin-top: clamp(40px, 6vw, 80px); padding-top: 28px; border-top: 1px solid var(--ink); }
+.ca .lead { font-size: 20px; color: var(--muted); }
+.ca .cta { font: 500 18px var(--body); text-decoration: none; border-bottom: 1px solid var(--ink); padding-bottom: 4px; white-space: nowrap; }
+.ca .cta:hover { color: var(--accent); border-color: var(--accent); }
+
+.ca .sec { padding: clamp(56px, 8vw, 112px) 0; border-top: 1px solid var(--line); }
+.ca .sec.alt { background: var(--alt); }
+.ca .grid { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 48px; }
+.ca .label { font: 500 13px/1.4 var(--body); letter-spacing: .16em; text-transform: uppercase; display: flex; flex-direction: column; gap: 6px; color: var(--ink); }
+.ca .label span { font: 400 40px/1 var(--head); letter-spacing: 0; color: var(--accent); }
+
+.ca .services li { display: grid; grid-template-columns: 64px minmax(0, 1fr) minmax(0, 1.3fr); gap: 32px; padding: 32px 0; border-top: 1px solid var(--line); align-items: baseline; }
+.ca .services li:first-child { border-top: 0; padding-top: 0; }
+.ca .num { font: 400 22px var(--head); color: var(--accent); }
+.ca h3 { font: 400 clamp(24px, 2.6vw, 34px)/1.15 var(--head); letter-spacing: -.01em; }
+.ca .services p, .ca .principles p { color: var(--muted); font-size: 17px; }
+
+.ca .statement { font: 400 clamp(26px, 3.2vw, 40px)/1.3 var(--head); letter-spacing: -.012em; max-width: 30ch; margin-bottom: 56px; }
+.ca .principles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+.ca .principles li { border-top: 1px solid var(--ink); padding-top: 16px; }
+.ca .principles h3 { font-size: 22px; margin-bottom: 8px; }
+.ca .vendors { margin-top: 48px; font-size: 15px; color: var(--muted); }
+.ca .vendors span { display: block; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 6px; }
+
+.ca .index .row { display: grid; grid-template-columns: 72px minmax(0, 2.2fr) minmax(0, 1.2fr) minmax(0, 1fr); gap: 24px; padding: 18px 0; border-top: 1px solid var(--line); align-items: baseline; transition: background .15s; }
+.ca .index .row:last-child { border-bottom: 1px solid var(--line); }
+.ca .index .row:hover { background: color-mix(in srgb, var(--alt) 60%, transparent); }
+.ca .index .yr { font: 400 17px var(--head); color: var(--accent); font-feature-settings: "tnum"; }
+.ca .index .nm { font: 400 clamp(19px, 2vw, 24px)/1.3 var(--head); }
+.ca .index .ct, .ca .index .pl { font-size: 15px; color: var(--muted); }
+.ca .note { margin-top: 20px; font-size: 14px; color: var(--muted); max-width: 70ch; }
+
+.ca .people { display: grid; gap: 0; }
+.ca .people li { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 24px; padding: 28px 0; border-top: 1px solid var(--line); }
+.ca .people li:first-child { border-top: 0; padding-top: 0; }
+.ca .mono { display: grid; place-items: center; width: 72px; height: 72px; background: var(--ink); color: var(--bg); font: 400 32px var(--head); }
+.ca .role { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin: 4px 0 8px; }
+.ca .people p:last-child { color: var(--muted); max-width: 60ch; }
+
+.ca .contact .big { font: 400 clamp(40px, 6vw, 84px)/1.02 var(--head); letter-spacing: -.02em; margin-bottom: 24px; }
+.ca .facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: 40px; }
+.ca .facts div { border-top: 1px solid var(--ink); padding-top: 12px; }
+.ca .facts dt { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+.ca .facts dd { font: italic 400 20px var(--head); color: var(--muted); }
+.ca .foot { display: flex; justify-content: space-between; gap: 16px; padding: 32px 0 56px; font-size: 14px; color: var(--muted); border-top: 1px solid var(--line); flex-wrap: wrap; }
+
+@media (max-width: 960px) {
+  .ca .grid { grid-template-columns: 1fr; gap: 28px; }
+  .ca .label { flex-direction: row; align-items: baseline; gap: 14px; }
+  .ca .label span { font-size: 30px; }
+  .ca .services li { grid-template-columns: 48px 1fr; } .ca .services li p { grid-column: 2; }
+  .ca .principles, .ca .facts { grid-template-columns: 1fr; }
+  .ca .hero-foot { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  .ca .nav { display: none; }
+  .ca .index .row { grid-template-columns: 56px 1fr; gap: 4px 16px; } .ca .index .ct, .ca .index .pl { grid-column: 2; }
+  .ca .top { padding-inline: 20px; } .ca .logo svg { height: 44px; }
+}
