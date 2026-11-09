@@ -31,6 +31,8 @@ test('the concept previews are served without login, hidden from search engines,
       assert.equal(css.status, 200); assert.equal(css.headers.get('content-type'), 'text/css; charset=utf-8');
     }
     assert.equal((await fetch(`${base}/site/concept-base.css`)).status, 200);
+    const mosaicJs = await fetch(`${base}/site/mosaic.js`);
+    assert.equal(mosaicJs.status, 200); assert.equal(mosaicJs.headers.get('content-type'), 'text/javascript; charset=utf-8');
     assert.equal((await fetch(`${base}/koncepcio/d`)).status, 404);
     assert.equal((await fetch(`${base}/site/fonts/ibm-plex-mono-latin-400-normal.woff2`)).status, 200);
     assert.equal((await fetch(`${base}/koncepcio/a`, { method: 'POST', headers: { 'x-gaut-request': '1' } })).status, 404);
@@ -42,6 +44,7 @@ test('the three concepts really differ in structure, and use only the real compa
   assert.ok(renderConceptIndex().length > 500);
   // different building blocks, not recoloured copies
   assert.ok(a.includes('class="index"') && !b.includes('class="index"') && !c.includes('class="index"'), 'only A has the ruled reference index');
+  assert.ok(b.includes('class="mosaic"') && b.includes('/site/mosaic.js') && !a.includes('class="mosaic"') && !c.includes('class="mosaic"'), 'only B shows the references as a mosaic of image tiles');
   assert.ok(b.includes('/site/img/hero-2.webp') && !a.includes('/site/img/') && !c.includes('/site/img/'), 'only B is photo-led');
   assert.ok(c.includes('<svg class="diagram"') && !a.includes('class="diagram"') && !b.includes('class="diagram"'), 'only C carries the architecture diagram');
   assert.ok(c.includes('<table>') && !a.includes('<table>') && !b.includes('<table>'), 'only C presents references as a table');
