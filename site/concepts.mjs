@@ -1,6 +1,7 @@
 import { LOGOS } from './art.mjs';
 import { defaultText, sampleReferences, sampleTeam, categoryLabel } from './site.mjs';
 import { applyContent, isChamberUrl } from './content.mjs';
+import { renderMosaic } from './mosaic.mjs';
 
 // Three genuinely different layout concepts for the public site. They are design previews (hidden from search engines),
 // but they show the same content as the live site: the texts, team, references and images saved in the site editor
@@ -59,7 +60,7 @@ function shell(key, body, title, d) {
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/site/concept-base.css">
 <link rel="stylesheet" href="/site/${c.css}">
-</head>
+${key === 'b' ? '<script type="module" src="/site/mosaic.js"></script>\n' : ''}</head>
 <body class="c${key}">
 <div class="pv"><span>Tervezési koncepció ${key.toUpperCase()}. Előnézet ${source}, még nem a végleges oldal.</span>
   <nav aria-label="Koncepciók">${Object.keys(CONCEPTS).map(k => `<a href="/koncepcio/${k}"${k === key ? ' aria-current="page"' : ''}>${k.toUpperCase()}</a>`).join('')}<a href="/koncepcio">Összehasonlítás</a><a href="/">Jelenlegi oldal</a></nav></div>
@@ -121,12 +122,7 @@ function conceptB(view) {
   const heroImg = hero
     ? `<img src="/media/${hero.id}/${hero.widths.includes(1600) ? 1600 : hero.widths.at(-1)}.webp" srcset="${srcset(hero)}" sizes="100vw" alt="${esc(hero.alt?.hu || '')}" width="${hero.width}" height="${hero.height}" fetchpriority="high">`
     : '<img src="/site/img/hero-2.webp" alt="" width="2400" height="1600" fetchpriority="high">';
-  const tiles = d.references.slice(0, 9).map(r => {
-    const cm = r.coverMedia;
-    const art = cm ? `<img src="${small(cm)}" srcset="${srcset(cm)}" sizes="(max-width: 960px) 100vw, 380px" width="${cm.width}" height="${cm.height}" alt="${esc(pick(r.title))}" loading="lazy" decoding="async">` : '<div class="ph" role="img" aria-label="Fotó helye"><span>Fotó helye</span></div>';
-    const summary = pick(r.summary);
-    return `<article class="tile">${art}<p class="m">${refMeta(r)}</p><h3>${esc(pick(r.title))}</h3>${summary ? `<p>${esc(summary)}</p>` : ''}</article>`;
-  }).join('');
+  const mosaic = renderMosaic(d.references, { lang: 'hu', categoryLabel: c => categoryLabel(c, 'hu'), labels: { all: t.all, filter: t.refsKicker, open: t.mosaicOpen, close: t.mosaicClose, prev: t.mosaicPrev, next: t.mosaicNext, detail: t.mosaicDetail, sample: t.sample, designYear: t.designYear } });
   const people = d.team.map(m => `<article class="person">${m.photoMedia ? portrait(m, 'photo') : '<div class="ph sq" role="img" aria-label="Fotó helye"><span>Fotó helye</span></div>'}<h3>${esc(pick(m.name))}</h3><p class="role">${esc(pick(m.role))}</p>${chamber(m)}</article>`).join('');
   return shell('b', `
 <main>
@@ -154,7 +150,7 @@ function conceptB(view) {
 
 <section class="refs wrap" id="referenciak">
   <h2 class="kick">${esc(t.refsKicker)}</h2><p class="big sm">${esc(t.refsTitle)}</p>
-  <div class="grid">${tiles}</div>
+  ${mosaic}
   ${sampleNote(d, 'Mintaprojektek a megjelenés bemutatására; a végleges oldalon valódi referenciák és projektfotók szerepelnek.')}
 </section>
 ${d.team.length ? `

@@ -1,6 +1,7 @@
 import { readFileSync, existsSync } from 'node:fs';
-import { buildingSvg, LOGOS, ICONS } from './art.mjs';
+import { LOGOS, ICONS } from './art.mjs';
 import { applyContent, isChamberUrl } from './content.mjs';
+import { renderMosaic } from './mosaic.mjs';
 
 // Hero render for concept n: a high-resolution file (hero-N.webp or hero-N.jpg) wins over the interim
 // crop from the concept board (heroN.png). See docs/HERO-IMAGES.md.
@@ -70,9 +71,10 @@ export function toPublicReference(record) {
   };
 }
 const firstYear = year => Number(/\d{4}/.exec(year)?.[0] ?? 0);
-// Public references for a list of records: featured first, then newest design year, then title.
+// Public references for a list of records: newest design year first, then title. A featured reference keeps its place in time
+// and is shown as a double-size tile in the mosaic, so big and small tiles alternate.
 export const publicReferences = records => records.map(toPublicReference).filter(Boolean)
-  .sort((a, b) => Number(b.featured) - Number(a.featured) || firstYear(b.year) - firstYear(a.year) || a.title.hu.localeCompare(b.title.hu, 'hu'));
+  .sort((a, b) => firstYear(b.year) - firstYear(a.year) || a.title.hu.localeCompare(b.title.hu, 'hu'));
 
 const CATEGORIES = {
   hu: { office: 'Iroda', industry: 'Ipar és logisztika', education: 'Oktatás', hotel: 'Szálloda', health: 'Egészségügy', community: 'Közösségi épület' },
@@ -113,7 +115,7 @@ const TEXT = {
     sectors: ['Ipari létesítmények', 'Kereskedelmi létesítmények', 'Szállodák', 'Közösségi épületek', 'Oktatási intézmények', 'Egészségügyi beruházások'],
     refsKicker: 'Referenciák', refsTitle: 'Válogatás a munkáinkból',
     refsNote: 'Bemutató mintaprojektek. A látható projektek kitaláltak, a végleges oldalon valós referenciák szerepelnek majd.',
-    all: 'Mind', sample: 'Minta', designYear: 'Tervév', more: 'További referenciák',
+    all: 'Mind', sample: 'Minta', designYear: 'Tervév', mosaicOpen: 'Megnyitás', mosaicClose: 'Bezárás', mosaicPrev: 'Előző referencia', mosaicNext: 'Következő referencia', mosaicDetail: 'Referencia részletei',
     contactKicker: 'Kapcsolat', contactTitle: 'Beszéljük meg a projektet',
     contactText: 'Írjon vagy hívjon minket, és közösen megnézzük, milyen rendszer illik az épületéhez.',
     contactPending: 'Az elérhetőségek a végleges adatok megérkezése után kerülnek ide.',
@@ -152,7 +154,7 @@ const TEXT = {
     sectors: ['Industrial facilities', 'Commercial facilities', 'Hotels', 'Community buildings', 'Educational institutions', 'Healthcare projects'],
     refsKicker: 'Projects', refsTitle: 'Selected work',
     refsNote: 'Illustrative sample projects. The projects shown are invented; the final site will list real references.',
-    all: 'All', sample: 'Sample', designYear: 'Design year', more: 'More projects',
+    all: 'All', sample: 'Sample', designYear: 'Design year', mosaicOpen: 'Open', mosaicClose: 'Close', mosaicPrev: 'Previous project', mosaicNext: 'Next project', mosaicDetail: 'Project details',
     contactKicker: 'Contact', contactTitle: 'Let\'s talk about your project',
     contactText: 'Write or call us and we will look together at which system suits your building.',
     contactPending: 'Contact details will be added when the final information arrives.',
@@ -167,26 +169,6 @@ const TEXT = {
 export const defaultText = lang => structuredClone(TEXT[lang]);
 
 const arrow = '<svg class="arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
-
-function card(ref, lang, t) {
-  const tagList = ref.tags?.[lang]?.length ? ref.tags[lang] : (ref.tags?.hu || []);
-  const tags = tagList.map(x => `<li>${esc(x)}</li>`).join('');
-  const cm = ref.coverMedia; // an approved cover photo (resolved media record), if any
-  const art = cm
-    ? `<img src="/media/${cm.id}/${cm.widths.includes(800) ? 800 : cm.widths[0]}.webp" srcset="${cm.widths.map(w => `/media/${cm.id}/${w}.webp ${w}w`).join(', ')}" sizes="(max-width: 560px) 100vw, (max-width: 1040px) 50vw, 280px" width="${cm.width}" height="${cm.height}" alt="${esc(pick(ref.title, lang))}" loading="lazy" decoding="async">`
-    : buildingSvg(ref.kind);
-  const meta = [categoryLabel(ref.category, lang), pick(ref.place, lang), ref.year ? `${t.designYear} ${ref.year}` : ''].filter(Boolean).map(esc).join(' · ');
-  const summary = pick(ref.summary, lang);
-  return `<article class="ref${ref.featured ? ' featured' : ''}" data-cat="${esc(ref.category)}">
-  <div class="ref-art${cm ? ' photo' : ''}">${art}${ref.sample ? `<span class="badge">${esc(t.sample)}</span>` : ''}</div>
-  <div class="ref-body">
-    <p class="ref-meta">${meta}</p>
-    <h3>${esc(pick(ref.title, lang))}</h3>
-    ${summary ? `<p>${esc(summary)}</p>` : ''}
-    ${tags ? `<ul class="tags">${tags}</ul>` : ''}
-  </div>
-</article>`;
-}
 
 // English fields fall back to the Hungarian ones when they are empty.
 const pick = (pair, lang) => (pair?.[lang] || pair?.hu || '');
@@ -219,7 +201,6 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
   lang = LANGS.includes(lang) ? lang : 'hu';
   theme = parseTheme(theme);
   const t = applyContent(TEXT[lang], content?.[lang]);
-  const cats = [...new Set(references.map(r => r.category))];
   const pathOf = l => (l === 'hu' ? '/' : '/en'); // the Hungarian site is the root, English lives at /en
   const home = pathOf(lang);
   const otherLang = lang === 'hu' ? 'en' : 'hu';
@@ -286,12 +267,7 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
   <div class="wrap">
     <p class="kicker">${esc(t.refsKicker)}</p><h2>${esc(t.refsTitle)}</h2>
     ${t.refsNote && (references.some(r => r.sample) || content?.[lang]?.refsNote !== undefined) ? `<p class="note">${esc(t.refsNote)}</p>` : ''}
-    <div class="filters" role="group" aria-label="${esc(t.refsKicker)}">
-      <button type="button" class="chip on" data-filter="*">${esc(t.all)}</button>
-      ${cats.map(c => `<button type="button" class="chip" data-filter="${esc(c)}">${esc(categoryLabel(c, lang))}</button>`).join('')}
-    </div>
-    <div class="refs" data-page="8">${references.map(r => card(r, lang, t)).join('')}</div>
-    <p class="more-wrap"><button type="button" class="btn ghost more-btn" hidden>${esc(t.more)}</button></p>
+    ${renderMosaic(references, { lang, categoryLabel: c => categoryLabel(c, lang), labels: { all: t.all, filter: t.refsKicker, open: t.mosaicOpen, close: t.mosaicClose, prev: t.mosaicPrev, next: t.mosaicNext, detail: t.mosaicDetail, sample: t.sample, designYear: t.designYear } })}
   </div>
 </section>
 

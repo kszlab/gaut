@@ -263,7 +263,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         fail(404, 'Ismeretlen művelet.');
       }
       // Public site preview. Pages are rendered from sample data; nothing here reads the private stores.
-      const siteAssets = { '/site/concept-base.css': ['site/concept-base.css', 'text/css'], '/site/concept-a.css': ['site/concept-a.css', 'text/css'], '/site/concept-b.css': ['site/concept-b.css', 'text/css'], '/site/concept-c.css': ['site/concept-c.css', 'text/css'], '/site/concept-index.css': ['site/concept-index.css', 'text/css'], '/site/site.css': ['site/site.css', 'text/css'], '/site/site.js': ['site/site.js', 'text/javascript'] };
+      const siteAssets = { '/site/concept-base.css': ['site/concept-base.css', 'text/css'], '/site/concept-a.css': ['site/concept-a.css', 'text/css'], '/site/concept-b.css': ['site/concept-b.css', 'text/css'], '/site/concept-c.css': ['site/concept-c.css', 'text/css'], '/site/concept-index.css': ['site/concept-index.css', 'text/css'], '/site/site.css': ['site/site.css', 'text/css'], '/site/site.js': ['site/site.js', 'text/javascript'], '/site/mosaic.js': ['site/mosaic.js', 'text/javascript'] };
       // The workspace lives under /munkater; the root is the public site. Old workspace page addresses keep working through redirects.
       const moved = { '/referenciak': '/munkater/referenciak', '/honlap': '/munkater/honlap', '/munkater/': '/munkater', '/munkater/referenciak/': '/munkater/referenciak', '/munkater/honlap/': '/munkater/honlap' };
       if (['GET', 'HEAD'].includes(req.method) && moved[path]) { res.writeHead(302, { Location: moved[path] + url.search }); return res.end(); }
