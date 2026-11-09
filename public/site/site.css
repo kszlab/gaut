@@ -239,3 +239,8 @@ h3 { font-size: 21px; }
 @media (max-width: 1040px) { .mosaic { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 240px; gap: 20px; } }
 @media (max-width: 640px) { .mosaic { grid-template-columns: 1fr; grid-auto-rows: 250px; gap: 16px; } .mt.big { grid-column: auto; grid-row: span 2; } .md-body { padding: 18px 18px 24px; } }
 .mt.nophoto .mt-cap strong { display: none; } /* the typographic tile already shows the title */
+
+/* General introduction of the team: full content width, under the section heading */
+.team-intro { max-width: none; margin: 0 0 40px; }
+.team-intro p { margin: 0 0 1em; font-size: 19px; line-height: 1.7; color: var(--ink); }
+.team-intro p:last-child { margin-bottom: 0; }
