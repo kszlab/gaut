@@ -80,12 +80,12 @@ test('team section renders every member in both languages, with a placeholder wh
 test('traced logos, hero renders and self-hosted fonts are part of the page and served safely', async () => {
   const html = renderSite({ lang: 'hu' });
   for (const k of ['rendszer', 'struktura', 'szinkron']) assert.match(html, new RegExp(String.raw`class="logo logo-${k}"><svg[^>]*viewBox="0 0 \d+ \d+"`));
-  assert.match(html, /class="hero-img hero-rendszer" src="\/site\/img\/hero1\.png"/);
+  assert.match(html, /class="hero-img hero-rendszer" src="\/site\/img\/hero-1\.webp"/);
   assert.equal((html.match(/class="sys-icons"/g) || []).length, 1);
   assert.match(html, /<h1 class="hero-title t-szinkron"><span class="line">Intelligens épületek\.<\/span> <span class="line last">Összhangban<span class="dot">\.<\/span><\/span><\/h1>/);
   await withServer(async base => {
-    const img = await fetch(`${base}/site/img/hero1.png`);
-    assert.equal(img.status, 200); assert.equal(img.headers.get('content-type'), 'image/png');
+    const img = await fetch(`${base}/site/img/hero-1.webp`);
+    assert.equal(img.status, 200); assert.equal(img.headers.get('content-type'), 'image/webp');
     const font = await fetch(`${base}/site/fonts/inter-latin-wght-normal.woff2`);
     assert.equal(font.status, 200); assert.equal(font.headers.get('content-type'), 'font/woff2');
     assert.equal((await fetch(`${base}/site/img/nincs.png`)).status, 404);

@@ -1,10 +1,10 @@
 # Hero-képek előállítása
 
-A honlap nyitóképei most a koncepciótáblákról kivágott, kis felbontású ideiglenes képek (`public/site/img/hero1.png`, `hero2.png`, `hero3.png`). Retina kijelzőn puhák, ezért a végleges változatot magas felbontásban kell elkészíteni.
+A honlap nyitóképei most a koncepciótáblákból külön képekre bontott, 2400 px szélességre felskálázott WebP fájlok (`public/site/img/hero-1.webp`, `hero-2.webp`, `hero-3.webp`). Ezek még AI-vizualizációk, nem végleges anyagok. A hero-3 a vízszintes vonalak miatt fix magasságú, az ikonoszlop a `site.css`-ben ehhez igazodik.
 
 ## Hogyan kerül be
 
-Tedd a kész fájlt a `public/site/img/` mappába, a következő nevek valamelyikén (a webp előnyt élvez a jpg-vel szemben, az mindkettővel szemben az ideiglenes png-vel):
+Tedd a kész fájlt a `public/site/img/` mappába, a következő nevek valamelyikén (a webp előnyt élvez a jpg-vel szemben; ha egyik sincs, az oldal a régi `heroN.png` ideiglenes képet keresné):
 
 | Arculat | Fájlnév |
 | --- | --- |
