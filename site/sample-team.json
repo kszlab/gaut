@@ -1,0 +1,17 @@
+{
+  "note": "Helyőrző csapattagok a honlap kinézetének bemutatásához. A nevek a munkatér gyűjtőrészei, a szerepkörök és bemutatkozások mintaszövegek, nem valós adatok.",
+  "members": [
+    { "id": "misi", "name": { "hu": "Misi", "en": "Misi" }, "role": { "hu": "Tervező mérnök", "en": "Design engineer" },
+      "bio": { "hu": "Mintaszöveg: néhány mondat a szakterületről, a tapasztalatról és arról, hogy milyen típusú feladatokban dolgozik legszívesebben.", "en": "Sample text: a few sentences about the area of expertise, experience and the kind of tasks this person enjoys most." },
+      "focus": { "hu": ["Szakterület", "Projekttípus"], "en": ["Specialty", "Project type"] }, "photo": null },
+    { "id": "nandi", "name": { "hu": "Nándi", "en": "Nándi" }, "role": { "hu": "Tervező mérnök", "en": "Design engineer" },
+      "bio": { "hu": "Mintaszöveg: néhány mondat a szakterületről, a tapasztalatról és arról, hogy milyen típusú feladatokban dolgozik legszívesebben.", "en": "Sample text: a few sentences about the area of expertise, experience and the kind of tasks this person enjoys most." },
+      "focus": { "hu": ["Szakterület", "Projekttípus"], "en": ["Specialty", "Project type"] }, "photo": null },
+    { "id": "attila", "name": { "hu": "Attila", "en": "Attila" }, "role": { "hu": "Tervező mérnök", "en": "Design engineer" },
+      "bio": { "hu": "Mintaszöveg: néhány mondat a szakterületről, a tapasztalatról és arról, hogy milyen típusú feladatokban dolgozik legszívesebben.", "en": "Sample text: a few sentences about the area of expertise, experience and the kind of tasks this person enjoys most." },
+      "focus": { "hu": ["Szakterület", "Projekttípus"], "en": ["Specialty", "Project type"] }, "photo": null },
+    { "id": "krisztian", "name": { "hu": "Krisztián", "en": "Krisztián" }, "role": { "hu": "Tervező mérnök", "en": "Design engineer" },
+      "bio": { "hu": "Mintaszöveg: néhány mondat a szakterületről, a tapasztalatról és arról, hogy milyen típusú feladatokban dolgozik legszívesebben.", "en": "Sample text: a few sentences about the area of expertise, experience and the kind of tasks this person enjoys most." },
+      "focus": { "hu": ["Szakterület", "Projekttípus"], "en": ["Specialty", "Project type"] }, "photo": null }
+  ]
+}

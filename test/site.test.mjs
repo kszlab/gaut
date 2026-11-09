@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { makeServer } from '../server.mjs';
-import { renderSite, toPublicReference, sampleReferences } from '../site/site.mjs';
+import { renderSite, toPublicReference, sampleReferences, sampleTeam } from '../site/site.mjs';
 import { buildingSvg, SCENES } from '../site/art.mjs';
 
 async function withServer(fn) {
@@ -42,7 +42,7 @@ test('site assets are served, the private API stays closed', async () => {
 test('sample references render and are marked as samples', () => {
   const html = renderSite({ lang: 'hu' });
   for (const r of sampleReferences()) assert.ok(html.includes(r.title.hu), r.id);
-  assert.equal((html.match(/class="badge"/g) || []).length, sampleReferences().length);
+  assert.equal((html.match(/class="badge"/g) || []).length, sampleReferences().length + sampleTeam().length);
   assert.ok(!html.includes('<script>'));
 });
 
@@ -63,4 +63,16 @@ test('only approved, active references reach the public shape and internal field
   assert.equal(toPublicReference({ ...base, archived: true }), null);
   assert.equal(toPublicReference({ ...base, merged_into: 'X' }), null);
   assert.equal(toPublicReference({ ...base, website_copy_draft: '' }), null);
+});
+
+test('team section renders every member in both languages, with a placeholder when there is no photo', () => {
+  for (const lang of ['hu', 'en']) {
+    const html = renderSite({ lang });
+    assert.match(html, /id="csapat"/);
+    for (const m of sampleTeam()) assert.ok(html.includes(`<h3>${m.name[lang]}</h3>`), `${lang} ${m.id}`);
+    assert.equal((html.match(/class="portrait-empty"/g) || []).length, sampleTeam().length);
+  }
+  const withPhoto = renderSite({ lang: 'hu', team: [{ ...sampleTeam()[0], photo: '/site/team/misi.jpg' }] });
+  assert.match(withPhoto, /<img src="\/site\/team\/misi\.jpg" alt="Misi"/);
+  assert.ok(!withPhoto.includes('portrait-empty'));
 });

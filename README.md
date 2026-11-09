@@ -123,6 +123,7 @@ A `/hu` és `/en` címen elérhető, belépés nélkül, kétnyelvű egyoldalas 
 - `site/site.mjs`: szerveroldali HTML-render (szövegek HU/EN, szekciók, referenciakártyák).
 - `site/art.mjs`: generált SVG-k (három ideiglenes logóváltozat és az izometrikus épületillusztrációk, CSS-változókkal színezve).
 - `site/sample-references.json`: **kitalált** mintaprojektek, az oldalon „Minta" jelzéssel. Nem valós referenciák.
+- `site/sample-team.json`: helyőrző csapattagok (név, szerepkör, mintaszöveg), „Minta" jelzéssel. Fotó nélkül monogramos helyőrző jelenik meg. Később szerkeszthető csapatlista lesz a munkatérben, portréfotókkal, a referenciafotókhoz hasonló privát feltöltéssel és külön jóváhagyott nyilvános képútvonallal.
 - `public/site/site.css`, `public/site/site.js`: stílus és kis kliensoldali viselkedés (témaváltó, szűrő, mobilmenü).
 
 ### Terv a valódi referenciatárral való összekötéshez
