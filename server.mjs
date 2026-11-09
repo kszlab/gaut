@@ -207,6 +207,15 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         res.setHeader('Content-Type', `${type}; charset=utf-8`);
         return res.end(req.method === 'HEAD' ? undefined : readFileSync(join(ROOT, 'public', name)));
       }
+      const mediaMatch = /^\/site\/(img|fonts)\/([a-z0-9-]+)\.(png|jpg|webp|woff2)$/.exec(path);
+      if (mediaMatch && ['GET', 'HEAD'].includes(req.method)) {
+        const types = { png: 'image/png', jpg: 'image/jpeg', webp: 'image/webp', woff2: 'font/woff2' };
+        const file = join(ROOT, 'public', 'site', mediaMatch[1], `${mediaMatch[2]}.${mediaMatch[3]}`);
+        if (!existsSync(file)) fail(404, 'Az oldal nem található.');
+        res.setHeader('Cache-Control', mediaMatch[1] === 'fonts' ? 'public, max-age=86400' : 'no-cache');
+        res.setHeader('Content-Type', types[mediaMatch[3]]);
+        return res.end(req.method === 'HEAD' ? undefined : readFileSync(file));
+      }
       const assets = { '/reference-search.js': ['reference-search.js', 'text/javascript'], '/reference-photos.js': ['reference-photos.js', 'text/javascript'], '/referenciak': ['references.html', 'text/html'], '/references.js': ['references.js', 'text/javascript'], '/references.css': ['references.css', 'text/css'], '/': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'], '/favicon.svg': ['favicon.svg', 'image/svg+xml'] };
       if (!assets[path] || !['GET', 'HEAD'].includes(req.method)) fail(404, 'Az oldal nem található.');
       const [name, type] = assets[path];

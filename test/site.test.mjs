@@ -20,11 +20,11 @@ test('public site pages need no login and respect language and theme', async () 
     const hu = await fetch(`${base}/hu?tema=3`); const html = await hu.text();
     assert.equal(hu.status, 200);
     assert.match(html, /<html lang="hu" data-theme="szinkron">/);
-    assert.match(html, /Összehangolt rendszerek\./);
+    assert.match(html, /Összehangolt rendszerek<span class="dot">\.<\/span>/);
     assert.match(html, /name="robots" content="noindex, nofollow"/);
     const en = await (await fetch(`${base}/en?tema=2`)).text();
     assert.match(en, /<html lang="en" data-theme="struktura">/);
-    assert.match(en, /Coordinated systems\./);
+    assert.match(en, /Coordinated systems<span class="dot">\.<\/span>/);
     assert.match(await (await fetch(`${base}/hu?tema=nincs`)).text(), /data-theme="rendszer"/);
   });
 });
@@ -75,4 +75,21 @@ test('team section renders every member in both languages, with a placeholder wh
   const withPhoto = renderSite({ lang: 'hu', team: [{ ...sampleTeam()[0], photo: '/site/team/misi.jpg' }] });
   assert.match(withPhoto, /<img src="\/site\/team\/misi\.jpg" alt="Misi"/);
   assert.ok(!withPhoto.includes('portrait-empty'));
+});
+
+test('traced logos, hero renders and self-hosted fonts are part of the page and served safely', async () => {
+  const html = renderSite({ lang: 'hu' });
+  for (const k of ['rendszer', 'struktura', 'szinkron']) assert.match(html, new RegExp(String.raw`class="logo logo-${k}"><svg[^>]*viewBox="0 0 \d+ \d+"`));
+  assert.match(html, /class="hero-img hero-rendszer" src="\/site\/img\/hero1\.png"/);
+  assert.equal((html.match(/class="sys-icons"/g) || []).length, 1);
+  assert.match(html, /<h1 class="hero-title t-szinkron"><span class="line">Intelligens épületek\.<\/span> <span class="line last">Összhangban<span class="dot">\.<\/span><\/span><\/h1>/);
+  await withServer(async base => {
+    const img = await fetch(`${base}/site/img/hero1.png`);
+    assert.equal(img.status, 200); assert.equal(img.headers.get('content-type'), 'image/png');
+    const font = await fetch(`${base}/site/fonts/inter-latin-wght-normal.woff2`);
+    assert.equal(font.status, 200); assert.equal(font.headers.get('content-type'), 'font/woff2');
+    assert.equal((await fetch(`${base}/site/img/nincs.png`)).status, 404);
+    assert.equal((await fetch(`${base}/site/img/..%2Fsite.css`)).status, 404);
+    assert.equal((await fetch(`${base}/site/fonts/inter-latin-wght-normal.woff2.map`)).status, 404);
+  });
 });

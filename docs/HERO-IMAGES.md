@@ -1,0 +1,39 @@
+# Hero-képek előállítása
+
+A honlap nyitóképei most a koncepciótáblákról kivágott, kis felbontású ideiglenes képek (`public/site/img/hero1.png`, `hero2.png`, `hero3.png`). Retina kijelzőn puhák, ezért a végleges változatot magas felbontásban kell elkészíteni.
+
+## Hogyan kerül be
+
+Tedd a kész fájlt a `public/site/img/` mappába, a következő nevek valamelyikén (a webp előnyt élvez a jpg-vel szemben, az mindkettővel szemben az ideiglenes png-vel):
+
+| Arculat | Fájlnév |
+| --- | --- |
+| 01 Rendszer | `hero-1.webp` vagy `hero-1.jpg` |
+| 02 Struktúra | `hero-2.webp` vagy `hero-2.jpg` |
+| 03 Szinkron | `hero-3.webp` vagy `hero-3.jpg` |
+
+Ajánlott méret: legalább 2000 px széles, 4:3 vagy 3:2 arány, 300 KB alatti webp/jpg (érdemes tömöríteni). Az oldal a kép szélét elhalványítja, ezért a háttér legyen egységes, szöveg és felület nélkül.
+
+## Kép-promptok (ChatGPT / image_gen, angolul)
+
+Mindhárom promptban az a lényeg, hogy **csak az épület** legyen a képen: ne legyen rajta laptop, böngésző, felirat, logó, menü, gomb vagy ember a kép szélén.
+
+**01 Rendszer**
+
+```
+Clean high-resolution architectural visualization, isometric three-quarter view of a modern contemporary commercial building with glass facades, terraces and a few trees, white and light grey tones, thin teal (#007F82) building-services lines running through the facade and roof as integrated engineering paths. Light neutral off-white background fading softly at the edges (#F4F7F7), generic building, not a real project. No text, no logo, no people, no UI, no laptop, no border. 3:2 landscape, 2400 px wide, sharp detail.
+```
+
+**02 Struktúra**
+
+```
+Editorial architectural photograph at golden hour of a generic contemporary commercial building facade, dark graphite panels and glass, warm interior light, a young tree in front, subtle thin copper (#B36C45) lines tracing the facade joints like system lines. Calm sky with soft warm tones, generous space on the left side of the frame. Not a real identifiable building. No text, no logo, no UI, no border. 4:3 landscape, 2400 px wide, photorealistic.
+```
+
+**03 Szinkron**
+
+```
+Technical visualization of a modern multi-storey glass office building in cutaway view on a deep ink blue background (#152C52), interconnected building subsystems drawn as glowing vivid lime (#C5E64A) pipes, ducts and cable paths across the floors, a few small figures for scale, a tree at the lower left. Five thin lime lines run horizontally out of the right edge of the image at about 23%, 39%, 55%, 73% and 91% of its height (they connect to icon boxes added on the website). Dark ink blue background everywhere else. No text, no logo, no UI, no laptop, no border. 16:9 landscape, 2400 px wide.
+```
+
+A 03-as kép jobb oldali vonalai miatt a weboldal ikonoszlopa a kép szélén illeszkedik. Ha a generált vonalak más magasságban futnak, a magasságokat a `public/site/site.css`-ben a `.sys-icons li:nth-child(n)` szabályokban kell igazítani.
