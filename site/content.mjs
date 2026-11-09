@@ -65,10 +65,49 @@ export const HERO_SLOTS = [['hero.rendszer', 'Nyitókép · 01 Rendszer', '/site
 export const isSlot = slot => HERO_SLOTS.some(([s]) => s === slot) || /^team\.[a-z0-9-]{1,40}$/.test(slot);
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 
-// Validates and normalises overrides: {hu: {path: value}, en: {...}, media: {slot: imageId}}.
+// Team list: absent = the placeholder team of the preview; [] = the team section is hidden; otherwise the list shown on the site.
+export const TEAM_MAX = 12;
+const oneLine = (value, max, label, required = false) => {
+  if (typeof value !== 'string') fail(400, `A(z) ${label} szöveg legyen.`);
+  const v = value.replace(/\s+/g, ' ').trim();
+  if (/[\u0000-\u001f\u007f]/.test(v) || v.length > max) fail(400, `Érvénytelen vagy túl hosszú: ${label} (legfeljebb ${max} karakter).`);
+  if (required && !v) fail(400, `Hiányzik: ${label}.`);
+  return v;
+};
+export function cleanTeam(list) {
+  if (!Array.isArray(list) || list.length > TEAM_MAX) fail(400, `A csapatlista legfeljebb ${TEAM_MAX} tagot tartalmazhat.`);
+  const ids = new Set();
+  return list.map((m, i) => {
+    if (!m || typeof m !== 'object' || Array.isArray(m)) fail(400, 'Hibás csapattag.');
+    if (typeof m.id !== 'string' || !/^[a-z0-9-]{1,40}$/.test(m.id) || ids.has(m.id)) fail(400, 'Hibás vagy ismétlődő csapattag-azonosító.');
+    ids.add(m.id);
+    const pair = (obj, key, max, label, required = false) => {
+      const hu = oneLine(obj?.hu ?? '', max, `${label} (HU)`, required), en = oneLine(obj?.en ?? '', max, `${label} (EN)`);
+      return { hu, en };
+    };
+    const bio = {};
+    for (const lang of ['hu', 'en']) {
+      const raw = m.bio?.[lang] ?? '';
+      if (typeof raw !== 'string') fail(400, 'A bemutatkozás szöveg legyen.');
+      const v = raw.replace(/\r\n/g, '\n').trim();
+      if (/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(v) || v.length > 700) fail(400, `Érvénytelen vagy túl hosszú bemutatkozás (${lang.toUpperCase()}, legfeljebb 700 karakter).`);
+      bio[lang] = v;
+    }
+    const focus = {};
+    for (const lang of ['hu', 'en']) {
+      const tags = m.focus?.[lang] ?? [];
+      if (!Array.isArray(tags) || tags.length > 4) fail(400, 'Legfeljebb 4 szakterület-címke adható meg.');
+      focus[lang] = tags.map(t => oneLine(t, 40, `címke (${lang.toUpperCase()})`)).filter(Boolean);
+    }
+    return { id: m.id, name: pair(m.name, 'name', 80, `${i + 1}. tag neve`, true), role: pair(m.role, 'role', 80, `${i + 1}. tag szerepköre`), bio, focus };
+  });
+}
+
+// Validates and normalises overrides: {hu: {path: value}, en: {...}, media: {slot: imageId}, team?: [...]}.
 export function cleanOverrides(input) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) fail(400, 'Hibás tartalom.');
   const out = { hu: {}, en: {}, media: {} };
+  if (input.team !== undefined && input.team !== null) out.team = cleanTeam(input.team);
   const media = input.media ?? {};
   if (typeof media !== 'object' || Array.isArray(media)) fail(400, 'Hibás képhozzárendelés.');
   for (const [slot, id] of Object.entries(media)) {
@@ -109,7 +148,7 @@ export function contentStore(db) {
     return row;
   }
   const draftView = row => ({ overrides: parse(row.payload), revision: row.revision, updated_at: row.updated_at });
-  const meta = row => ({ id: row.id, created_at: row.created_at, note: row.note, changes: ['hu', 'en', 'media'].reduce((n, l) => n + Object.keys(parse(row.payload)[l]).length, 0) });
+  const meta = row => ({ id: row.id, created_at: row.created_at, note: row.note, changes: ['hu', 'en', 'media'].reduce((n, l) => n + Object.keys(parse(row.payload)[l]).length, 0) + (parse(row.payload).team ? 1 : 0) });
   const store = {
     draft: () => draftView(draftRow()),
     saveDraft(revision, overrides) {

@@ -156,3 +156,12 @@ A `/honlap` oldal tetején a három nyitókép cserélhető (`HERO_SLOTS` a `sit
 - A képleírás (alt) a képhez tartozik, nem verziózott: módosítása azonnal látszik az élő oldalon.
 - A `sharp` az első használatkor töltődik be. Ha a natív könyvtár nem tölthető be, csak a képfeltöltés áll le (503 hibaüzenettel), a munkatér és az oldal tovább működik.
 - A Docker-image mostantól `npm ci --omit=dev` lépést futtat (a `package-lock.json` bekerült a tárba), a CI is `npm ci`-vel indul.
+
+### Csapat a honlap-szerkesztőben
+
+A `/honlap` oldal „Csapat" szekciója a nyilvános oldal csapatlistáját kezeli (`team` a vázlat és a közzétett verziók tartalmában, `cleanTeam` a `site/content.mjs`-ben):
+
+- Három állapot: **nincs csapatlista** (a „Minta" jelzésű mintacsapat látszik), **saját lista** (legfeljebb 12 tag), **üres lista** (a Csapat szekció és menüpontja rejtett).
+- Tagonként: név, szerepkör, bemutatkozás (700 karakter) és legfeljebb 4 szakterület-címke magyarul és angolul, fénykép, sorrend (↑ ↓), törlés. Az angol mezők üresen maradhatnak, ilyenkor a magyar szöveg jelenik meg.
+- A fénykép a `team.<tagazonosító>` képhelyre kerül, ugyanúgy WebP-vé alakul és közzétételig privát, mint a nyitóképek. A kép alt-szövege a tag neve.
+- A vázlat, az előnézet, a közzététel és a visszaállítás a szövegekkel együtt, egy verzióként működik.

@@ -33,7 +33,8 @@ function slotHtml(s) {
       ${m ? `<label>Képleírás (HU)<input data-alt="hu" data-media="${esc(id)}" maxlength="200" value="${esc(alt('hu'))}" placeholder="Rövid leírás a képről"></label><label>Képleírás (EN)<input data-alt="en" data-media="${esc(id)}" maxlength="200" value="${esc(alt('en'))}" placeholder="Short description of the image"></label>` : '<small>Az alapkép dekoratív, külön leírás nélkül.</small>'}</div></div>`;
 }
 const readBase64 = file => new Promise((resolve, reject) => { const r = new FileReader(); r.onload = () => resolve(String(r.result).split(',')[1] || ''); r.onerror = () => reject(new Error('A fájl nem olvasható.')); r.readAsDataURL(file); });
-$('#images').addEventListener('change', async e => {
+const renderMedia = () => { renderImages(); renderTeam(); };
+const onUpload = async e => {
   const input = e.target.closest('[data-upload]'); if (!input) return;
   const file = input.files[0]; input.value = '';
   if (!file) return;
@@ -43,12 +44,62 @@ $('#images').addEventListener('change', async e => {
   await run(async () => {
     message('Feltöltés és átméretezés folyamatban…');
     const r = await api('/api/site/media', 'POST', { filename: file.name, content: await readBase64(file) });
-    state.media[r.media.id] = r.media; state.values.media[slot] = r.media.id; state.dirty = true; renderImages();
-  }, 'A kép feltöltve. Add meg a képleírást, majd mentsd a vázlatot.');
-});
-$('#images').addEventListener('click', e => {
+    state.media[r.media.id] = r.media; state.values.media[slot] = r.media.id; state.dirty = true; renderMedia();
+  }, slot.startsWith('team.') ? 'A fénykép feltöltve. Mentsd a vázlatot.' : 'A kép feltöltve. Add meg a képleírást, majd mentsd a vázlatot.');
+};
+const onReset = e => {
   const b = e.target.closest('[data-reset-slot]'); if (!b) return;
-  delete state.values.media[b.dataset.resetSlot]; state.dirty = true; renderImages(); renderStatus();
+  delete state.values.media[b.dataset.resetSlot]; state.dirty = true; renderMedia(); renderStatus();
+};
+for (const box of [$('#images'), $('#team')]) { box.addEventListener('change', onUpload); box.addEventListener('click', onReset); }
+
+// ---- Team list ----
+const TEAM_MAX = 12;
+const newMember = () => ({ id: `tag-${Math.random().toString(36).slice(2, 8)}`, name: { hu: '', en: '' }, role: { hu: '', en: '' }, bio: { hu: '', en: '' }, focus: { hu: [], en: [] } });
+function renderTeam() {
+  const team = state.values.team;
+  let body;
+  if (team === undefined) {
+    body = `<p class="muted">Most a mintacsapat látszik az oldalon („Minta" jelzéssel, helyőrző szöveggel). Indítsd el a saját csapatlistát, vagy rejtsd el a szekciót.</p><div class="slot-actions"><button type="button" class="primary" data-team-action="start">Saját csapatlista indítása</button><button type="button" class="secondary" data-team-action="hide">Csapat szekció elrejtése</button></div>`;
+  } else {
+    body = `${team.length ? '' : '<p class="muted">A Csapat szekció és menüpontja jelenleg rejtett. Vegyél fel csapattagot, hogy megjelenjen.</p>'}<div class="team-list">${team.map((m, i) => memberHtml(m, i, team.length)).join('')}</div>
+      <div class="slot-actions"><button type="button" class="secondary" data-team-action="add" ${team.length >= TEAM_MAX ? 'disabled' : ''}>＋ Új csapattag</button><button type="button" class="secondary" data-team-action="sample">Vissza a mintacsapathoz</button></div>`;
+  }
+  $('#team').innerHTML = `<section class="group"><h2>Csapat</h2><p class="field-hint">Legfeljebb ${TEAM_MAX} tag. Az angol mezők üresen maradhatnak: ilyenkor a magyar szöveg jelenik meg az angol oldalon. A fénykép ajánlott aránya álló, 4:5.</p>${body}</section>`;
+}
+function memberHtml(m, i, n) {
+  const slot = `team.${m.id}`, id = state.values.media[slot], pm = id && state.media[id];
+  const src = pm ? `/media/${id}/${pm.widths.includes(800) ? 800 : pm.widths[0]}.webp` : '';
+  const cell = (lang, key, label, tag = 'input', max = 80) => {
+    const v = key === 'focus' ? (m.focus[lang] || []).join(', ') : (m[key][lang] || '');
+    const attrs = `data-member="${esc(m.id)}" data-mf="${key}.${lang}" maxlength="${key === 'focus' ? 200 : max}"`;
+    return `<label>${label} (${lang.toUpperCase()})${tag === 'textarea' ? `<textarea ${attrs} rows="4">${esc(v)}</textarea>` : `<input ${attrs} value="${esc(v)}">`}</label>`;
+  };
+  return `<div class="member-card" data-card="${esc(m.id)}">
+    <div class="member-photo">${src ? `<img src="${esc(src)}" alt="">` : '<span>Nincs fénykép</span>'}
+      <div class="slot-actions"><label class="secondary file-btn">${src ? 'Fénykép cseréje' : 'Fénykép feltöltése'}<input type="file" accept="image/jpeg,image/png,image/webp" data-upload="${esc(slot)}" hidden></label>${src ? `<button type="button" class="secondary" data-reset-slot="${esc(slot)}">Törlés</button>` : ''}</div></div>
+    <div class="member-fields"><div class="two">${cell('hu', 'name', 'Név')}${cell('en', 'name', 'Név')}</div><div class="two">${cell('hu', 'role', 'Szerepkör')}${cell('en', 'role', 'Szerepkör')}</div>
+      <div class="two">${cell('hu', 'bio', 'Bemutatkozás', 'textarea', 700)}${cell('en', 'bio', 'Bemutatkozás', 'textarea', 700)}</div><div class="two">${cell('hu', 'focus', 'Szakterület-címkék (vesszővel, legfeljebb 4)')}${cell('en', 'focus', 'Szakterület-címkék (vesszővel, legfeljebb 4)')}</div>
+      <div class="slot-actions"><button type="button" class="secondary" data-team-action="up" data-member-id="${esc(m.id)}" ${i === 0 ? 'disabled' : ''}>↑ Feljebb</button><button type="button" class="secondary" data-team-action="down" data-member-id="${esc(m.id)}" ${i === n - 1 ? 'disabled' : ''}>↓ Lejjebb</button><button type="button" class="danger" data-team-action="remove" data-member-id="${esc(m.id)}">Törlés</button></div></div></div>`;
+}
+$('#team').addEventListener('input', e => {
+  const t = e.target; if (!t.dataset.mf) return;
+  const m = state.values.team.find(x => x.id === t.dataset.member); if (!m) return;
+  const [key, lang] = t.dataset.mf.split('.');
+  if (key === 'focus') m.focus[lang] = t.value.split(',').map(s => s.trim()).filter(Boolean).slice(0, 4); else m[key][lang] = t.value;
+  state.dirty = true; renderStatus();
+});
+$('#team').addEventListener('click', e => {
+  const b = e.target.closest('[data-team-action]'); if (!b) return;
+  const act = b.dataset.teamAction, team = state.values.team, idx = team?.findIndex(x => x.id === b.dataset.memberId);
+  if (act === 'start') state.values.team = [newMember()];
+  else if (act === 'hide') state.values.team = [];
+  else if (act === 'add' && team.length < TEAM_MAX) team.push(newMember());
+  else if (act === 'sample') { if (!confirm('Visszaáll a mintacsapat, a saját csapatlista elveszik a vázlatból. Folytatod?')) return; delete state.values.team; }
+  else if (act === 'remove') { if (!confirm('Törlöd ezt a csapattagot?')) return; delete state.values.media[`team.${team[idx].id}`]; team.splice(idx, 1); }
+  else if (act === 'up' && idx > 0) [team[idx - 1], team[idx]] = [team[idx], team[idx - 1]];
+  else if (act === 'down' && idx < team.length - 1) [team[idx + 1], team[idx]] = [team[idx], team[idx + 1]];
+  state.dirty = true; renderTeam(); renderStatus();
 });
 $('#images').addEventListener('input', e => {
   const t = e.target; if (!t.dataset.alt) return;
@@ -71,7 +122,7 @@ function cellHtml(f, lang) {
 }
 const rowHtml = f => `<div class="row"><div class="row-label">${esc(f.label)}<small>legfeljebb ${f.max} karakter</small></div>${cellHtml(f, 'hu')}${cellHtml(f, 'en')}</div>`;
 
-function changedCount() { return ['hu', 'en', 'media'].reduce((n, l) => n + Object.keys(state.values[l]).length, 0); }
+function changedCount() { return ['hu', 'en', 'media'].reduce((n, l) => n + Object.keys(state.values[l]).length, 0) + (state.values.team ? 1 : 0); }
 function renderStatus() {
   const live = state.live ? `Élő verzió: <strong>${esc(date(state.live.created_at))}</strong>${state.live.note ? ` (${esc(state.live.note)})` : ''}` : 'Még nincs közzétett verzió, az oldal az alapszövegeket mutatja.';
   $('#status').innerHTML = `Vázlat: <strong>${changedCount()}</strong> módosított mező${state.dirty ? ' <span class="dirty">· mentetlen változtatások</span>' : ''}<br>${live}`;
@@ -81,7 +132,7 @@ function renderStatus() {
 function renderVersions() {
   $('#versions').innerHTML = state.versions.length ? state.versions.map((v, i) => `<div class="version-row"><span class="version-number">${state.versions.length - i}</span><div><strong>${esc(date(v.created_at))}${i === 0 ? '<span class="current-tag">ÉLŐ</span>' : ''}</strong><small>${esc(v.note || 'Nincs megjegyzés')} · ${v.changes} módosított mező</small></div><button class="secondary" type="button" data-restore="${esc(v.id)}">Vázlatba töltés</button></div>`).join('') : '<p class="muted">Még nincs közzétett verzió.</p>';
 }
-function renderAll() { renderImages(); renderGroups(); renderStatus(); renderVersions(); }
+function renderAll() { renderImages(); renderTeam(); renderGroups(); renderStatus(); renderVersions(); }
 
 async function run(fn, done) {
   if (state.busy) return; state.busy = true; renderStatus();

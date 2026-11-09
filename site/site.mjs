@@ -166,17 +166,24 @@ function card(ref, lang, t) {
 </article>`;
 }
 
+// English fields fall back to the Hungarian ones when they are empty.
+const pick = (pair, lang) => (pair?.[lang] || pair?.hu || '');
 function teamCard(m, lang, t) {
-  const name = m.name[lang];
-  const photo = m.photo
-    ? `<img src="${esc(m.photo)}" alt="${esc(name)}" loading="lazy">`
-    : `<div class="portrait-empty" role="img" aria-label="${esc(t.photoSoon)}"><span class="initial">${esc(name.slice(0, 1).toUpperCase())}</span><span class="soon">${esc(t.photoSoon)}</span></div>`;
-  const focus = (m.focus?.[lang] || []).map(x => `<li>${esc(x)}</li>`).join('');
+  const name = pick(m.name, lang);
+  const pm = m.photoMedia; // an uploaded portrait (resolved media record), if any
+  const photo = pm
+    ? `<img src="/media/${pm.id}/${pm.widths.includes(800) ? 800 : pm.widths[0]}.webp" srcset="${pm.widths.map(w => `/media/${pm.id}/${w}.webp ${w}w`).join(', ')}" sizes="(max-width: 560px) 100vw, (max-width: 1040px) 50vw, 280px" width="${pm.width}" height="${pm.height}" alt="${esc(name)}" loading="lazy" decoding="async">`
+    : m.photo
+      ? `<img src="${esc(m.photo)}" alt="${esc(name)}" loading="lazy">`
+      : `<div class="portrait-empty" role="img" aria-label="${esc(t.photoSoon)}"><span class="initial">${esc(name.slice(0, 1).toUpperCase())}</span><span class="soon">${esc(t.photoSoon)}</span></div>`;
+  const tags = m.focus?.[lang]?.length ? m.focus[lang] : (m.focus?.hu || []);
+  const focus = tags.map(x => `<li>${esc(x)}</li>`).join('');
+  const role = pick(m.role, lang), bio = pick(m.bio, lang);
   return `<article class="member">
   <div class="portrait">${photo}${m.sample ? `<span class="badge">${esc(t.sample)}</span>` : ''}</div>
   <h3>${esc(name)}</h3>
-  <p class="role">${esc(m.role[lang])}</p>
-  <p class="bio">${esc(m.bio[lang])}</p>
+  ${role ? `<p class="role">${esc(role)}</p>` : ''}
+  ${bio ? `<p class="bio">${esc(bio)}</p>` : ''}
   ${focus ? `<ul class="tags">${focus}</ul>` : ''}
 </article>`;
 }
@@ -210,7 +217,7 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
   </a>
   <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav" aria-label="Menu"><span></span><span></span></button>
   <nav id="nav" class="nav" aria-label="${lang === 'hu' ? 'Főmenü' : 'Main'}">
-    ${t.nav.map(([id, label]) => `<a href="#${id}">${esc(label)}</a>`).join('')}
+    ${t.nav.filter(([id]) => id !== 'csapat' || team.length).map(([id, label]) => `<a href="#${id}">${esc(label)}</a>`).join('')}
     <a class="lang" href="/${otherLang}" data-keep-theme hreflang="${otherLang}" lang="${otherLang}" title="${esc(t.otherName)}">${esc(t.other)}</a>
   </nav>
 </header>
@@ -259,13 +266,13 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
   </div>
 </section>
 
-<section id="csapat" class="block alt">
+${team.length ? `<section id="csapat" class="block alt">
   <div class="wrap">
     <p class="kicker">${esc(t.teamKicker)}</p><h2>${esc(t.teamTitle)}</h2>
-    ${t.teamNote ? `<p class="note">${esc(t.teamNote)}</p>` : ''}
+    ${t.teamNote && (team.some(m => m.sample) || content?.[lang]?.teamNote !== undefined) ? `<p class="note">${esc(t.teamNote)}</p>` : ''}
     <div class="team">${team.map(m => teamCard(m, lang, t)).join('')}</div>
   </div>
-</section>
+</section>` : ''}
 
 <section id="kapcsolat" class="block contact">
   <div class="wrap split">

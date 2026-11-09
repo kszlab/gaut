@@ -25,6 +25,16 @@
 .site-editor .slot-actions .secondary { padding: 8px 12px; min-height: 0; font-size: 11px; cursor: pointer; }
 .site-editor .slot-body label { font-size: 11px; margin-top: 10px; }
 .site-editor .slot-body label input { margin-top: 5px; }
+.site-editor .team-list { display: grid; gap: 16px; margin: 14px 0; }
+.site-editor .member-card { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 18px; border: 1px solid var(--line); border-radius: 7px; padding: 16px; background: #fff; }
+.site-editor .member-photo { display: flex; flex-direction: column; gap: 10px; }
+.site-editor .member-photo > img, .site-editor .member-photo > span { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 5px; background: #e8eef1; }
+.site-editor .member-photo > span { display: grid; place-items: center; font-size: 12px; color: var(--muted); }
+.site-editor .member-fields .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 4px; }
+.site-editor .member-fields label { font-size: 11px; margin-top: 8px; }
+.site-editor .member-fields label input, .site-editor .member-fields label textarea { margin-top: 5px; }
+.site-editor .member-fields .slot-actions { margin-top: 12px; }
+@media (max-width: 800px) { .site-editor .member-card { grid-template-columns: 1fr; } .site-editor .member-fields .two { grid-template-columns: 1fr; } }
 .site-editor .versions { margin-top: 34px; }
 .site-editor .version-row .secondary { padding: 8px 12px; min-height: 0; font-size: 11px; }
 .site-editor .current-tag { font-size: 9px; letter-spacing: 1.4px; background: var(--teal); color: #fff; padding: 3px 7px; border-radius: 3px; margin-left: 8px; vertical-align: middle; }

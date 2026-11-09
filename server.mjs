@@ -221,7 +221,9 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         // ?elonezet=1 shows the unpublished draft, but only to a signed-in workspace user; everyone else gets the live version.
         const draft = url.searchParams.get('elonezet') === '1' && Boolean(session(req));
         const shown = draft ? siteContent.draft().overrides : siteContent.live()?.overrides ?? null;
-        const html = renderSite({ lang: path.slice(1), theme: parseTheme(url.searchParams.get('tema')), content: shown, draft, media: resolveMedia(shown?.media) });
+        const mediaMap = resolveMedia(shown?.media);
+        const team = shown?.team?.map(m => ({ ...m, sample: false, photoMedia: mediaMap[`team.${m.id}`] }));
+        const html = renderSite({ lang: path.slice(1), theme: parseTheme(url.searchParams.get('tema')), content: shown, draft, media: mediaMap, ...(team ? { team } : {}) });
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         return res.end(req.method === 'HEAD' ? undefined : html);
