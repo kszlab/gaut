@@ -1,7 +1,7 @@
 const $ = s => document.querySelector(s);
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const date = v => new Intl.DateTimeFormat('hu-HU', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(v));
-const state = { fields: [], slots: [], media: {}, altEdits: {}, defaults: { hu: {}, en: {} }, values: { hu: {}, en: {}, media: {} }, revision: 0, live: null, versions: [], dirty: false, busy: false };
+const state = { references: [], fields: [], slots: [], media: {}, altEdits: {}, defaults: { hu: {}, en: {} }, values: { hu: {}, en: {}, media: {} }, revision: 0, live: null, versions: [], dirty: false, busy: false };
 const MAX_UPLOAD = 20 * 1024 * 1024;
 
 async function api(path, method = 'GET', data) {
@@ -16,7 +16,7 @@ function load(s) {
   state.fields = s.fields; state.slots = s.slots; state.defaults = s.defaults; state.revision = s.draft.revision;
   state.values = structuredClone(s.draft.overrides); state.values.media ??= {};
   for (const m of s.media) state.media[m.id] = m;
-  state.altEdits = {}; state.live = s.live; state.versions = s.versions; state.dirty = false;
+  state.references = s.references; state.altEdits = {}; state.live = s.live; state.versions = s.versions; state.dirty = false;
 }
 
 // ---- Images: one card per slot (hero image of each identity draft) ----
@@ -52,6 +52,13 @@ const onReset = e => {
   delete state.values.media[b.dataset.resetSlot]; state.dirty = true; renderMedia(); renderStatus();
 };
 for (const box of [$('#images'), $('#team')]) { box.addEventListener('change', onUpload); box.addEventListener('click', onReset); }
+
+// ---- References that Közzététel will put on the site (read-only; edited in the reference workshop) ----
+function renderRefs() {
+  const list = state.references, flagged = list.filter(r => r.warnings.length).length;
+  $('#refs').innerHTML = `<section class="group"><h2>Referenciák</h2><p class="field-hint">A referenciákat a <a href="/referenciak">Referenciaműhelyben</a> szerkesztheted (honlapos cím, leírás, borítókép, „Honlapon megjeleníthető” jelölés). A lista a Közzététel pillanatában rögzül: a későbbi módosítások csak az újabb közzététel után látszanak. Ha egyetlen referencia sincs megjelölve, a „Minta” jelzésű mintaprojektek maradnak az oldalon.</p>
+    ${list.length ? `<p><strong>${list.length}</strong> referencia kerül ki közzétételkor${flagged ? `, ebből <strong>${flagged}</strong> hiányos honlapos adatokkal (figyelmeztetés, nem akadály)` : ''}.</p><ul class="ref-overview">${list.map(r => `<li><strong>${esc(r.name)}</strong>${r.featured ? ' <span class="current-tag">KIEMELT</span>' : ''}${r.warnings.length ? `<ul class="ref-warn">${r.warnings.map(w => `<li>${esc(w)}</li>`).join('')}</ul>` : ' <small>rendben</small>'}</li>`).join('')}</ul>` : '<p class="muted">Jelenleg nincs „Honlapon megjeleníthető” referencia, ezért a mintaprojektek látszanak.</p>'}</section>`;
+}
 
 // ---- Team list ----
 const TEAM_MAX = 12;
@@ -132,7 +139,7 @@ function renderStatus() {
 function renderVersions() {
   $('#versions').innerHTML = state.versions.length ? state.versions.map((v, i) => `<div class="version-row"><span class="version-number">${state.versions.length - i}</span><div><strong>${esc(date(v.created_at))}${i === 0 ? '<span class="current-tag">ÉLŐ</span>' : ''}</strong><small>${esc(v.note || 'Nincs megjegyzés')} · ${v.changes} módosított mező</small></div><button class="secondary" type="button" data-restore="${esc(v.id)}">Vázlatba töltés</button></div>`).join('') : '<p class="muted">Még nincs közzétett verzió.</p>';
 }
-function renderAll() { renderImages(); renderTeam(); renderGroups(); renderStatus(); renderVersions(); }
+function renderAll() { renderImages(); renderTeam(); renderRefs(); renderGroups(); renderStatus(); renderVersions(); }
 
 async function run(fn, done) {
   if (state.busy) return; state.busy = true; renderStatus();

@@ -8,7 +8,7 @@ export function referenceStore(db) {
   db.exec('CREATE TABLE IF NOT EXISTS reference_records(id TEXT PRIMARY KEY,payload TEXT NOT NULL,revision INTEGER NOT NULL,updated_at TEXT NOT NULL); CREATE TABLE IF NOT EXISTS reference_meta(key TEXT PRIMARY KEY,value TEXT NOT NULL)');
   db.exec('CREATE TABLE IF NOT EXISTS reference_merges(id TEXT PRIMARY KEY,payload TEXT NOT NULL,created_at TEXT NOT NULL,undone_at TEXT)');
   const insert = db.prepare('INSERT INTO reference_records VALUES(?,?,1,?)');
-  const get = id => { const r = db.prepare('SELECT * FROM reference_records WHERE id=?').get(id); if (!r) fail(404,'A referencia nem található.'); const p=JSON.parse(r.payload); return { deleted_at:null, website_publishable:false, ...p, sections:p.sections||[p.section||'common'], revision:r.revision, updated_at:r.updated_at }; };
+  const get = id => { const r = db.prepare('SELECT * FROM reference_records WHERE id=?').get(id); if (!r) fail(404,'A referencia nem található.'); const p=JSON.parse(r.payload); return { deleted_at:null, website_publishable:false, website_role_confirmed:false, website_photo_rights:false, website_featured:false, website_title_hu:'', website_title_en:'', website_copy_hu:'', website_copy_en:'', website_cover_photo:'', website_cover_media:'', ...p, sections:p.sections||[p.section||'common'], revision:r.revision, updated_at:r.updated_at }; };
   function validate(p) {
     if (!p || typeof p !== 'object' || Array.isArray(p)) fail(400,'Hibás referencia.');
     const r = structuredClone(p); delete r.revision; delete r.updated_at; delete r.photo_count; delete r.photo_cover_id; delete r.photo_research;
@@ -23,7 +23,9 @@ export function referenceStore(db) {
     r.sections=OWNERS.filter(x=>r.sections.includes(x));r.section=r.sections[0];
     if (!/^[a-zA-Z0-9_-]{1,100}$/.test(r.id || '')) fail(400,'Érvénytelen azonosító.');
     if (typeof r.name !== 'string' || !r.name.trim() || r.name.length>500) fail(400,'A projekt neve kötelező, legfeljebb 500 karakter.');
-    for (const key of ['design_year','category','city','address','identification_status','scope_from_pdf','background','questions','publication_status','attribution','website_copy_draft','technical_detail']) { if(r[key]===undefined) r[key]=''; if(typeof r[key]!=='string') fail(400,'A szöveges mezőkben szöveget adj meg.'); }
+    for (const key of ['design_year','category','city','address','identification_status','scope_from_pdf','background','questions','publication_status','attribution','website_copy_draft','technical_detail','website_title_hu','website_title_en','website_copy_hu','website_copy_en','website_cover_photo','website_cover_media']) { if(r[key]===undefined) r[key]=''; if(typeof r[key]!=='string') fail(400,'A szöveges mezőkben szöveget adj meg.'); }
+    for (const [key,max] of [['website_title_hu',160],['website_title_en',160],['website_copy_hu',900],['website_copy_en',900]]) if(r[key].length>max) fail(400,'Túl hosszú honlapos szöveg: '+key+' (legfeljebb '+max+' karakter).');
+    for (const key of ['website_role_confirmed','website_photo_rights','website_featured']) { if(r[key]===undefined) r[key]=false; if(typeof r[key]!=='boolean') fail(400,'Invalid website flag: '+key); }
     for (const [k,v] of Object.entries(r)) if (typeof v==='string' && v.length>30000) fail(400,`Túl hosszú mező: ${k}`);
     for (const key of ['sources','photo_sources']) {
       if (!Array.isArray(r[key]) || r[key].length>100) fail(400,'Hibás linklista.');
@@ -62,6 +64,7 @@ export function referenceStore(db) {
     } catch(e) { db.exec('ROLLBACK'); throw e; }
   }
   const store = {
+    get:id=>get(id),
     list:()=>db.prepare('SELECT id FROM reference_records ORDER BY id').all().map(r=>get(r.id)),
     create(p) { const r=validate({...p,deleted_at:null,id:`GAUT-REF-${randomUUID()}`}); uniqueLocations(r); insert.run(r.id,JSON.stringify(r),new Date().toISOString()); return get(r.id); },
     update(id,p) { const old=get(id); if(p.revision!==old.revision) fail(409,'Közben valaki módosította ezt a referenciát. Nyisd meg újra a friss adatokat; a mentés nem írta felül őket.'); if(old.merged_into)fail(409,'Ez a tétel már össze lett vonva.'); if(!p.sections&&old.sections.length>1)fail(409,'Frissítsd az oldalt a több résztvevő mentéséhez.'); if(p.section!==old.section&&JSON.stringify(p.sections)===JSON.stringify(old.sections)){if(old.sections.length>1)fail(409,'Frissítsd az oldalt.');p={...p,sections:[p.section]};} const r=validate({...p,id,deleted_at:old.deleted_at,merged_into:old.merged_into}); uniqueLocations(r); db.prepare('UPDATE reference_records SET payload=?,revision=revision+1,updated_at=? WHERE id=?').run(JSON.stringify(r),new Date().toISOString(),id); return get(id); },

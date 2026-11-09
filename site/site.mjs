@@ -48,26 +48,39 @@ export const sampleReferences = () => SAMPLE.references.map(r => ({ ...r, sample
 const TEAM = JSON.parse(readFileSync(new URL('./sample-team.json', import.meta.url), 'utf8'));
 export const sampleTeam = () => TEAM.members.map(m => ({ ...m, sample: true }));
 
-// Whitelist mapping from an internal reference record to the public shape.
-// Only fields listed here can ever reach the public site. Not wired up yet.
+// Whitelist mapping from an internal reference record to the public shape. Only the fields listed here can
+// ever reach the public site: the internal work description, source notes, questions, designers' names,
+// photo links and the general description draft (website_copy_draft) are deliberately NOT used. Readiness
+// warnings (see public/site-readiness.js) never block a reference marked as publishable.
+const KINDS = ['tower', 'warehouse', 'school', 'hotel', 'clinic', 'hall', 'plant'];
+const kindFor = id => KINDS[[...String(id)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) % KINDS.length];
+const str = (value, max) => String(value ?? '').trim().slice(0, max);
 export function toPublicReference(record) {
   const ok = record && record.website_publishable === true && !record.deleted_at && !record.archived && !record.merged_into;
   if (!ok) return null;
-  const hu = { title: String(record.website_title_hu || record.name || ''), summary: String(record.website_copy_hu || record.website_copy_draft || '') };
-  const en = { title: String(record.website_title_en || ''), summary: String(record.website_copy_en || '') };
-  if (!hu.title || !hu.summary) return null;
+  const titleHu = str(record.website_title_hu || record.name, 160);
+  if (!titleHu) return null;
   return {
-    id: String(record.id), kind: 'tower', category: String(record.category || ''), year: String(record.design_year || ''),
-    place: { hu: String(record.city || ''), en: String(record.city || '') },
-    title: { hu: hu.title, en: en.title || hu.title }, summary: { hu: hu.summary, en: en.summary || hu.summary },
-    tags: { hu: [], en: [] }
+    id: String(record.id), kind: kindFor(record.id), category: str(record.category, 80), year: str(record.design_year, 40),
+    place: { hu: str(record.city, 80), en: str(record.city, 80) },
+    title: { hu: titleHu, en: str(record.website_title_en, 160) },
+    summary: { hu: str(record.website_copy_hu, 900), en: str(record.website_copy_en, 900) },
+    tags: { hu: [], en: [] }, featured: record.website_featured === true,
+    cover: record.website_cover_media ? String(record.website_cover_media) : null
   };
 }
+const firstYear = year => Number(/\d{4}/.exec(year)?.[0] ?? 0);
+// Public references for a list of records: featured first, then newest design year, then title.
+export const publicReferences = records => records.map(toPublicReference).filter(Boolean)
+  .sort((a, b) => Number(b.featured) - Number(a.featured) || firstYear(b.year) - firstYear(a.year) || a.title.hu.localeCompare(b.title.hu, 'hu'));
 
 const CATEGORIES = {
   hu: { office: 'Iroda', industry: 'Ipar és logisztika', education: 'Oktatás', hotel: 'Szálloda', health: 'Egészségügy', community: 'Közösségi épület' },
   en: { office: 'Office', industry: 'Industry & logistics', education: 'Education', hotel: 'Hotel', health: 'Healthcare', community: 'Community building' }
 };
+// English names of the categories used in the reference store (anything else is shown as typed).
+const CATEGORY_EN = { 'Ipar és logisztika': 'Industry & logistics', 'Egészségügy': 'Healthcare', 'Iroda és kereskedelem': 'Office & retail', 'Szálloda és turizmus': 'Hotels & tourism', 'Műemlék és kultúra': 'Heritage & culture', 'Energia és infrastruktúra': 'Energy & infrastructure', 'Sport és fürdő': 'Sport & spa', 'Lakóépület': 'Residential', 'Oktatás és középület': 'Education & public buildings' };
+const categoryLabel = (category, lang) => CATEGORIES[lang][category] ?? (lang === 'en' ? CATEGORY_EN[category] : undefined) ?? category;
 
 const TEXT = {
   hu: {
@@ -99,7 +112,7 @@ const TEXT = {
     sectors: ['Ipari létesítmények', 'Kereskedelmi létesítmények', 'Szállodák', 'Közösségi épületek', 'Oktatási intézmények', 'Egészségügyi beruházások'],
     refsKicker: 'Referenciák', refsTitle: 'Válogatás a munkáinkból',
     refsNote: 'Bemutató mintaprojektek. A látható projektek kitaláltak, a végleges oldalon valós referenciák szerepelnek majd.',
-    all: 'Mind', sample: 'Minta', designYear: 'Tervév',
+    all: 'Mind', sample: 'Minta', designYear: 'Tervév', more: 'További referenciák',
     contactKicker: 'Kapcsolat', contactTitle: 'Beszéljük meg a projektet',
     contactText: 'Írjon vagy hívjon minket, és közösen megnézzük, milyen rendszer illik az épületéhez.',
     contactPending: 'Az elérhetőségek a végleges adatok megérkezése után kerülnek ide.',
@@ -137,7 +150,7 @@ const TEXT = {
     sectors: ['Industrial facilities', 'Commercial facilities', 'Hotels', 'Community buildings', 'Educational institutions', 'Healthcare projects'],
     refsKicker: 'Projects', refsTitle: 'Selected work',
     refsNote: 'Illustrative sample projects. The projects shown are invented; the final site will list real references.',
-    all: 'All', sample: 'Sample', designYear: 'Design year',
+    all: 'All', sample: 'Sample', designYear: 'Design year', more: 'More projects',
     contactKicker: 'Contact', contactTitle: 'Let\'s talk about your project',
     contactText: 'Write or call us and we will look together at which system suits your building.',
     contactPending: 'Contact details will be added when the final information arrives.',
@@ -154,13 +167,20 @@ export const defaultText = lang => structuredClone(TEXT[lang]);
 const arrow = '<svg class="arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
 
 function card(ref, lang, t) {
-  const tags = (ref.tags?.[lang] || []).map(x => `<li>${esc(x)}</li>`).join('');
-  return `<article class="ref" data-cat="${esc(ref.category)}">
-  <div class="ref-art">${buildingSvg(ref.kind)}${ref.sample ? `<span class="badge">${esc(t.sample)}</span>` : ''}</div>
+  const tagList = ref.tags?.[lang]?.length ? ref.tags[lang] : (ref.tags?.hu || []);
+  const tags = tagList.map(x => `<li>${esc(x)}</li>`).join('');
+  const cm = ref.coverMedia; // an approved cover photo (resolved media record), if any
+  const art = cm
+    ? `<img src="/media/${cm.id}/${cm.widths.includes(800) ? 800 : cm.widths[0]}.webp" srcset="${cm.widths.map(w => `/media/${cm.id}/${w}.webp ${w}w`).join(', ')}" sizes="(max-width: 560px) 100vw, (max-width: 1040px) 50vw, 280px" width="${cm.width}" height="${cm.height}" alt="${esc(pick(ref.title, lang))}" loading="lazy" decoding="async">`
+    : buildingSvg(ref.kind);
+  const meta = [categoryLabel(ref.category, lang), pick(ref.place, lang), ref.year ? `${t.designYear} ${ref.year}` : ''].filter(Boolean).map(esc).join(' · ');
+  const summary = pick(ref.summary, lang);
+  return `<article class="ref${ref.featured ? ' featured' : ''}" data-cat="${esc(ref.category)}">
+  <div class="ref-art${cm ? ' photo' : ''}">${art}${ref.sample ? `<span class="badge">${esc(t.sample)}</span>` : ''}</div>
   <div class="ref-body">
-    <p class="ref-meta">${esc(CATEGORIES[lang][ref.category] || ref.category)} · ${esc(ref.place[lang])} · ${esc(ref.year)}</p>
-    <h3>${esc(ref.title[lang])}</h3>
-    <p>${esc(ref.summary[lang])}</p>
+    <p class="ref-meta">${meta}</p>
+    <h3>${esc(pick(ref.title, lang))}</h3>
+    ${summary ? `<p>${esc(summary)}</p>` : ''}
     ${tags ? `<ul class="tags">${tags}</ul>` : ''}
   </div>
 </article>`;
@@ -257,12 +277,13 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
 <section id="referenciak" class="block">
   <div class="wrap">
     <p class="kicker">${esc(t.refsKicker)}</p><h2>${esc(t.refsTitle)}</h2>
-    ${t.refsNote ? `<p class="note">${esc(t.refsNote)}</p>` : ''}
+    ${t.refsNote && (references.some(r => r.sample) || content?.[lang]?.refsNote !== undefined) ? `<p class="note">${esc(t.refsNote)}</p>` : ''}
     <div class="filters" role="group" aria-label="${esc(t.refsKicker)}">
       <button type="button" class="chip on" data-filter="*">${esc(t.all)}</button>
-      ${cats.map(c => `<button type="button" class="chip" data-filter="${esc(c)}">${esc(CATEGORIES[lang][c] || c)}</button>`).join('')}
+      ${cats.map(c => `<button type="button" class="chip" data-filter="${esc(c)}">${esc(categoryLabel(c, lang))}</button>`).join('')}
     </div>
-    <div class="refs">${references.map(r => card(r, lang, t)).join('')}</div>
+    <div class="refs" data-page="8">${references.map(r => card(r, lang, t)).join('')}</div>
+    <p class="more-wrap"><button type="button" class="btn ghost more-btn" hidden>${esc(t.more)}</button></p>
   </div>
 </section>
 

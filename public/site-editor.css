@@ -39,3 +39,7 @@
 .site-editor .version-row .secondary { padding: 8px 12px; min-height: 0; font-size: 11px; }
 .site-editor .current-tag { font-size: 9px; letter-spacing: 1.4px; background: var(--teal); color: #fff; padding: 3px 7px; border-radius: 3px; margin-left: 8px; vertical-align: middle; }
 @media (max-width: 900px) { .site-editor .row { grid-template-columns: 1fr; gap: 8px; } .site-editor .row-label { padding-top: 0; } }
+
+.site-editor .ref-overview { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 8px; }
+.site-editor .ref-overview > li { border: 1px solid var(--line); border-radius: 6px; padding: 10px 14px; background: #fff; font-size: 13px; }
+.site-editor .ref-warn { margin: 6px 0 0; padding-left: 18px; color: #805b14; font-size: 12px; }

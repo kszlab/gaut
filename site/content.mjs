@@ -148,7 +148,7 @@ export function contentStore(db) {
     return row;
   }
   const draftView = row => ({ overrides: parse(row.payload), revision: row.revision, updated_at: row.updated_at });
-  const meta = row => ({ id: row.id, created_at: row.created_at, note: row.note, changes: ['hu', 'en', 'media'].reduce((n, l) => n + Object.keys(parse(row.payload)[l]).length, 0) + (parse(row.payload).team ? 1 : 0) });
+  const meta = row => ({ id: row.id, created_at: row.created_at, note: row.note, changes: ['hu', 'en', 'media'].reduce((n, l) => n + Object.keys(parse(row.payload)[l]).length, 0) + (parse(row.payload).team ? 1 : 0), references: parse(row.payload).references?.length ?? 0 });
   const store = {
     draft: () => draftView(draftRow()),
     saveDraft(revision, overrides) {
@@ -158,12 +158,13 @@ export function contentStore(db) {
       db.prepare('UPDATE site_draft SET payload=?, revision=revision+1, updated_at=? WHERE id=1').run(JSON.stringify(clean), now());
       return draftView(draftRow());
     },
-    publish(revision, note = '') {
+    // `extra` is data frozen into the version at publication time, e.g. the public references taken from the reference store.
+    publish(revision, note = '', extra = {}) {
       const row = draftRow();
       if (revision !== row.revision) fail(409, 'A vázlat közben megváltozott. Töltsd újra az oldalt, nézd át, és közzétételkor az aktuális vázlat kerül ki.');
       if (typeof note !== 'string' || note.length > 200) fail(400, 'A megjegyzés legfeljebb 200 karakter lehet.');
       const id = randomUUID();
-      db.prepare('INSERT INTO site_versions(id,payload,note,created_at) VALUES(?,?,?,?)').run(id, row.payload, note.trim(), now());
+      db.prepare('INSERT INTO site_versions(id,payload,note,created_at) VALUES(?,?,?,?)').run(id, JSON.stringify({ ...JSON.parse(row.payload), ...extra }), note.trim(), now());
       liveCache = undefined;
       return meta(db.prepare('SELECT * FROM site_versions WHERE id=?').get(id));
     },
@@ -180,7 +181,8 @@ export function contentStore(db) {
       if (!version) fail(404, 'A verzió nem található.');
       const row = draftRow();
       if (revision !== row.revision) fail(409, 'Közben valaki más módosította a vázlatot. Töltsd újra az oldalt.');
-      db.prepare('UPDATE site_draft SET payload=?, revision=revision+1, updated_at=? WHERE id=1').run(version.payload, now());
+      const { references: ignored, ...draftPart } = JSON.parse(version.payload); // frozen references are not part of the editable draft
+      db.prepare('UPDATE site_draft SET payload=?, revision=revision+1, updated_at=? WHERE id=1').run(JSON.stringify(draftPart), now());
       return draftView(draftRow());
     }
   };

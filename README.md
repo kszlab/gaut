@@ -165,3 +165,14 @@ A `/honlap` oldal „Csapat" szekciója a nyilvános oldal csapatlistáját keze
 - Tagonként: név, szerepkör, bemutatkozás (700 karakter) és legfeljebb 4 szakterület-címke magyarul és angolul, fénykép, sorrend (↑ ↓), törlés. Az angol mezők üresen maradhatnak, ilyenkor a magyar szöveg jelenik meg.
 - A fénykép a `team.<tagazonosító>` képhelyre kerül, ugyanúgy WebP-vé alakul és közzétételig privát, mint a nyitóképek. A kép alt-szövege a tag neve.
 - A vázlat, az előnézet, a közzététel és a visszaállítás a szövegekkel együtt, egy verzióként működik.
+
+### Referenciák a nyilvános honlapon
+
+A referenciatár és a honlap össze van kötve. A „Honlapon megjeleníthető referencia" jelölés után a referencia a **Közzététellel** kerül ki; addig az élő oldal a korábban közzétett listát mutatja.
+
+- **Mi kerül ki:** csak a `toPublicReference()` (`site/site.mjs`) fehérlistás mezői: honlapos cím és leírás (HU/EN), kategória, település, tervév, kiemelés és a borítókép. A belső munkaleírás, a háttér, a megjegyzések, a kérdések, a források, a fotólinkek, a tervezők nevei és az **átfogó leírás-tervezet (`website_copy_draft`) sosem**. A tervezet nem tartalék szöveg: a „tervezet másolása" gombbal be lehet másolni a magyar honlapos leírásba, átnézés után.
+- **Kiadási ellenőrzés:** a `public/site-readiness.js` figyelmeztet, ha hiányzik a magyar cím vagy leírás, az angol szöveg, a szerep megerősítése, a borítókép vagy a képhasználati engedély. A figyelmeztetés **nem akadályozza** a kapcsoló bekapcsolását vagy a közzétételt. A referencia adatlapján élőben látszik, a referencialista kártyáin és a Honlap-szerkesztő „Referenciák" panelján összesítve.
+- **Borítókép:** a referencia már mentett, nem törölt képei közül választható. Mentéskor a szerver átméretezett WebP-vé alakítja (rejtett adatok nélkül) a honlap képtárába, a kliens által küldött médiaazonosítót figyelmen kívül hagyja. A kép a közzétételig privát.
+- **Közzététel:** a lista a Közzététel pillanatában rögzül a verzióba (`references`). A későbbi szerkesztés a következő közzétételig nem látszik élesben; a vázlat-előnézet a tár aktuális állapotát mutatja. Visszaállításkor a rögzített referenciák nem kerülnek a vázlatba.
+- **Sorrend és megjelenítés:** kiemeltek elöl, utána tervév szerint csökkenő. Az oldal 8 referenciát mutat, a „További referenciák" gomb nyit többet. Kép nélkül egy generált illusztráció jelenik meg.
+- **Mintaprojektek:** ha egyetlen referencia sincs megjelölve, a „Minta" jelzésű mintaprojektek maradnak (a közzététel ilyenkor nem rögzít referencialistát).

@@ -1,6 +1,7 @@
 import http from 'node:http';
 import { referenceStore } from './references.mjs';
-import { renderSite, parseTheme, defaultText } from './site/site.mjs';
+import { renderSite, parseTheme, defaultText, toPublicReference, publicReferences } from './site/site.mjs';
+import { websiteWarnings } from './public/site-readiness.js';
 import { contentStore, defaultsFor, FIELDS, HERO_SLOTS } from './site/content.mjs';
 import { mediaStore } from './site/media.mjs';
 import { photoStore } from './photos.mjs';
@@ -46,10 +47,25 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
   const siteContent = contentStore(db);
   const siteMedia = mediaStore(db, dataDir);
   const resolveMedia = (map = {}) => Object.fromEntries(Object.entries(map).map(([slot, id]) => [slot, siteMedia.get(id)]).filter(([, m]) => m));
-  const isPublishedMedia = id => Object.values(siteContent.live()?.overrides.media ?? {}).includes(id);
+  const isPublishedMedia = id => { const live = siteContent.live()?.overrides; return Object.values(live?.media ?? {}).includes(id) || Boolean(live?.references?.some(r => r.cover === id)); };
+  // References that a publication would put on the site, with advisory warnings (never blocking).
+  const referenceOverview = () => references.list().filter(r => toPublicReference(r)).map(r => ({ id: r.id, name: r.website_title_hu || r.name, featured: r.website_featured === true, warnings: websiteWarnings(r) }));
+  // The cover photo of a reference is copied into the site image store (resized WebP, no metadata) when it is chosen, never taken from the client.
+  async function prepareCover(id, data) {
+    const old = id ? references.get(id) : null;
+    const want = typeof data.website_cover_photo === 'string' ? data.website_cover_photo : '';
+    data.website_cover_media = '';
+    if (!want) { data.website_cover_photo = ''; return; }
+    if (!old) fail(400, 'Új referenciához előbb mentsd el a referenciát, utána választhatsz borítóképet.');
+    if (want === old.website_cover_photo && old.website_cover_media) { data.website_cover_media = old.website_cover_media; return; }
+    const photo = photos.file(want);
+    if (photo.reference_id !== id || photo.deleted_at) fail(400, 'A borítókép ehhez a referenciához tartozó, nem törölt kép legyen.');
+    const media = await siteMedia.add({ filename: photo.filename, bytes: readFileSync(photo.path), alt_hu: old.name.slice(0, 190), alt_en: '' });
+    data.website_cover_media = media.id;
+  }
   const siteState = () => {
     const live = siteContent.live();
-    return { fields: FIELDS, slots: HERO_SLOTS.map(([slot, label, fallback]) => ({ slot, label, fallback })), defaults: { hu: defaultsFor(defaultText('hu')), en: defaultsFor(defaultText('en')) }, draft: siteContent.draft(), live: live && { id: live.id, created_at: live.created_at, note: live.note, changes: live.changes }, versions: siteContent.versions(), media: siteMedia.list() };
+    return { fields: FIELDS, slots: HERO_SLOTS.map(([slot, label, fallback]) => ({ slot, label, fallback })), defaults: { hu: defaultsFor(defaultText('hu')), en: defaultsFor(defaultText('en')) }, draft: siteContent.draft(), live: live && { id: live.id, created_at: live.created_at, note: live.note, changes: live.changes }, versions: siteContent.versions(), media: siteMedia.list(), references: referenceOverview() };
   };
   const photos = photoStore(db, dataDir);
   const attempts = new Map();
@@ -130,7 +146,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         const user = session(req); if (!user) fail(401, 'A folytatáshoz jelentkezz be.');
         if (path === '/api/reference-photos/import' && req.method === 'POST') return json(res,200,photos.import(await body(req)));
         if (path === '/api/references' && req.method === 'GET') return json(res, 200, { references: references.list().map(r=>{const active=photos.list(r.id).filter(p=>!p.deleted_at);return {...r,photo_count:active.length,photo_cover_id:active[0]?.id||null,photo_research:photos.research(r.id)};}) });
-        if (path === '/api/references' && req.method === 'POST') return json(res, 201, { reference: references.create(await body(req, 1024*1024)) });
+        if (path === '/api/references' && req.method === 'POST') { const data = await body(req, 1024*1024); await prepareCover(null, data); return json(res, 201, { reference: references.create(data) }); }
         if (path === '/api/references/export' && req.method === 'GET') return json(res, 200, {...references.bundle(),photos:photos.all(),photo_export_note:'A JSON a képek metaadatait tartalmazza. A képfájlok külön tölthetők le az adatlapokról; teljes mentéshez a DATA_DIR könyvtár is szükséges.'});
         const photoUpload = /^\/api\/references\/([a-zA-Z0-9_-]{1,100})\/photos$/.exec(path);
         if (photoUpload && req.method === 'GET') return json(res, 200, {photos:photos.list(photoUpload[1])});
@@ -151,10 +167,10 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         if(referenceRestore && req.method==='POST') {const data=await body(req,1024);return json(res,200,{reference:references.trash(referenceRestore[1],data.revision,true)});}
         const referenceMatch = /^\/api\/references\/([a-zA-Z0-9_-]{1,100})$/.exec(path);
         if(referenceMatch && req.method==='DELETE') {const data=await body(req,1024);return json(res,200,{reference:references.trash(referenceMatch[1],data.revision)});}
-        if (referenceMatch && req.method === 'PUT') return json(res, 200, { reference: references.update(referenceMatch[1], await body(req, 1024*1024)) });
+        if (referenceMatch && req.method === 'PUT') { const data = await body(req, 1024*1024); await prepareCover(referenceMatch[1], data); return json(res, 200, { reference: references.update(referenceMatch[1], data) }); }
         if (path === '/api/site/content' && req.method === 'GET') return json(res, 200, siteState());
         if (path === '/api/site/content' && req.method === 'PUT') { const b = await body(req, 512 * 1024); siteContent.saveDraft(b.revision, b.overrides); return json(res, 200, siteState()); }
-        if (path === '/api/site/publish' && req.method === 'POST') { const b = await body(req, 4096); siteContent.publish(b.revision, b.note ?? ''); return json(res, 200, siteState()); }
+        if (path === '/api/site/publish' && req.method === 'POST') { const b = await body(req, 4096); const list = publicReferences(references.list()); siteContent.publish(b.revision, b.note ?? '', list.length ? { references: list } : {}); return json(res, 200, siteState()); }
         if (path === '/api/site/media' && req.method === 'POST') {
           const b = await body(req);
           const f = fileData({ filename: b.filename, content: b.content }); // same size and base64 checks as workspace uploads
@@ -223,7 +239,10 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         const shown = draft ? siteContent.draft().overrides : siteContent.live()?.overrides ?? null;
         const mediaMap = resolveMedia(shown?.media);
         const team = shown?.team?.map(m => ({ ...m, sample: false, photoMedia: mediaMap[`team.${m.id}`] }));
-        const html = renderSite({ lang: path.slice(1), theme: parseTheme(url.searchParams.get('tema')), content: shown, draft, media: mediaMap, ...(team ? { team } : {}) });
+        // References: the live version shows the list frozen at publication; the draft preview shows the current reference store. Without any publishable reference the sample projects stay.
+        const frozen = draft ? publicReferences(references.list()) : siteContent.live()?.overrides.references;
+        const refs = frozen?.length ? frozen.map(r => ({ ...r, coverMedia: r.cover ? siteMedia.get(r.cover) ?? undefined : undefined })) : undefined;
+        const html = renderSite({ lang: path.slice(1), theme: parseTheme(url.searchParams.get('tema')), content: shown, draft, media: mediaMap, ...(team ? { team } : {}), ...(refs ? { references: refs } : {}) });
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         return res.end(req.method === 'HEAD' ? undefined : html);
@@ -253,7 +272,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         res.setHeader('Content-Type', types[mediaMatch[3]]);
         return res.end(req.method === 'HEAD' ? undefined : readFileSync(file));
       }
-      const assets = { '/honlap': ['site-editor.html', 'text/html'], '/site-editor.js': ['site-editor.js', 'text/javascript'], '/site-editor.css': ['site-editor.css', 'text/css'], '/reference-search.js': ['reference-search.js', 'text/javascript'], '/reference-photos.js': ['reference-photos.js', 'text/javascript'], '/referenciak': ['references.html', 'text/html'], '/references.js': ['references.js', 'text/javascript'], '/references.css': ['references.css', 'text/css'], '/': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'], '/favicon.svg': ['favicon.svg', 'image/svg+xml'] };
+      const assets = { '/honlap': ['site-editor.html', 'text/html'], '/site-editor.js': ['site-editor.js', 'text/javascript'], '/site-editor.css': ['site-editor.css', 'text/css'], '/site-readiness.js': ['site-readiness.js', 'text/javascript'], '/reference-search.js': ['reference-search.js', 'text/javascript'], '/reference-photos.js': ['reference-photos.js', 'text/javascript'], '/referenciak': ['references.html', 'text/html'], '/references.js': ['references.js', 'text/javascript'], '/references.css': ['references.css', 'text/css'], '/': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'], '/favicon.svg': ['favicon.svg', 'image/svg+xml'] };
       if (!assets[path] || !['GET', 'HEAD'].includes(req.method)) fail(404, 'Az oldal nem található.');
       const [name, type] = assets[path];
       res.setHeader('Content-Type', `${type}; charset=utf-8`);
