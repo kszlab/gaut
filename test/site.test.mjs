@@ -52,17 +52,21 @@ test('building art exists for every sample kind', () => {
 });
 
 test('only approved, active references reach the public shape and internal fields never do', () => {
-  const base = { id: 'GAUT-REF-1', name: 'Teszt iroda', category: 'Iroda', city: 'Budapest', design_year: '2022', website_publishable: true, website_copy_draft: 'Nyilvános leírás.', attribution: 'BELSŐ szerepjegyzet', questions: 'BELSŐ kérdés', sources: [{ url: 'https://pelda.hu' }], sections: ['krisztian'] };
+  const base = { id: 'GAUT-REF-1', name: 'Teszt iroda', category: 'Iroda', city: 'Budapest', design_year: '2022', website_publishable: true, website_copy_hu: 'Nyilvános leírás.', website_copy_draft: 'BELSŐ tervezet: pontosítandó a szerep', background: 'BELSŐ háttér', attribution: 'BELSŐ szerepjegyzet', questions: 'BELSŐ kérdés', sources: [{ url: 'https://pelda.hu' }], photo_sources: [{ url: 'https://foto.hu' }], sections: ['krisztian'], website_cover_media: 'cover-id' };
   const pub = toPublicReference(base);
   assert.equal(pub.title.hu, 'Teszt iroda');
   assert.equal(pub.summary.hu, 'Nyilvános leírás.');
-  assert.ok(!JSON.stringify(pub).includes('BELSŐ'));
-  assert.ok(!JSON.stringify(pub).includes('pelda.hu'));
+  assert.equal(pub.cover, 'cover-id');
+  assert.ok(!JSON.stringify(pub).includes('BELSŐ'), 'no internal text, including the general description draft');
+  assert.ok(!JSON.stringify(pub).includes('pelda.hu') && !JSON.stringify(pub).includes('foto.hu'));
   assert.equal(toPublicReference({ ...base, website_publishable: false }), null);
   assert.equal(toPublicReference({ ...base, deleted_at: '2026-01-01' }), null);
   assert.equal(toPublicReference({ ...base, archived: true }), null);
   assert.equal(toPublicReference({ ...base, merged_into: 'X' }), null);
-  assert.equal(toPublicReference({ ...base, website_copy_draft: '' }), null);
+  // missing public texts are only warnings: the reference is still published, the draft text is never used as a fallback
+  const bare = toPublicReference({ ...base, website_copy_hu: '' });
+  assert.equal(bare.summary.hu, ''); assert.equal(bare.title.hu, 'Teszt iroda');
+  assert.equal(toPublicReference({ ...base, website_title_hu: ' Saját cím ', website_title_en: 'Own title' }).title.en, 'Own title');
 });
 
 test('team section renders every member in both languages, with a placeholder when there is no photo', () => {
