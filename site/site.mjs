@@ -220,7 +220,8 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
   theme = parseTheme(theme);
   const t = applyContent(TEXT[lang], content?.[lang]);
   const cats = [...new Set(references.map(r => r.category))];
-  const home = `/${lang}`;
+  const pathOf = l => (l === 'hu' ? '/' : '/en'); // the Hungarian site is the root, English lives at /en
+  const home = pathOf(lang);
   const otherLang = lang === 'hu' ? 'en' : 'hu';
   return `<!doctype html>
 <html lang="${t.htmlLang}" data-theme="${theme}">
@@ -230,7 +231,7 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
 <meta name="robots" content="noindex, nofollow">
 <title>${esc(t.title)}</title>
 <meta name="description" content="${esc(t.description)}">
-<link rel="alternate" hreflang="hu" href="/hu"><link rel="alternate" hreflang="en" href="/en">
+<link rel="alternate" hreflang="hu" href="/"><link rel="alternate" hreflang="en" href="/en">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/site/site.css">
 <script type="module" src="/site/site.js"></script>
@@ -245,7 +246,7 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
   <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav" aria-label="Menu"><span></span><span></span></button>
   <nav id="nav" class="nav" aria-label="${lang === 'hu' ? 'Főmenü' : 'Main'}">
     ${t.nav.filter(([id]) => id !== 'csapat' || team.length).map(([id, label]) => `<a href="#${id}">${esc(label)}</a>`).join('')}
-    <a class="lang" href="/${otherLang}" data-keep-theme hreflang="${otherLang}" lang="${otherLang}" title="${esc(t.otherName)}">${esc(t.other)}</a>
+    <a class="lang" href="${pathOf(otherLang)}" data-keep-theme hreflang="${otherLang}" lang="${otherLang}" title="${esc(t.otherName)}">${esc(t.other)}</a>
   </nav>
 </header>
 <main id="tartalom">

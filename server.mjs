@@ -252,7 +252,10 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
       }
       // Public site preview. Pages are rendered from sample data; nothing here reads the private stores.
       const siteAssets = { '/site/site.css': ['site/site.css', 'text/css'], '/site/site.js': ['site/site.js', 'text/javascript'] };
-      if (['GET', 'HEAD'].includes(req.method) && (path === '/hu' || path === '/en')) {
+      // The workspace lives under /munkater; the root is the public site. Old workspace page addresses keep working through redirects.
+      const moved = { '/referenciak': '/munkater/referenciak', '/honlap': '/munkater/honlap', '/munkater/': '/munkater', '/munkater/referenciak/': '/munkater/referenciak', '/munkater/honlap/': '/munkater/honlap' };
+      if (['GET', 'HEAD'].includes(req.method) && moved[path]) { res.writeHead(302, { Location: moved[path] + url.search }); return res.end(); }
+      if (['GET', 'HEAD'].includes(req.method) && (path === '/' || path === '/hu' || path === '/en')) {
         // ?elonezet=1 shows the unpublished draft, but only to a signed-in workspace user; everyone else gets the live version.
         const draft = url.searchParams.get('elonezet') === '1' && Boolean(session(req));
         const shown = draft ? siteContent.draft().overrides : siteContent.live()?.overrides ?? null;
@@ -261,7 +264,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         // References: the live version shows the list frozen at publication; the draft preview shows the current reference store. Without any publishable reference the sample projects stay.
         const frozen = draft ? publicReferences(references.list()) : siteContent.live()?.overrides.references;
         const refs = frozen?.length ? frozen.map(r => ({ ...r, coverMedia: r.cover ? siteMedia.get(r.cover) ?? undefined : undefined })) : undefined;
-        const html = renderSite({ lang: path.slice(1), theme: parseTheme(url.searchParams.get('tema')), content: shown, draft, media: mediaMap, ...(team ? { team } : {}), ...(refs ? { references: refs } : {}) });
+        const html = renderSite({ lang: path === '/en' ? 'en' : 'hu', theme: parseTheme(url.searchParams.get('tema')), content: shown, draft, media: mediaMap, ...(team ? { team } : {}), ...(refs ? { references: refs } : {}) });
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         return res.end(req.method === 'HEAD' ? undefined : html);
@@ -291,7 +294,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         res.setHeader('Content-Type', types[mediaMatch[3]]);
         return res.end(req.method === 'HEAD' ? undefined : readFileSync(file));
       }
-      const assets = { '/honlap': ['site-editor.html', 'text/html'], '/site-editor.js': ['site-editor.js', 'text/javascript'], '/site-editor.css': ['site-editor.css', 'text/css'], '/site-readiness.js': ['site-readiness.js', 'text/javascript'], '/reference-search.js': ['reference-search.js', 'text/javascript'], '/reference-photos.js': ['reference-photos.js', 'text/javascript'], '/referenciak': ['references.html', 'text/html'], '/references.js': ['references.js', 'text/javascript'], '/references.css': ['references.css', 'text/css'], '/': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'], '/favicon.svg': ['favicon.svg', 'image/svg+xml'] };
+      const assets = { '/munkater/honlap': ['site-editor.html', 'text/html'], '/munkater/referenciak': ['references.html', 'text/html'], '/munkater': ['index.html', 'text/html'], '/site-editor.js': ['site-editor.js', 'text/javascript'], '/site-editor.css': ['site-editor.css', 'text/css'], '/site-readiness.js': ['site-readiness.js', 'text/javascript'], '/reference-search.js': ['reference-search.js', 'text/javascript'], '/reference-photos.js': ['reference-photos.js', 'text/javascript'], '/references.js': ['references.js', 'text/javascript'], '/references.css': ['references.css', 'text/css'], '/app.js': ['app.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'], '/favicon.svg': ['favicon.svg', 'image/svg+xml'] };
       if (!assets[path] || !['GET', 'HEAD'].includes(req.method)) fail(404, 'Az oldal nem található.');
       const [name, type] = assets[path];
       res.setHeader('Content-Type', `${type}; charset=utf-8`);
