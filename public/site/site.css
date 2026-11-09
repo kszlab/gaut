@@ -60,6 +60,8 @@ h1, h2, h3 { font-family: var(--font-head); font-weight: var(--head-weight); let
 .logo svg { display: block; height: 52px; width: auto; }
 .logo-ink { fill: var(--ink); }
 .logo-accent { fill: var(--accent); }
+/* The small "MÉRNÖKIRODA" line is live text (sharp at any size); the mark and the wordmark are traced vectors. */
+.logo-desc { fill: var(--ink); font-family: var(--font-body); font-weight: 500; text-rendering: geometricPrecision; }
 .nav { display: flex; align-items: center; gap: 28px; }
 .nav a { color: var(--ink); text-decoration: none; font-size: 15px; padding: 6px 0; border-bottom: 2px solid transparent; }
 .nav a:hover { border-color: var(--accent); }
