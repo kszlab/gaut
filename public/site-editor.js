@@ -10,7 +10,11 @@ async function api(path, method = 'GET', data) {
   if (!r.ok) { const e = new Error(r.status === 401 ? 'A szerkesztéshez jelentkezz be az anyaggyűjtőben, majd frissítsd ezt az oldalt.' : b.error || 'A művelet nem sikerült.'); e.status = r.status; throw e; }
   return b;
 }
-const message = (text, bad = false) => { const el = $('#message'); el.textContent = text; el.className = bad ? 'error' : 'muted'; };
+// Messages appear next to the page heading and in the sticky bar, which stays in view while scrolling through a long form.
+const message = (text, bad = false) => {
+  const el = $('#message'); el.textContent = text; el.className = bad ? 'error' : 'muted';
+  const bar = $('#bar-message'); bar.textContent = text; bar.className = `bar-message ${bad ? 'error' : text ? 'ok' : ''}`;
+};
 
 function load(s) {
   state.fields = s.fields; state.slots = s.slots; state.defaults = s.defaults; state.revision = s.draft.revision;
@@ -21,7 +25,7 @@ function load(s) {
 
 // ---- Images: one card per slot (hero image of each identity draft) ----
 function renderImages() {
-  $('#images').innerHTML = `<section class="group"><h2>Képek</h2><p class="field-hint">A feltöltött kép automatikusan WebP-vé alakul, több méretben. JPG, PNG vagy WebP, legalább 600 px széles, legfeljebb 20 MB. A kép eredeti fájlja nem marad meg, a rejtett helyadatok (pl. GPS) is törlődnek. A változás a vázlat mentése és a Közzététel után látszik a látogatóknak.</p><div class="image-grid">${state.slots.map(slotHtml).join('')}</div></section>`;
+  $('#images').innerHTML = `<section class="group"><h2>Képek</h2><p class="field-hint">A feltöltött kép automatikusan WebP-vé alakul, több méretben. JPG, PNG vagy WebP, legalább 200 px széles, legfeljebb 20 MB. A kép eredeti fájlja nem marad meg, a rejtett helyadatok (pl. GPS) is törlődnek. A változás a vázlat mentése és a Közzététel után látszik a látogatóknak.</p><div class="image-grid">${state.slots.map(slotHtml).join('')}</div></section>`;
 }
 function slotHtml(s) {
   const id = state.values.media[s.slot], m = id && state.media[id], edit = state.altEdits[id] || {};
@@ -41,11 +45,15 @@ const onUpload = async e => {
   if (file.size > MAX_UPLOAD) { message('A kép legfeljebb 20 MB lehet.', true); return; }
   if (!/^image\/(jpeg|png|webp)$/.test(file.type)) { message('Csak JPG, PNG és WebP kép tölthető fel.', true); return; }
   const slot = input.dataset.upload;
+  let width = 0;
   await run(async () => {
     message('Feltöltés és átméretezés folyamatban…');
     const r = await api('/api/site/media', 'POST', { filename: file.name, content: await readBase64(file) });
-    state.media[r.media.id] = r.media; state.values.media[slot] = r.media.id; state.dirty = true; renderMedia();
-  }, slot.startsWith('team.') ? 'A fénykép feltöltve. Mentsd a vázlatot.' : 'A kép feltöltve. Add meg a képleírást, majd mentsd a vázlatot.');
+    width = r.media.width; state.media[r.media.id] = r.media; state.values.media[slot] = r.media.id; state.dirty = true; renderMedia();
+  }, () => {
+    const team = slot.startsWith('team.'), recommended = team ? 400 : 1600;
+    return `${team ? 'A fénykép feltöltve.' : 'A kép feltöltve. Add meg a képleírást.'} Mentsd a vázlatot, hogy megmaradjon.${width < recommended ? ` Figyelem: a kép kis felbontású (${width} px széles), ezért életlen lehet. Ajánlott legalább ${recommended} px.` : ''}`;
+  });
 };
 const onReset = e => {
   const b = e.target.closest('[data-reset-slot]'); if (!b) return;
@@ -143,7 +151,7 @@ function renderAll() { renderImages(); renderTeam(); renderRefs(); renderGroups(
 
 async function run(fn, done) {
   if (state.busy) return; state.busy = true; renderStatus();
-  try { await fn(); if (done) message(done); else message(''); } catch (e) { message(e.message, true); if (e.status === 409) { try { load(await api('/api/site/content')); renderAll(); } catch { /* keep message */ } } } finally { state.busy = false; renderStatus(); }
+  try { await fn(); const text = typeof done === 'function' ? done() : done; message(text || ''); } catch (e) { message(e.message, true); if (e.status === 409) { try { load(await api('/api/site/content')); renderAll(); } catch { /* keep message */ } } } finally { state.busy = false; renderStatus(); }
 }
 const save = async () => {
   for (const [id, alt] of Object.entries(state.altEdits)) { const r = await api(`/api/site/media/${encodeURIComponent(id)}`, 'PATCH', { alt_hu: alt.hu, alt_en: alt.en }); state.media[id] = r.media; }

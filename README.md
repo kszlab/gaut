@@ -150,7 +150,7 @@ Következő lépések: képkezelés (nyitóképek, portrék, automatikus átmér
 
 A `/honlap` oldal tetején a három nyitókép cserélhető (`HERO_SLOTS` a `site/content.mjs`-ben; a csapatfotók és referenciafotók ugyanezt a mechanizmust használják majd). A feltöltést a `site/media.mjs` dolgozza fel a `sharp` könyvtárral:
 
-- JPG, PNG vagy WebP, legalább 600 px széles, legfeljebb 20 MB. A kép 800, 1600 és 2400 px széles WebP változatokká alakul (amelyik kisebb az eredetinél, kimarad). Az eredeti fájl nem marad meg, ezért az EXIF-adatok (pl. GPS) is törlődnek.
+- JPG, PNG vagy WebP, legalább 200 px széles (nyitóképhez legalább 1600 px ajánlott), legfeljebb 20 MB. A kép 800, 1600 és 2400 px széles WebP változatokká alakul (amelyik kisebb az eredetinél, kimarad). Az eredeti fájl nem marad meg, ezért az EXIF-adatok (pl. GPS) is törlődnek.
 - A fájlok a `DATA_DIR/site-media` könyvtárban vannak, a táblázat a `site_media` (méret, képleírás magyarul és angolul). A teljes mentéshez ezért a teljes `DATA_DIR` kell.
 - Egy kép egy képhelyhez a vázlatban rendelődik hozzá, és a Közzététellel válik élessé. A `/media/<id>/<szélesség>.webp` címen **csak akkor érhető el kívülről, ha az élő verzió használja**; a belépett munkatérfelhasználó a vázlat képeit is látja. A közzétett képek hosszú ideig gyorsítótárazhatók (az azonosító soha nem változik).
 - A képleírás (alt) a képhez tartozik, nem verziózott: módosítása azonnal látszik az élő oldalon.

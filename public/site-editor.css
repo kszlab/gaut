@@ -2,6 +2,10 @@
 .site-editor .editor-status { font-size: 13px; line-height: 1.5; }
 .site-editor .editor-status strong { color: var(--teal); }
 .site-editor .editor-status .dirty { color: #a35a00; font-weight: 700; }
+.site-editor .bar-message { flex-basis: 100%; order: 3; margin: 0; font-size: 13px; line-height: 1.5; }
+.site-editor .bar-message:empty { display: none; }
+.site-editor .bar-message.error { color: #b23b3b; font-weight: 600; }
+.site-editor .bar-message.ok { color: var(--teal); }
 .site-editor .editor-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .site-editor .note-field { max-width: 520px; margin: 14px 0 26px; }
 .site-editor .group { background: #fff; border: 1px solid var(--line); border-radius: 7px; padding: 22px 24px; margin-bottom: 18px; }
