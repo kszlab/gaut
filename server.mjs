@@ -1,7 +1,8 @@
 import http from 'node:http';
 import { referenceStore } from './references.mjs';
 import { renderSite, parseTheme, defaultText } from './site/site.mjs';
-import { contentStore, defaultsFor, FIELDS } from './site/content.mjs';
+import { contentStore, defaultsFor, FIELDS, HERO_SLOTS } from './site/content.mjs';
+import { mediaStore } from './site/media.mjs';
 import { photoStore } from './photos.mjs';
 import { DatabaseSync } from 'node:sqlite';
 import { readFileSync, writeFileSync, mkdirSync, existsSync, unlinkSync, createReadStream } from 'node:fs';
@@ -43,9 +44,12 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
   `);
   const references = referenceStore(db);
   const siteContent = contentStore(db);
+  const siteMedia = mediaStore(db, dataDir);
+  const resolveMedia = (map = {}) => Object.fromEntries(Object.entries(map).map(([slot, id]) => [slot, siteMedia.get(id)]).filter(([, m]) => m));
+  const isPublishedMedia = id => Object.values(siteContent.live()?.overrides.media ?? {}).includes(id);
   const siteState = () => {
     const live = siteContent.live();
-    return { fields: FIELDS, defaults: { hu: defaultsFor(defaultText('hu')), en: defaultsFor(defaultText('en')) }, draft: siteContent.draft(), live: live && { id: live.id, created_at: live.created_at, note: live.note, changes: live.changes }, versions: siteContent.versions() };
+    return { fields: FIELDS, slots: HERO_SLOTS.map(([slot, label, fallback]) => ({ slot, label, fallback })), defaults: { hu: defaultsFor(defaultText('hu')), en: defaultsFor(defaultText('en')) }, draft: siteContent.draft(), live: live && { id: live.id, created_at: live.created_at, note: live.note, changes: live.changes }, versions: siteContent.versions(), media: siteMedia.list() };
   };
   const photos = photoStore(db, dataDir);
   const attempts = new Map();
@@ -151,6 +155,13 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         if (path === '/api/site/content' && req.method === 'GET') return json(res, 200, siteState());
         if (path === '/api/site/content' && req.method === 'PUT') { const b = await body(req, 512 * 1024); siteContent.saveDraft(b.revision, b.overrides); return json(res, 200, siteState()); }
         if (path === '/api/site/publish' && req.method === 'POST') { const b = await body(req, 4096); siteContent.publish(b.revision, b.note ?? ''); return json(res, 200, siteState()); }
+        if (path === '/api/site/media' && req.method === 'POST') {
+          const b = await body(req);
+          const f = fileData({ filename: b.filename, content: b.content }); // same size and base64 checks as workspace uploads
+          return json(res, 201, { media: await siteMedia.add({ filename: f.filename, bytes: f.bytes, alt_hu: b.alt_hu, alt_en: b.alt_en }) });
+        }
+        const siteMediaAlt = /^\/api\/site\/media\/([a-f0-9-]{36})$/.exec(path);
+        if (siteMediaAlt && req.method === 'PATCH') { const b = await body(req, 4096); return json(res, 200, { media: siteMedia.setAlt(siteMediaAlt[1], b.alt_hu, b.alt_en) }); }
         const siteRestore = /^\/api\/site\/versions\/([a-f0-9-]{36})\/restore$/.exec(path);
         if (siteRestore && req.method === 'POST') { const b = await body(req, 4096); siteContent.restore(siteRestore[1], b.revision); return json(res, 200, siteState()); }
         if (path === '/api/me' && req.method === 'GET') return json(res, 200, { user: cleanUser(user), sections: SECTIONS, categories: CATEGORIES, maxFileSize: MAX_FILE });
@@ -209,7 +220,8 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
       if (['GET', 'HEAD'].includes(req.method) && (path === '/hu' || path === '/en')) {
         // ?elonezet=1 shows the unpublished draft, but only to a signed-in workspace user; everyone else gets the live version.
         const draft = url.searchParams.get('elonezet') === '1' && Boolean(session(req));
-        const html = renderSite({ lang: path.slice(1), theme: parseTheme(url.searchParams.get('tema')), content: draft ? siteContent.draft().overrides : siteContent.live()?.overrides ?? null, draft });
+        const shown = draft ? siteContent.draft().overrides : siteContent.live()?.overrides ?? null;
+        const html = renderSite({ lang: path.slice(1), theme: parseTheme(url.searchParams.get('tema')), content: shown, draft, media: resolveMedia(shown?.media) });
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         return res.end(req.method === 'HEAD' ? undefined : html);
@@ -219,6 +231,16 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         res.setHeader('Cache-Control', 'no-cache'); // preview phase: always revalidate; switch to a fingerprinted long cache before launch
         res.setHeader('Content-Type', `${type}; charset=utf-8`);
         return res.end(req.method === 'HEAD' ? undefined : readFileSync(join(ROOT, 'public', name)));
+      }
+      // Uploaded site images: public only once a published version uses them; a signed-in user can also see unpublished ones (draft preview, editor).
+      const uploaded = /^\/media\/([a-f0-9-]{36})\/(\d{3,4})\.webp$/.exec(path);
+      if (uploaded && ['GET', 'HEAD'].includes(req.method)) {
+        const [, id, width] = uploaded, published = isPublishedMedia(id);
+        const file = (published || session(req)) ? siteMedia.file(id, Number(width)) : null;
+        if (!file) fail(404, 'A kép nem található.');
+        res.setHeader('Cache-Control', published ? 'public, max-age=31536000, immutable' : 'private, no-cache');
+        res.setHeader('Content-Type', 'image/webp');
+        return res.end(req.method === 'HEAD' ? undefined : readFileSync(file));
       }
       const mediaMatch = /^\/site\/(img|fonts)\/([a-z0-9-]+)\.(png|jpg|webp|woff2)$/.exec(path);
       if (mediaMatch && ['GET', 'HEAD'].includes(req.method)) {
