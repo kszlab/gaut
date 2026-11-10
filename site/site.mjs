@@ -37,7 +37,12 @@ const THEME_ALIASES = { 1: 'rendszer', 2: 'struktura', 3: 'szinkron' };
 
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-export const parseTheme = value => THEMES.includes(value) ? value : THEME_ALIASES[value] || 'rendszer';
+// A free text block: an empty line starts a new paragraph, a single line break stays a line break. Everything is escaped.
+// It is used for the general introduction of the team (full width, under the section heading); an empty value renders nothing.
+export const paragraphsHtml = text => String(text ?? '').trim().split(/\n\s*\n/).map(p => p.trim()).filter(Boolean).map(p => `<p>${esc(p).replace(/\n/g, '<br>')}</p>`).join('');
+const teamIntroHtml = text => { const html = paragraphsHtml(text); return html ? `<div class="team-intro">${html}</div>` : ''; };
+
+export const parseTheme =value => THEMES.includes(value) ? value : THEME_ALIASES[value] || 'rendszer';
 
 // Where the public references come from. Today: a file of invented sample projects.
 // Later: the same shape produced from the reference store by toPublicReference() below.
@@ -89,7 +94,7 @@ const TEXT = {
     htmlLang: 'hu', title: 'GAUT Mérnökiroda | Gépészeti automatika és épületfelügyelet',
     description: 'A GAUT gépészeti automatika- és épületfelügyeleti rendszereket tervező mérnökiroda.',
     nav: [['szakteruletek', 'Szakterületek'], ['szemlelet', 'Szemlélet'], ['referenciak', 'Referenciák'], ['csapat', 'Csapat'], ['kapcsolat', 'Kapcsolat']],
-    teamKicker: 'Csapat', teamTitle: 'A tervezők, akikkel dolgozhat',
+    teamKicker: 'Csapat', teamTitle: 'A tervezők, akikkel dolgozhat', teamIntro: '',
     teamNote: 'Helyőrző bemutatkozások. A fotók és a szövegek a kollégáktól érkeznek majd.', photoSoon: 'Fotó hamarosan',
     chamberLabel: 'Mérnöki kamarai névjegyzék', chamberOpen: 'megnyitás',
     skip: 'Ugrás a tartalomra', descriptor: 'Mérnökiroda', other: 'EN', otherName: 'English',
@@ -128,7 +133,7 @@ const TEXT = {
     htmlLang: 'en', title: 'GAUT Engineering | Building automation and building management design',
     description: 'GAUT is an engineering consultancy designing mechanical automation and building management systems.',
     nav: [['szakteruletek', 'Services'], ['szemlelet', 'Approach'], ['referenciak', 'Projects'], ['csapat', 'Team'], ['kapcsolat', 'Contact']],
-    teamKicker: 'Team', teamTitle: 'The engineers you will work with',
+    teamKicker: 'Team', teamTitle: 'The engineers you will work with', teamIntro: '',
     teamNote: 'Placeholder introductions. Photos and texts will come from the colleagues.', photoSoon: 'Photo coming soon',
     chamberLabel: 'Chamber of Engineers register', chamberOpen: 'open',
     skip: 'Skip to content', descriptor: 'Engineering', other: 'HU', otherName: 'Magyar',
@@ -275,6 +280,7 @@ ${team.length ? `<section id="csapat" class="block alt">
   <div class="wrap">
     <p class="kicker">${esc(t.teamKicker)}</p><h2>${esc(t.teamTitle)}</h2>
     ${t.teamNote && (team.some(m => m.sample) || content?.[lang]?.teamNote !== undefined) ? `<p class="note">${esc(t.teamNote)}</p>` : ''}
+    ${teamIntroHtml(t.teamIntro || content?.hu?.teamIntro)}
     <div class="team">${team.map(m => teamCard(m, lang, t)).join('')}</div>
   </div>
 </section>` : ''}

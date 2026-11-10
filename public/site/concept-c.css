@@ -82,3 +82,6 @@
 .cc .chamber { margin-top: 8px; font: 400 12px var(--mono); color: var(--muted); }
 .cc .chamber a { color: var(--accent); text-underline-offset: 3px; }
 .cc .contact dd a { color: var(--ink); text-underline-offset: 4px; }
+.cc .team-intro { max-width: none; margin-bottom: 36px; }
+.cc .team-intro p { margin: 0 0 1em; font-size: 18px; line-height: 1.7; color: var(--muted); }
+.cc .team-intro p:last-child { margin-bottom: 0; }

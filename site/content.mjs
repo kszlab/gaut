@@ -26,6 +26,7 @@ export const FIELDS = [
   line('refsTitle', 'Referenciák', 'Szekció címe', 120),
   text('refsNote', 'Referenciák', 'Megjegyzés a szekció alatt', 400, true),
   line('teamTitle', 'Csapat', 'Szekció címe', 120),
+  { ...text('teamIntro', 'Csapat', 'Csapat általános bemutatkozása (üres sor: új bekezdés)', 2000), optional: true },
   text('teamNote', 'Csapat', 'Megjegyzés a szekció alatt', 400, true),
   line('contactTitle', 'Kapcsolat és lábléc', 'Szekció címe', 120),
   text('contactText', 'Kapcsolat és lábléc', 'Bevezető szöveg', 500),

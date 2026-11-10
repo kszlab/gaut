@@ -114,3 +114,7 @@
 @media (max-width: 1040px) { .cb .mosaic { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 240px; gap: 20px; } }
 @media (max-width: 640px) { .cb .mosaic { grid-template-columns: 1fr; grid-auto-rows: 250px; gap: 16px; } .cb .mt.big { grid-column: auto; grid-row: span 2; } .cb .md-body { padding: 18px 18px 24px; } }
 .cb .mt.nophoto .mt-cap strong { display: none; } /* the typographic tile already shows the title */
+
+.cb .team-intro { max-width: none; margin: -16px 0 40px; }
+.cb .team-intro p { margin: 0 0 1em; font-size: 19px; line-height: 1.7; color: var(--muted); }
+.cb .team-intro p:last-child { margin-bottom: 0; }

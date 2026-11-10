@@ -1,5 +1,5 @@
 import { LOGOS } from './art.mjs';
-import { defaultText, sampleReferences, sampleTeam, categoryLabel } from './site.mjs';
+import { defaultText, sampleReferences, sampleTeam, categoryLabel, paragraphsHtml } from './site.mjs';
 import { applyContent, isChamberUrl } from './content.mjs';
 import { renderMosaic } from './mosaic.mjs';
 
@@ -45,6 +45,8 @@ const contactValues = t => t.contactLabels.map((label, i) => {
   const shown = key === 'email' ? `<a href="mailto:${esc(value)}">${esc(value)}</a>` : key === 'phone' ? `<a href="tel:${esc(value.replace(/[^0-9+]/g, ''))}">${esc(value)}</a>` : esc(value);
   return `<div><dt>${esc(label)}</dt><dd>${shown}</dd></div>`;
 }).join('');
+// General introduction of the team, set in the editor; full width above the people, nothing when empty.
+const intro = t => { const html = paragraphsHtml(t.teamIntro); return html ? `<div class="team-intro">${html}</div>` : ''; };
 const sampleNote = (d, text) => (d.sampleRefs ? `<p class="note">${esc(text)}</p>` : '');
 
 function shell(key, body, title, d) {
@@ -103,7 +105,7 @@ function conceptA(view) {
 ${d.team.length ? `
 <section class="sec alt" id="csapat"><div class="wrap grid">
   <h2 class="label"><span>${num()}</span>${esc(t.teamKicker)}</h2>
-  <ul class="people">${people}</ul>
+  <div>${intro(t)}<ul class="people">${people}</ul></div>
 </div></section>` : ''}
 
 <section class="sec contact" id="kapcsolat"><div class="wrap grid">
@@ -154,7 +156,7 @@ function conceptB(view) {
   ${sampleNote(d, 'Mintaprojektek a megjelenés bemutatására; a végleges oldalon valódi referenciák és projektfotók szerepelnek.')}
 </section>
 ${d.team.length ? `
-<section class="team wrap" id="csapat"><h2 class="kick">${esc(t.teamKicker)}</h2><p class="big sm">${esc(t.teamTitle)}</p><div class="people">${people}</div></section>` : ''}
+<section class="team wrap" id="csapat"><h2 class="kick">${esc(t.teamKicker)}</h2><p class="big sm">${esc(t.teamTitle)}</p>${intro(t)}<div class="people">${people}</div></section>` : ''}
 
 <section class="contact" id="kapcsolat"><div class="wrap">
   <h2 class="kick">${esc(t.contactKicker)}</h2><p class="big">${esc(t.contactTitle)}</p><p class="sub">${esc(t.contactText)}</p>
@@ -211,7 +213,7 @@ function conceptC(view) {
   <div class="table-wrap"><table><caption class="sr">${d.sampleRefs ? 'Mintaprojektek' : 'Referenciák'}</caption><thead><tr><th scope="col">Azonosító</th><th scope="col">Projekt</th><th scope="col">Terület</th><th scope="col">Hely</th><th scope="col">Tervév</th></tr></thead><tbody>${rows}</tbody></table></div>
   ${sampleNote(d, 'Mintaprojektek a megjelenés bemutatására. A végleges lista a referenciatárból készül; a tervév nem átadási év.')}</section>
 ${d.team.length ? `
-<section class="sec wrap" id="csapat"><h2 class="tag">${code()} · ${esc(t.teamKicker)}</h2><div class="people">${people}</div></section>` : ''}
+<section class="sec wrap" id="csapat"><h2 class="tag">${code()} · ${esc(t.teamKicker)}</h2>${intro(t)}<div class="people">${people}</div></section>` : ''}
 
 <section class="sec wrap contact" id="kapcsolat"><h2 class="tag">${code()} · ${esc(t.contactKicker)}</h2><p class="big">${esc(t.contactTitle)}</p><p class="lead">${esc(t.contactText)}</p>
   <dl>${contactValues(t).replace(/<dt>/g, '<dt class="tag">')}</dl></section>

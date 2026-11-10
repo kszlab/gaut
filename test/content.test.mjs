@@ -27,7 +27,7 @@ test('every editable field has a default in both languages', () => {
   for (const lang of ['hu', 'en']) {
     const d = defaultsFor(defaultText(lang));
     for (const f of FIELDS) assert.ok(f.path in d, `${lang} ${f.path}`);
-    for (const f of FIELDS) if (!f.path.startsWith('contact.') && !f.hideable) assert.ok(d[f.path].length > 0, `${lang} ${f.path} default is empty`);
+    for (const f of FIELDS) if (!f.path.startsWith('contact.') && !f.hideable && !f.optional) assert.ok(d[f.path].length > 0, `${lang} ${f.path} default is empty`);
   }
 });
 
