@@ -16,3 +16,5 @@
 @media(max-width:700px){.site-two{grid-template-columns:1fr}}
 .site-warn{display:inline-block;background:#fff4db;color:#805b14;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;margin-bottom:8px}
 #site-warnings{margin-top:14px}#site-warnings ul{margin:8px 0 0;padding-left:18px}
+
+input.stale{color:#b42318;border-color:#b42318;background:#fff5f4}.stale-note{display:block;margin-top:6px;color:#b42318;font-weight:600}
