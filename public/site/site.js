@@ -35,3 +35,7 @@ if (links.size && 'IntersectionObserver' in window) {
   }, { rootMargin: '-45% 0px -45% 0px' });
   for (const id of links.keys()) { const el = document.getElementById(id); if (el) spy.observe(el); }
 }
+
+// "Tervezési fázisok": a link to a phase (#fazis-N) opens that phase.
+const openTarget = () => { const el = location.hash.startsWith('#fazis-') && document.getElementById(location.hash.slice(1)); if (el?.tagName === 'DETAILS') el.open = true; };
+addEventListener('hashchange', openTarget); openTarget();

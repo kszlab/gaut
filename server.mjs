@@ -15,6 +15,8 @@ import { randomBytes, randomUUID, createHash, scryptSync, timingSafeEqual } from
 
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
+// Public pages of the site: the home page and the "Tervezési fázisok" subpage, in both languages.
+const SITE_PAGES = { '/': { lang: 'hu', page: 'home' }, '/hu': { lang: 'hu', page: 'home' }, '/en': { lang: 'en', page: 'home' }, '/tervezesi-fazisok': { lang: 'hu', page: 'phases' }, '/en/design-phases': { lang: 'en', page: 'phases' } };
 const SECTIONS = { common: 'Közös', misi: 'Misi', nandi: 'Nándi', attila: 'Attila', krisztian: 'Krisztián' };
 const CATEGORIES = ['Referencia', 'Fénykép', 'Leírás', 'Cégbemutatás', 'Arculat', 'Egyéb'];
 const MAX_FILE = 20 * 1024 * 1024;
@@ -267,11 +269,12 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
       // The workspace lives under /munkater; the root is the public site. Old workspace page addresses keep working through redirects.
       const moved = { '/referenciak': '/munkater/referenciak', '/honlap': '/munkater/honlap', '/munkater/': '/munkater', '/munkater/referenciak/': '/munkater/referenciak', '/munkater/honlap/': '/munkater/honlap' };
       if (['GET', 'HEAD'].includes(req.method) && moved[path]) { res.writeHead(302, { Location: moved[path] + url.search }); return res.end(); }
-      if (['GET', 'HEAD'].includes(req.method) && (path === '/' || path === '/hu' || path === '/en')) {
+      const sitePage = SITE_PAGES[path];
+      if (['GET', 'HEAD'].includes(req.method) && sitePage) {
         // ?elonezet=1 shows the unpublished draft, but only to a signed-in workspace user; everyone else gets the live version.
         const draft = url.searchParams.get('elonezet') === '1' && Boolean(session(req));
         const view = siteView(draft);
-        const html = renderSite({ lang: path === '/en' ? 'en' : 'hu', theme: parseTheme(url.searchParams.get('tema')), content: view.content, draft, media: view.media, ...(view.team ? { team: view.team } : {}), ...(view.references ? { references: view.references } : {}) });
+        const html = renderSite({ lang: sitePage.lang, page: sitePage.page, theme: parseTheme(url.searchParams.get('tema')), content: view.content, draft, media: view.media, ...(view.team ? { team: view.team } : {}), ...(view.references ? { references: view.references } : {}) });
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         return res.end(req.method === 'HEAD' ? undefined : html);

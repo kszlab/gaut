@@ -64,7 +64,7 @@ h1, h2, h3 { font-family: var(--font-head); font-weight: var(--head-weight); let
 .logo-desc { fill: var(--ink); font-family: var(--font-body); font-weight: 500; text-rendering: geometricPrecision; }
 .nav { display: flex; align-items: center; gap: 28px; }
 .nav a { color: var(--ink); text-decoration: none; font-size: 15px; padding: 6px 0; border-bottom: 2px solid transparent; }
-.nav a:hover { border-color: var(--accent); }
+.nav a:hover, .nav a[aria-current="page"] { border-color: var(--accent); }
 .nav .lang { border: 1px solid var(--line); padding: 4px 10px; font-size: 13px; letter-spacing: 0.08em; border-radius: var(--radius); }
 .menu-btn { display: none; background: none; border: 1px solid var(--line); width: 44px; height: 44px; border-radius: var(--radius); cursor: pointer; padding: 0; position: relative; }
 .menu-btn span { position: absolute; left: 12px; right: 12px; height: 2px; background: var(--ink); }
@@ -115,9 +115,11 @@ h1, h2, h3 { font-family: var(--font-head); font-weight: var(--head-weight); let
 [data-theme="szinkron"] .sys-icons { width: 50px; }
 [data-theme="szinkron"] .sys-icons li { width: 50px; height: 50px; margin-top: -25px; border-color: color-mix(in srgb, var(--ink) 75%, transparent); background: color-mix(in srgb, var(--bg) 55%, transparent); }
 [data-theme="szinkron"] .sys-icons li::before { display: none; } /* the render's own lime lines run to the icons */
-@media (min-width: 861px) {
+@media (min-width: 1021px) {
   [data-theme="szinkron"] .top .nav { flex: 1; }
   [data-theme="szinkron"] .top .nav a:first-child, [data-theme="szinkron"] .top .nav .lang { margin-left: auto; }
+}
+@media (min-width: 861px) {
   [data-theme="szinkron"] .hero { position: relative; display: flex; align-items: center; padding: 48px 0 64px; min-height: min(780px, calc(100svh - 114px)); }
   [data-theme="szinkron"] .hero-grid { display: block; width: 100%; }
   [data-theme="szinkron"] .hero-copy { position: relative; z-index: 1; max-width: min(470px, 40%); }
@@ -212,10 +214,13 @@ h3 { font-size: 21px; }
   .hero-grid { grid-template-columns: 1fr; } .hero { padding: 40px 0 32px; }
   [data-theme="szinkron"] .hero-art { margin-right: 0; } [data-theme="szinkron"] .sys-icons { display: none; }
   .logo svg { height: 38px; }
+  .block { padding: 60px 0; }
+}
+/* The menu folds into the menu button a little earlier than the hero stacks, so six items never crowd the logo. */
+@media (max-width: 1020px) {
   .menu-btn { display: block; }
   .nav { display: none; position: absolute; left: 0; right: 0; top: 100%; flex-direction: column; align-items: flex-start; gap: 4px; padding: 14px 28px 22px; background: var(--bg); border-bottom: 1px solid var(--line); }
   .nav.open { display: flex; } .nav a { padding: 10px 0; font-size: 17px; }
-  .block { padding: 60px 0; }
 }
 @media (max-width: 560px) { .team { grid-template-columns: 1fr; } .theme-switch { left: 8px; bottom: 8px; padding: 5px 6px; flex-wrap: nowrap; } .theme-switch span { display: none; } .theme-switch button { padding: 6px 9px; white-space: nowrap; } .wrap { padding: 0 20px; } .top { padding: 12px 20px; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } html { scroll-behavior: auto; } }
@@ -266,3 +271,63 @@ h3 { font-size: 21px; }
 .team-intro { max-width: none; margin: 0 0 40px; }
 .team-intro p { margin: 0 0 1em; font-size: 19px; line-height: 1.7; color: var(--ink); }
 .team-intro p:last-child { margin-bottom: 0; }
+/* "Tervezési fázisok" subpage: page heading, phase row, summary table, expandable phases */
+.more { margin: 0 0 28px; }
+.more a { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; text-underline-offset: 4px; }
+.page-hero { background: var(--hero-bg); padding: 72px 0 64px; }
+.page-title { font-size: clamp(34px, 4.6vw, 58px); max-width: 18ch; }
+.page-intro { max-width: 68ch; margin: 26px 0 44px; }
+.page-intro p { margin: 0 0 1em; font-size: 19px; color: var(--muted); }
+.page-intro p:first-child { color: var(--ink); }
+.flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0; }
+.flow li { border-top: 2px solid var(--line); }
+.flow li.key { border-top-color: var(--accent); }
+.flow a { display: block; height: 100%; padding: 16px 14px 14px 0; color: var(--ink); text-decoration: none; }
+.flow a:hover .flow-name { text-decoration: underline; text-underline-offset: 4px; }
+.flow-num { display: block; font-size: 13px; letter-spacing: .2em; font-weight: 700; color: var(--accent-text); margin-bottom: 8px; }
+.flow-name { display: block; font-family: var(--font-head); font-weight: var(--head-weight); font-size: 17px; line-height: 1.25; hyphens: auto; overflow-wrap: break-word; }
+.flow-note { margin: 22px 0 0; max-width: 78ch; font-size: 15px; color: var(--muted); }
+.ptable { width: 100%; border-collapse: collapse; font-size: 16px; }
+.ptable th, .ptable td { text-align: left; vertical-align: top; padding: 16px 18px 16px 0; border-bottom: 1px solid var(--line); }
+.ptable thead th { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); font-weight: 600; border-bottom-color: var(--ink); }
+.ptable tbody th { font-weight: 600; width: 32%; }
+.ptable td { color: var(--muted); }
+.ptable .num { font-size: 13px; letter-spacing: .12em; color: var(--accent-text); font-weight: 700; margin-right: 10px; }
+.ptable tr.key th { box-shadow: inset 3px 0 0 var(--accent); padding-left: 14px; }
+.phases { display: grid; gap: 14px; }
+.phase { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); scroll-margin-top: 100px; }
+.phase.key { border-left: 4px solid var(--accent); }
+.phase summary { display: flex; align-items: center; gap: 22px; padding: 22px 24px; cursor: pointer; list-style: none; }
+.phase summary::-webkit-details-marker { display: none; }
+.phase summary:focus-visible { outline-offset: -3px; }
+.phase .num { flex: none; width: 2.2em; font-size: 14px; letter-spacing: .12em; font-weight: 700; color: var(--accent-text); }
+.ph-head { flex: 1; min-width: 0; }
+.ph-head h3 { font-size: 21px; margin: 0 0 4px; }
+.phase.key .ph-head h3 { font-size: 24px; }
+.ph-short { display: block; font-size: 15px; color: var(--muted); }
+.ph-chev { flex: none; width: 12px; height: 12px; margin-right: 6px; border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: rotate(45deg) translate(-3px, -3px); transition: transform .15s ease; }
+.phase[open] .ph-chev { transform: rotate(225deg) translate(-3px, -3px); }
+.ph-body { padding: 4px 24px 26px calc(24px + 2.2em + 22px); max-width: 86ch; }
+.ph-body p { margin: 0 0 1em; }
+.ph-body h4 { margin: 22px 0 10px; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.ph-list { margin: 0 0 1.2em; padding: 0; list-style: none; }
+.ph-list li { position: relative; padding: 5px 0 5px 22px; }
+.ph-list li::before { content: ""; position: absolute; left: 0; top: .95em; width: 10px; height: 2px; background: var(--accent); }
+.ph-result { margin: 18px 0 0; padding-top: 16px; border-top: 1px solid var(--line); }
+.prose { max-width: 62ch; color: var(--muted); }
+.prose p { margin: 0 0 1em; }
+.prose a { font-weight: 600; text-underline-offset: 3px; }
+@media (max-width: 1040px) { .flow { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 18px; } }
+@media (max-width: 700px) {
+  .page-hero { padding: 44px 0 40px; } .page-intro p { font-size: 17px; }
+  .flow { grid-template-columns: 1fr; row-gap: 0; }
+  .flow li { border-top: 0; border-left: 2px solid var(--line); } .flow li.key { border-left-color: var(--accent); }
+  .flow a { display: flex; align-items: baseline; gap: 14px; padding: 10px 0 10px 16px; } .flow-num { margin: 0; }
+  .ptable thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .ptable, .ptable tbody, .ptable tr, .ptable th, .ptable td { display: block; width: auto; }
+  .ptable tr { padding: 16px 0; border-bottom: 1px solid var(--line); } .ptable tr.key { padding-left: 14px; box-shadow: inset 3px 0 0 var(--accent); }
+  .ptable th, .ptable td, .ptable tbody th { padding: 0; border: 0; width: auto; } .ptable tr.key th { box-shadow: none; padding-left: 0; }
+  .ptable td { margin-top: 8px; } .ptable td::before { content: attr(data-label); display: block; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .phase summary { gap: 14px; padding: 18px 16px; } .ph-head h3, .phase.key .ph-head h3 { font-size: 19px; }
+  .ph-body { padding: 0 16px 22px; }
+}
