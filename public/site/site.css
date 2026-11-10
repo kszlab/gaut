@@ -31,11 +31,11 @@
   --wordmark-track: 0.16em; --wordmark-weight: 500;
 }
 [data-theme="szinkron"] {
-  --bg: #0F2244; --surface: #152C52; --alt: #122650; --ink: #F6F8FB; --muted: #B6C3D8; --line: #2B4570;
-  --accent: #C5E64A; --accent-strong: #C5E64A; --accent-text: #C5E64A; --on-accent: #0F2244; --link: #C5E64A;
+  --bg: #152C52; --surface: #1B3662; --alt: #10244A; --ink: #F6F8FB; --muted: #B6C3D8; --line: #2B4570;
+  --accent: #C5E64A; --accent-strong: #C5E64A; --accent-text: #C5E64A; --on-accent: #152C52; --link: #C5E64A;
   --font-body: "GAUT Jakarta", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
   --bt: #2A4676; --bl: #1D3A6B; --br: #16305C; --bline: #3B5A8E; --bwin: #4C6EA4; --ground: #132B52; --grid: #1F3A68;
-  --radius: 6px; --head-weight: 750; --head-track: -0.02em; --hero-bg: radial-gradient(1000px 520px at 80% 20%, #1C3A6E, #0F2244);
+  --radius: 6px; --head-weight: 650; --head-track: -0.02em; --hero-bg: var(--bg);
   --wordmark-track: 0.01em; --wordmark-weight: 800;
 }
 
@@ -101,8 +101,30 @@ h1, h2, h3 { font-family: var(--font-head); font-weight: var(--head-weight); let
 .sys-icons li { position: absolute; left: 0; width: 44px; height: 44px; margin-top: -22px; display: grid; place-items: center; border: 1px solid var(--accent); border-radius: 8px; color: var(--ink); background: var(--surface); }
 .sys-icons li::before { content: ""; position: absolute; right: 100%; top: 50%; width: 14px; height: 2px; margin-top: -1px; background: var(--accent); }
 .sys-icons li:nth-child(1) { top: 22%; } .sys-icons li:nth-child(2) { top: 37%; } .sys-icons li:nth-child(3) { top: 52%; } .sys-icons li:nth-child(4) { top: 67%; } .sys-icons li:nth-child(5) { top: 81%; }
-@media (min-width: 861px) { [data-theme="szinkron"] .hero-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 32px; } }
 .icon { width: 26px; height: 26px; }
+
+/* "Szinkron" follows its concept board: one ink-blue surface for header and hero, the render bleeding to the right edge,
+   logo and headline on one left edge, centred menu with a short lime marker, pill buttons, outlined icon column. */
+[data-theme="szinkron"] .top { border-bottom-color: transparent; padding-inline: max(28px, calc((100% - var(--wrap)) / 2 + 28px)); }
+[data-theme="szinkron"] .nav a:not(.lang) { position: relative; border-bottom: 0; }
+[data-theme="szinkron"] .nav a:not(.lang)::after { content: ""; position: absolute; left: 0; bottom: -2px; width: 24px; height: 2px; background: var(--accent); opacity: 0; transition: opacity .15s ease; }
+[data-theme="szinkron"] .nav a:not(.lang):hover::after, [data-theme="szinkron"] .nav a[aria-current]::after { opacity: 1; }
+[data-theme="szinkron"] .btn { border-radius: 999px; padding: 11px 24px; font-size: 15px; }
+[data-theme="szinkron"] .sub { font-weight: 400; }
+[data-theme="szinkron"] .hero-szinkron { mix-blend-mode: lighten; -webkit-mask-image: linear-gradient(to right, transparent 0, #000 14%), linear-gradient(to bottom, #000 80%, transparent 97%); mask-image: linear-gradient(to right, transparent 0, #000 14%), linear-gradient(to bottom, #000 80%, transparent 97%); }
+[data-theme="szinkron"] .sys-icons { width: 50px; }
+[data-theme="szinkron"] .sys-icons li { width: 50px; height: 50px; margin-top: -25px; border-color: color-mix(in srgb, var(--ink) 75%, transparent); background: color-mix(in srgb, var(--bg) 55%, transparent); }
+[data-theme="szinkron"] .sys-icons li::before { width: 36px; }
+@media (min-width: 861px) {
+  [data-theme="szinkron"] .top .nav { flex: 1; }
+  [data-theme="szinkron"] .top .nav a:first-child, [data-theme="szinkron"] .top .nav .lang { margin-left: auto; }
+  [data-theme="szinkron"] .hero { position: relative; display: flex; align-items: center; padding: 48px 0 64px; min-height: min(780px, calc(100svh - 114px)); }
+  [data-theme="szinkron"] .hero-grid { display: block; width: 100%; }
+  [data-theme="szinkron"] .hero-copy { position: relative; z-index: 1; max-width: min(470px, 40%); }
+  [data-theme="szinkron"] .hero-art { position: absolute; top: 0; bottom: 0; right: 0; width: 66%; padding-right: 64px; }
+  [data-theme="szinkron"] .hero-szinkron { width: 100%; height: 100%; object-fit: contain; object-position: 100% 50%; }
+  [data-theme="szinkron"] .sys-icons { right: 24px; top: 50%; bottom: auto; height: min(100%, calc((66vw - 64px) * 2 / 3)); transform: translateY(-50%); }
+}
 
 /* Building illustrations */
 .b-top { fill: var(--bt); } .b-fl { fill: var(--bl); } .b-fr { fill: var(--br); }
