@@ -14,7 +14,7 @@ let records=[], editing=null, busy=false, dirty=false;
 setupPhotos(()=>{dirty=true;});
 const fields={name:'Projekt neve *',design_year:'Tervév / időszak',category:'Kategória',identification_status:'Azonosítás állapota',city:'Település',address:'Cím',tags:'Címkék (vesszővel elválasztva)',publication_status:'Publikálás állapota',scope_from_pdf:'Tervezési feladat / közreműködés',background:'Az épület és projekt leírása',technical_detail:'Műszaki részletek',questions:'Bizonytalanságok, hiányzó adatok',website_copy_draft:'Honlapra szánt leírástervezet',attribution:'Közreműködés és forrásmegjelölés'};
 const long=new Set(['scope_from_pdf','background','technical_detail','questions','website_copy_draft','attribution']);
-async function api(path,method='GET',data) { const r=await fetch(path,{method,headers:{'Content-Type':'application/json','X-Gaut-Request':'1'},body:data===undefined?undefined:JSON.stringify(data)});const b=await r.json();if(!r.ok){if(r.status===401){$('#message').innerHTML='A folytatáshoz <a href="/?next=references">jelentkezz be a közös jelszóval</a>.';$('#tools').hidden=true;}throw Error(b.error||'Nem sikerült a művelet.');}return b; }
+async function api(path,method='GET',data) { const r=await fetch(path,{method,headers:{'Content-Type':'application/json','X-Gaut-Request':'1'},body:data===undefined?undefined:JSON.stringify(data)});const b=await r.json();if(!r.ok){if(r.status===401){$('#message').innerHTML='A folytatáshoz <a href="/munkater?next=references">jelentkezz be a közös jelszóval</a>.';$('#tools').hidden=true;}throw Error(b.error||'Nem sikerült a művelet.');}return b; }
 function message(text){$('#message').textContent=text;}
 function options(id,key,title){const current=$(id).value;$(id).innerHTML=`<option value="">${title}</option>`+[...new Set(records.map(r=>r[key]).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'hu')).map(v=>`<option>${esc(v)}</option>`).join('');$(id).value=current;}
 async function load(){records=(await api('/api/references')).references.filter(r=>!r.merged_into);$('#tools').hidden=false;options('#category','category','Minden kategória');options('#status','identification_status','Minden állapot');render();await loadMerges();}
@@ -53,9 +53,12 @@ $('#merge-plan').onchange=async e=>{const file=e.target.files[0];if(!file)return
 $('#merge-history').onclick=async e=>{const b=e.target.closest('[data-undo-merge]');if(!b)return;if(!confirm('Visszaállítod az összevonás előtti külön referenciákat?'))return;try{await api('/api/reference-merges/'+b.dataset.undoMerge+'/undo','POST',{});await load();message('Az összevonás visszavonva.');}catch(e){message(e.message);}};
 
 // ---- Public website section of the reference form ----
-const SITE_TEXT=['website_title_hu','website_title_en','website_copy_hu','website_copy_en'],SITE_FLAGS=['website_featured','website_role_confirmed','website_photo_rights'];
+const SITE_TEXT=['website_title_hu','website_title_en','website_copy_hu','website_copy_en'],SITE_FLAGS=['website_featured'];
+// The English title turns red while it still belongs to another Hungarian title than the one in the form; its text stays.
+function markStaleTitle(){const f=$('#edit-form'),hu=f.elements.website_title_hu.value.trim(),en=f.elements.website_title_en,saved=(editing.website_title_en||'').trim(),base=editing.website_title_en_source||(editing.website_title_hu||'').trim();const stale=Boolean(saved)&&en.value.trim()===saved&&Boolean(base)&&hu!==base;en.classList.toggle('stale',stale);$('#title-en-stale').hidden=!stale;}
+for(const k of ['website_title_hu','website_title_en'])$('#edit-form').elements[k].addEventListener('input',markStaleTitle);
 function siteFormValues(){const f=$('#edit-form'),v={};for(const k of SITE_TEXT)v[k]=f.elements[k].value.trim();for(const k of SITE_FLAGS)v[k]=f.elements[k].checked;v.website_cover_photo=f.elements.website_cover_photo.value;return v;}
-function fillSiteSection(){const f=$('#edit-form');for(const k of SITE_TEXT)f.elements[k].value=editing[k]||'';for(const k of SITE_FLAGS)f.elements[k].checked=editing[k]===true;
+function fillSiteSection(){const f=$('#edit-form');for(const k of SITE_TEXT)f.elements[k].value=editing[k]||'';for(const k of SITE_FLAGS)f.elements[k].checked=editing[k]===true;markStaleTitle();
  const photos=savedPhotos(),current=editing.website_cover_photo||'';
  f.elements.website_cover_photo.innerHTML='<option value="">Nincs borítókép (illusztráció jelenik meg)</option>'+photos.map(p=>`<option value="${esc(p.id)}"${p.id===current?' selected':''}>${esc(p.label)}</option>`).join('')+(current&&!photos.some(p=>p.id===current)?`<option value="${esc(current)}" selected>(a jelenlegi borítókép)</option>`:'');
  showSiteWarnings();}

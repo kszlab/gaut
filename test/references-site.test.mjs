@@ -9,12 +9,14 @@ import { websiteWarnings } from '../public/site-readiness.js';
 import { renderSite, publicReferences, toPublicReference } from '../site/site.mjs';
 
 test('readiness warnings are advisory and cover each missing item', () => {
-  assert.equal(websiteWarnings({ website_title_hu: 'A', website_copy_hu: 'B', website_title_en: 'C', website_copy_en: 'D', website_role_confirmed: true, website_cover_photo: 'p', website_photo_rights: true }).length, 0);
+  assert.equal(websiteWarnings({ website_title_hu: 'A', website_copy_hu: 'B', website_title_en: 'C', website_copy_en: 'D', website_cover_photo: 'p' }).length, 0);
   const all = websiteWarnings({});
-  assert.equal(all.length, 5);
-  assert.ok(all.some(w => /magyar honlapos cím/.test(w)) && all.some(w => /magyar honlapos leírás/.test(w)) && all.some(w => /angol/.test(w)) && all.some(w => /szerepe/.test(w)) && all.some(w => /borítókép/.test(w)));
-  assert.ok(websiteWarnings({ website_cover_photo: 'p' }).some(w => /képhasználati engedély/.test(w)));
-  assert.ok(!websiteWarnings({ website_cover_photo: 'p', website_photo_rights: true }).some(w => /képhasználati|Nincs borítókép/.test(w)));
+  assert.equal(all.length, 4);
+  assert.ok(all.some(w => /magyar honlapos cím/.test(w)) && all.some(w => /magyar honlapos leírás/.test(w)) && all.some(w => /angol/.test(w)) && all.some(w => /borítókép/.test(w)));
+  assert.ok(!all.some(w => /szerepe|képhasználati/.test(w)), 'the role and photo-rights switches are gone');
+  assert.ok(!websiteWarnings({ website_cover_photo: 'p' }).some(w => /képhasználati|Nincs borítókép/.test(w)));
+  assert.ok(websiteWarnings({ website_title_hu: 'Új cím', website_title_en: 'Old title', website_title_en_source: 'Régi cím' }).some(w => /angol címet nézd át/.test(w)), 'a stale English title is flagged');
+  assert.ok(!websiteWarnings({ website_title_hu: 'Cím', website_title_en: 'Title', website_title_en_source: 'Cím' }).some(w => /nézd át/.test(w)));
 });
 
 test('public references are sorted by year and rendered as a mosaic with fallbacks', () => {
@@ -68,7 +70,7 @@ test('references on the site end to end: cover import, warnings, frozen publicat
     assert.equal((await call(`/api/references/${saved.id}`, 'PUT', { ...saved, website_featured: 'igen' })).status, 400);
     const state = await (await call('/api/site/content')).json();
     assert.equal(state.references.length, 1);
-    assert.ok(state.references[0].warnings.some(w => /szerepe/.test(w)) && state.references[0].warnings.some(w => /képhasználati/.test(w)), 'advisory warnings are listed');
+    assert.ok(state.references[0].warnings.some(w => /angol/.test(w)) && !state.references[0].warnings.some(w => /szerepe|képhasználati/.test(w)), 'advisory warnings are listed');
 
     // not visible to visitors before publication; visible in the draft preview; cover private
     assert.ok(!(await page('/hu')).includes('Honlapos cím'));
