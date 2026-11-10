@@ -120,6 +120,8 @@ Referencia törlése: a kártya Törlés gombja vagy az adatlap Referencia törl
 
 A gyökércímen (`/`, magyarul) és az `/en` címen (angolul) elérhető, belépés nélkül, kétnyelvű egyoldalas bemutatkozó oldal; a `/hu` a gyökér másik neve. Jelenleg **nem éles**: a keresők elől rejtett (`noindex`), és a témaváltó is bent van. **A belső munkatér a `/munkater` címen van** (közös jelszavas belépéssel), a referencia-kezelő a `/munkater/referenciak`, a honlap-szerkesztő a `/munkater/honlap`. A régi `/referenciak` és `/honlap` címek átirányítanak. Az API (`/api/...`) címei nem változtak. A három arculati vázlat (Rendszer, Struktúra, Szinkron) az oldalon váltható, vagy a `?tema=1|2|3` paraméterrel linkelhető. A választás után a váltót és a két többi témát el kell távolítani.
 
+**Aloldal: Tervezési fázisok.** A `/tervezesi-fazisok` (angolul `/en/design-phases`) címen érhető el, a főmenüből és a főoldal Szemlélet szakaszából. Ugyanazt a fejlécet, láblécet és arculatokat használja, mint a főoldal. A szövege a honlap-szerkesztő „Tervezési fázisok" csoportjában szerkeszthető (vázlat, `?elonezet=1` előnézet, közzététel); a hat fázis száma rögzített, a listamezőkben egy sor egy listaelem. Az alapszöveg és a megjelenítő a `site/phases.mjs` fájlban van; a kiemelt fázisok (tender-, kiviteli és gyártmányterv) ott vannak megadva.
+
 - `site/site.mjs`: szerveroldali HTML-render (szövegek HU/EN, szekciók, referenciakártyák).
 - `site/art.mjs`: generált SVG-k (három ideiglenes logóváltozat és az izometrikus épületillusztrációk, CSS-változókkal színezve).
 - `site/sample-references.json`: **kitalált** mintaprojektek, az oldalon „Minta" jelzéssel. Nem valós referenciák.

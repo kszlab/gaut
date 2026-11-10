@@ -7,6 +7,7 @@ const fail = (status, message) => { throw Object.assign(new Error(message), { st
 const line = (path, group, label, max = 200) => ({ path, group, label, type: 'line', max });
 const text = (path, group, label, max = 1200, hideable = false) => ({ path, group, label, type: 'text', max, ...(hideable ? { hideable: true } : {}) });
 
+const PH = 'Tervezési fázisok';
 export const FIELDS = [
   line('hero.rendszer', 'Nyitóoldal', 'Főcím · 01 Rendszer', 120),
   line('hero.struktura', 'Nyitóoldal', 'Főcím · 02 Struktúra', 120),
@@ -33,7 +34,27 @@ export const FIELDS = [
   line('contact.address', 'Kapcsolat és lábléc', 'Cím', 200),
   line('contact.email', 'Kapcsolat és lábléc', 'E-mail', 120),
   line('contact.phone', 'Kapcsolat és lábléc', 'Telefon', 40),
-  line('footer', 'Kapcsolat és lábléc', 'Lábléc szövege', 200)
+  line('footer', 'Kapcsolat és lábléc', 'Lábléc szövege', 200),
+  // "Tervezési fázisok" subpage (/tervezesi-fazisok). Six fixed phases; in the list fields every line is one list item.
+  line('phases.navLabel', PH, 'Menüpont felirata', 40),
+  line('phases.homeLink', PH, 'Hivatkozás felirata a főoldal Szemlélet szakaszában', 100),
+  line('phases.h1', PH, 'Főcím', 120),
+  text('phases.intro', PH, 'Bevezető (üres sor: új bekezdés)', 1200),
+  text('phases.flowNote', PH, 'Megjegyzés a fázissor alatt', 400, true),
+  ...[0, 1, 2, 3, 4, 5].flatMap(i => [
+    line(`phases.items.${i}.name`, PH, `${i + 1}. fázis · neve`, 80),
+    line(`phases.items.${i}.goal`, PH, `${i + 1}. fázis · elsődleges cél (táblázat és rövid leírás)`, 160),
+    line(`phases.items.${i}.level`, PH, `${i + 1}. fázis · részletezettség (táblázat)`, 120),
+    text(`phases.items.${i}.lead`, PH, `${i + 1}. fázis · leírás (üres sor: új bekezdés)`, 900),
+    text(`phases.items.${i}.list`, PH, `${i + 1}. fázis · dokumentációs tartalom (soronként egy listaelem)`, 1800),
+    text(`phases.items.${i}.result`, PH, `${i + 1}. fázis · eredmény`, 400)
+  ]),
+  line('phases.formTitle', PH, 'Formai követelmények · cím', 120),
+  text('phases.formText', PH, 'Formai követelmények · bevezető (üres sor: új bekezdés)', 800),
+  text('phases.formList', PH, 'Formai követelmények · lista (soronként egy listaelem)', 1500),
+  text('phases.formNote', PH, 'Formai követelmények · záró megjegyzés', 600),
+  line('phases.backgroundTitle', PH, 'Szabályozási háttér · cím', 120),
+  text('phases.backgroundText', PH, 'Szabályozási háttér · szöveg (üres sor: új bekezdés)', 1500)
 ];
 const BY_PATH = new Map(FIELDS.map(f => [f.path, f]));
 // Fields marked hideable may be saved empty on purpose: an empty override hides the text instead of using the default.
@@ -45,6 +66,10 @@ function locate(root, path) {
   if ((parts[0] === 'areas' || parts[0] === 'principles') && parts.length === 3) {
     const entry = root[parts[0]]?.[Number(parts[1])];
     return entry ? { holder: entry, key: parts[2] === 'title' ? 0 : 1 } : null;
+  }
+  if (parts[0] === 'phases' && parts[1] === 'items' && parts.length === 4) {
+    const entry = root.phases?.items?.[Number(parts[2])];
+    return entry && parts[3] in entry ? { holder: entry, key: parts[3] } : null;
   }
   if (parts[0] === 'sectors' && parts.length === 2) return root.sectors && Number(parts[1]) < root.sectors.length ? { holder: root.sectors, key: Number(parts[1]) } : null;
   if (parts.length === 2) return root[parts[0]] ? { holder: root[parts[0]], key: parts[1] } : null;

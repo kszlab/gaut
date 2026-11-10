@@ -2,6 +2,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { LOGOS, ICONS } from './art.mjs';
 import { applyContent, isChamberUrl } from './content.mjs';
 import { renderMosaic } from './mosaic.mjs';
+import { PHASES_TEXT, PHASES_PATH, phasesMain } from './phases.mjs';
 
 // Hero render for concept n: a high-resolution file (hero-N.webp or hero-N.jpg) wins over the interim
 // crop from the concept board (heroN.png). See docs/HERO-IMAGES.md.
@@ -170,6 +171,8 @@ const TEXT = {
   }
 };
 
+for (const lang of Object.keys(TEXT)) TEXT[lang].phases = PHASES_TEXT[lang]; // text of the "Tervezési fázisok" subpage
+
 // Default text of one language (used by the editor to show what an empty field falls back to).
 export const defaultText = lang => structuredClone(TEXT[lang]);
 
@@ -202,12 +205,15 @@ function teamCard(m, lang, t) {
 </article>`;
 }
 
-export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampleReferences(), team = sampleTeam(), content = null, draft = false, media = {} } = {}) {
+export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampleReferences(), team = sampleTeam(), content = null, draft = false, media = {}, page = 'home' } = {}) {
   lang = LANGS.includes(lang) ? lang : 'hu';
   theme = parseTheme(theme);
   const t = applyContent(TEXT[lang], content?.[lang]);
-  const pathOf = l => (l === 'hu' ? '/' : '/en'); // the Hungarian site is the root, English lives at /en
-  const home = pathOf(lang);
+  const homeOf = l => (l === 'hu' ? '/' : '/en'); // the Hungarian site is the root, English lives at /en
+  const sub = page === 'phases'; // the "Tervezési fázisok" subpage shares the header, footer and themes of the home page
+  const pathOf = l => (sub ? PHASES_PATH[l] : homeOf(l));
+  const home = homeOf(lang), anchor = id => `${sub ? home : ''}#${id}`;
+  const navLink = ([id, label]) => `<a href="${anchor(id)}">${esc(label)}</a>${id === 'szakteruletek' ? `<a href="${PHASES_PATH[lang]}"${sub ? ' aria-current="page"' : ''}>${esc(t.phases.navLabel)}</a>` : ''}`;
   const otherLang = lang === 'hu' ? 'en' : 'hu';
   return `<!doctype html>
 <html lang="${t.htmlLang}" data-theme="${theme}">
@@ -215,9 +221,9 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>${esc(t.title)}</title>
-<meta name="description" content="${esc(t.description)}">
-<link rel="alternate" hreflang="hu" href="/"><link rel="alternate" hreflang="en" href="/en">
+<title>${esc(sub ? t.phases.metaTitle : t.title)}</title>
+<meta name="description" content="${esc(sub ? t.phases.metaDescription : t.description)}">
+<link rel="alternate" hreflang="hu" href="${pathOf('hu')}"><link rel="alternate" hreflang="en" href="${pathOf('en')}">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/site/site.css">
 <script type="module" src="/site/site.js"></script>
@@ -231,12 +237,12 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
   </a>
   <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav" aria-label="Menu"><span></span><span></span></button>
   <nav id="nav" class="nav" aria-label="${lang === 'hu' ? 'Főmenü' : 'Main'}">
-    ${t.nav.filter(([id]) => id !== 'csapat' || team.length).map(([id, label]) => `<a href="#${id}">${esc(label)}</a>`).join('')}
+    ${t.nav.filter(([id]) => id !== 'csapat' || team.length).map(navLink).join('')}
     <a class="lang" href="${pathOf(otherLang)}" data-keep-theme hreflang="${otherLang}" lang="${otherLang}" title="${esc(t.otherName)}">${esc(t.other)}</a>
   </nav>
 </header>
 <main id="tartalom">
-<section class="hero">
+${sub ? phasesMain(t.phases, { esc, paragraphs: paragraphsHtml }) : `<section class="hero">
   <div class="wrap hero-grid">
     <div class="hero-copy">
       ${Object.entries(t.hero).map(([k, v]) => heroTitle(k, v)).join('')}
@@ -263,6 +269,7 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
 <section id="szemlelet" class="block alt">
   <div class="wrap split">
     <div><p class="kicker">${esc(t.approachKicker)}</p><h2>${esc(t.approachTitle)}</h2><p class="body">${esc(t.approachText)}</p>
+      ${t.phases.homeLink ? `<p class="more"><a href="${PHASES_PATH[lang]}">${esc(t.phases.homeLink)} ${arrow}</a></p>` : ''}
       <p class="sectors-label">${esc(t.vendorsLabel)}</p><ul class="vendors">${t.vendors.map(v => `<li>${esc(v)}</li>`).join('')}</ul></div>
     <ol class="principles">${t.principles.map(([h, p]) => `<li><h3>${esc(h)}</h3><p>${esc(p)}</p></li>`).join('')}</ol>
   </div>
@@ -298,7 +305,7 @@ ${team.length ? `<section id="csapat" class="block alt">
       ${Object.values(t.contact).every(Boolean) ? '' : `<p class="note">${esc(t.contactPending)}</p>`}
     </div>
   </div>
-</section>
+</section>`}
 </main>
 <footer class="foot"><div class="wrap"><span>${esc(t.footer)}</span></div></footer>
 
