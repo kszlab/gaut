@@ -100,7 +100,7 @@ h1, h2, h3 { font-family: var(--font-head); font-weight: var(--head-weight); let
 [data-theme="szinkron"] .sys-icons { display: block; }
 .sys-icons li { position: absolute; left: 0; width: 44px; height: 44px; margin-top: -22px; display: grid; place-items: center; border: 1px solid var(--accent); border-radius: 8px; color: var(--ink); background: var(--surface); }
 .sys-icons li::before { content: ""; position: absolute; right: 100%; top: 50%; width: 14px; height: 2px; margin-top: -1px; background: var(--accent); }
-.sys-icons li:nth-child(1) { top: 22%; } .sys-icons li:nth-child(2) { top: 37%; } .sys-icons li:nth-child(3) { top: 52%; } .sys-icons li:nth-child(4) { top: 67%; } .sys-icons li:nth-child(5) { top: 81%; }
+.sys-icons li:nth-child(1) { top: 22.8%; } .sys-icons li:nth-child(2) { top: 35%; } .sys-icons li:nth-child(3) { top: 47%; } .sys-icons li:nth-child(4) { top: 58.8%; } .sys-icons li:nth-child(5) { top: 70.8%; }
 .icon { width: 26px; height: 26px; }
 
 /* "Szinkron" follows its concept board: one ink-blue surface for header and hero, the render bleeding to the right edge,
@@ -114,7 +114,7 @@ h1, h2, h3 { font-family: var(--font-head); font-weight: var(--head-weight); let
 [data-theme="szinkron"] .hero-szinkron { mix-blend-mode: lighten; -webkit-mask-image: linear-gradient(to right, transparent 0, #000 14%), linear-gradient(to bottom, #000 80%, transparent 97%); mask-image: linear-gradient(to right, transparent 0, #000 14%), linear-gradient(to bottom, #000 80%, transparent 97%); }
 [data-theme="szinkron"] .sys-icons { width: 50px; }
 [data-theme="szinkron"] .sys-icons li { width: 50px; height: 50px; margin-top: -25px; border-color: color-mix(in srgb, var(--ink) 75%, transparent); background: color-mix(in srgb, var(--bg) 55%, transparent); }
-[data-theme="szinkron"] .sys-icons li::before { width: 36px; }
+[data-theme="szinkron"] .sys-icons li::before { display: none; } /* the render's own lime lines run to the icons */
 @media (min-width: 861px) {
   [data-theme="szinkron"] .top .nav { flex: 1; }
   [data-theme="szinkron"] .top .nav a:first-child, [data-theme="szinkron"] .top .nav .lang { margin-left: auto; }
