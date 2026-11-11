@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
+import { isReferenceCategory, normalizeReferenceCategory } from './reference-categories.mjs';
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
 const LABELS={common:'Közös',misi:'Misi',nandi:'Nándi',attila:'Attila',krisztian:'Krisztián'};
 const OWNERS = ['common', 'misi', 'nandi', 'attila', 'krisztian'];
@@ -23,7 +24,8 @@ export function referenceStore(db) {
     r.sections=OWNERS.filter(x=>r.sections.includes(x));r.section=r.sections[0];
     if (!/^[a-zA-Z0-9_-]{1,100}$/.test(r.id || '')) fail(400,'Érvénytelen azonosító.');
     if (typeof r.name !== 'string' || !r.name.trim() || r.name.length>500) fail(400,'A projekt neve kötelező, legfeljebb 500 karakter.');
-    for (const key of ['design_year','category','city','address','identification_status','scope_from_pdf','background','questions','publication_status','attribution','website_copy_draft','technical_detail','website_title_hu','website_title_en','website_title_en_source','website_copy_hu','website_copy_en','website_cover_photo','website_cover_media']) { if(r[key]===undefined) r[key]=''; if(typeof r[key]!=='string') fail(400,'A szöveges mezőkben szöveget adj meg.'); }
+    for (const key of ['design_year','category','city','address','identification_status','scope_from_pdf','background','questions','publication_status','attribution','website_copy_draft','technical_detail','website_title_hu','website_title_en','website_title_en_source','website_copy_hu','website_copy_en','website_cover_photo','website_cover_media','category_legacy']) { if(r[key]===undefined) r[key]=''; if(typeof r[key]!=='string') fail(400,'A szöveges mezőkben szöveget adj meg.'); }
+    if (!isReferenceCategory(r.category)) { r.category_legacy = r.category || ''; r.category = normalizeReferenceCategory(r.category); } else r.category = normalizeReferenceCategory(r.category);
     for (const [key,max] of [['website_title_hu',160],['website_title_en',160],['website_title_en_source',160],['website_copy_hu',900],['website_copy_en',900]]) if(r[key].length>max) fail(400,'Túl hosszú honlapos szöveg: '+key+' (legfeljebb '+max+' karakter).');
     for (const key of ['website_role_confirmed','website_photo_rights','website_featured']) { if(r[key]===undefined) r[key]=false; if(typeof r[key]!=='boolean') fail(400,'Invalid website flag: '+key); }
     for (const [k,v] of Object.entries(r)) if (typeof v==='string' && v.length>30000) fail(400,`Túl hosszú mező: ${k}`);
@@ -61,6 +63,24 @@ export function referenceStore(db) {
         if (p.section===undefined) { p.section='krisztian'; db.prepare('UPDATE reference_records SET payload=?,revision=revision+1 WHERE id=?').run(JSON.stringify(p),row.id); }
       }
       db.prepare('INSERT INTO reference_meta VALUES(?,?)').run('owners-v1','1'); db.exec('COMMIT');
+    } catch(e) { db.exec('ROLLBACK'); throw e; }
+  }
+  // One-time taxonomy migration: keep existing category values where canonical; preserve unknown legacy labels.
+  if (!db.prepare("SELECT 1 FROM reference_meta WHERE key='categories-v1'").get()) {
+    db.exec('BEGIN IMMEDIATE');
+    try {
+      for (const row of db.prepare('SELECT * FROM reference_records').all()) {
+        const p = JSON.parse(row.payload), old = String(p.category || '');
+        if (!isReferenceCategory(old)) {
+          p.category_legacy = old;
+          p.category = normalizeReferenceCategory(old);
+          db.prepare('UPDATE reference_records SET payload=?,revision=revision+1 WHERE id=?').run(JSON.stringify(p), row.id);
+        } else {
+          const canonical = normalizeReferenceCategory(old);
+          if (canonical !== old) { p.category = canonical; db.prepare('UPDATE reference_records SET payload=?,revision=revision+1 WHERE id=?').run(JSON.stringify(p), row.id); }
+        }
+      }
+      db.prepare('INSERT INTO reference_meta VALUES(?,?)').run('categories-v1','1'); db.exec('COMMIT');
     } catch(e) { db.exec('ROLLBACK'); throw e; }
   }
   // Website titles. The Hungarian title always holds a value (the project name when left empty). The English title remembers
