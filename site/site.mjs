@@ -43,22 +43,6 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;'
 // It is used for the general introduction of the team (full width, under the section heading); an empty value renders nothing.
 export const paragraphsHtml = text => String(text ?? '').trim().split(/\n\s*\n/).map(p => p.trim()).filter(Boolean).map(p => `<p>${esc(p).replace(/\n/g, '<br>')}</p>`).join('');
 // Limited Markdown renderer: raw HTML is escaped and external links are restricted to http(s).
-// If the editable first line repeats the section title, omit that line on the public page.
-// This also cleans up existing published overrides without requiring a manual content migration.
-export function withoutRepeatedTitle(title, source) {
-  const lines = String(source ?? '').replace(/\\r\\n/g, '\\n').split('\\n');
-  const first = lines.findIndex(line => line.trim());
-  if (first < 0) return String(source ?? '');
-  const plain = lines[first]
-    .replace(/\\[\\[(?:12|14|16|18|20|24|28|32|36|42)\\|(sans|serif|mono)\\]\\]/g, '')
-    .replace(/\\[\\[\\/\\]\\]/g, '')
-    .replace(/\\*\\*|\\*|\\+\\+/g, '')
-    .replace(/\\s+/g, ' ').trim();
-  return plain === String(title ?? '').replace(/\\s+/g, ' ').trim()
-    ? lines.filter((_, i) => i !== first).join('\\n').replace(/^\\n+/, '')
-    : String(source ?? '');
-}
-
 export function richTextHtml(source) {
   const inline = raw => {
     let out = esc(raw);
@@ -305,7 +289,7 @@ ${sub ? phasesMain(t.phases, { esc, paragraphs: paragraphsHtml }) : `<section cl
 </section>
 
 <section id="bemutatkozas" class="block about-section">
-  <div class="wrap"><p class="kicker">${lang === 'hu' ? 'Bemutatkozás' : 'About'}</p><h2>${esc(t.aboutTitle)}</h2><div class="rich-text">${richTextHtml(withoutRepeatedTitle(t.aboutTitle, t.aboutText))}</div></div>
+  <div class="wrap"><p class="kicker">${lang === 'hu' ? 'Bemutatkozás' : 'About'}</p><h2>${esc(t.aboutTitle)}</h2><div class="rich-text">${richTextHtml(t.aboutText)}</div></div>
 </section>
 
 <section id="szakteruletek" class="block">
