@@ -194,8 +194,13 @@ h3 { font-size: 21px; }
 .portrait::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--accent); }
 
 /* Contact & footer */
-.contact-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; }
-.contact-card dl { margin: 0 0 18px; display: grid; gap: 14px; }
+.contact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 28px; align-items: stretch; }
+.contact-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; min-width: 0; }
+.contact-card h2 { margin: 0 0 28px; font-family: var(--font-head); font-size: clamp(24px, 2.4vw, 32px); }
+.contact-card dl { margin: 0; display: grid; gap: 18px; }
+.contact-card dd { overflow-wrap: anywhere; }
+.contact-card .map-link { display: block; width: fit-content; margin-top: 8px; font-size: 14px; color: var(--accent-text); text-underline-offset: 3px; }
+@media(max-width: 760px) { .contact-grid { grid-template-columns: 1fr; gap: 16px; } .contact-card { padding: 22px; } }
 .contact-card dt { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
 .contact-card dd { margin: 2px 0 0; font-size: 18px; }
 .contact-card .pending { color: var(--muted); font-style: italic; }
