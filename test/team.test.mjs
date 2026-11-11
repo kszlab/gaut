@@ -60,7 +60,7 @@ test('team editing end to end: draft, preview, publish, portrait upload', async 
     const up = await (await call('/api/site/media', 'POST', { filename: 'anna.png', content: png.toString('base64') })).json();
     let state = await (await call('/api/site/content')).json();
     assert.ok((await (await fetch(`${base}/hu`)).text()).includes('class="badge">Minta'), 'live site starts with the placeholder team');
-    const put = await call('/api/site/content', 'PUT', { revision: state.draft.revision, overrides: { hu: {}, en: {}, media: { 'team.anna': up.media.id }, team: [member('anna')] } });
+    const put = await call('/api/site/content', 'PUT', { revision: state.draft.revision, overrides: { hu: {}, en: {}, media: { 'team.anna': up.media.id }, team: [member('anna', 'Kiss Anna', { email: 'anna@example.com' })] } });
     assert.equal(put.status, 200); state = await put.json();
     assert.equal(state.draft.overrides.team[0].name.hu, 'Kiss Anna');
     assert.equal((await call('/api/site/content', 'PUT', { revision: state.draft.revision, overrides: { hu: {}, en: {}, team: [member('anna', '')] } })).status, 400);
@@ -73,6 +73,11 @@ test('team editing end to end: draft, preview, publish, portrait upload', async 
     assert.equal((await call('/api/site/publish', 'POST', { revision: state.draft.revision, note: 'csapat' })).status, 200);
     const live = await (await fetch(`${base}/en`)).text();
     assert.ok(live.includes('<h3>Kiss Anna</h3>') && live.includes('Electrical designer') && live.includes('alt="Kiss Anna"'));
+    assert.ok(live.includes('data-contact-member="anna"') && !live.includes('anna@example.com'), 'contact address is not embedded in public HTML');
+    const contact = await fetch(`${base}/api/public/team-contact`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-gaut-request': '1' }, body: JSON.stringify({ id: 'anna' }) });
+    assert.equal(contact.status, 200); assert.deepEqual(await contact.json(), { email: 'anna@example.com' });
+    const missing = await fetch(`${base}/api/public/team-contact`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-gaut-request': '1' }, body: JSON.stringify({ id: 'missing' }) });
+    assert.equal(missing.status, 404);
     assert.equal((await fetch(`${base}/media/${up.media.id}/800.webp`)).status, 200, 'portrait is public once published');
     // hide the section
     state = await (await call('/api/site/content')).json();
@@ -89,6 +94,10 @@ test('chamber register number and link: validated, normalised and rendered safel
   assert.equal(ok.chamber_no, '01-15009'); assert.equal(ok.chamber_url, 'https://mernokvagyok.hu/nevjegyzek/?id=15009');
   assert.equal(cleanTeam([member('b')])[0].chamber_no, '', 'the chamber data is optional');
   assert.equal(cleanTeam([member('b')])[0].chamber_url, '');
+  assert.equal(cleanTeam([member('b', 'B', { email: 'anna@example.com' })])[0].email, 'anna@example.com');
+  assert.equal(cleanTeam([member('b')])[0].phone, '');
+  assert.throws(() => cleanTeam([member('b', 'B', { email: 'not-an-email' })]), /e-mail-cím/);
+  assert.throws(() => cleanTeam([member('b', 'B', { phone: 'abc123' })]), /telefonszám/);
   assert.equal(cleanTeam([member('b', 'B', { chamber_url: 'https://www.mmk.hu/nevjegyzek?x=1' })])[0].chamber_url, 'https://www.mmk.hu/nevjegyzek?x=1', 'subdomains of an allowed site are accepted');
   for (const bad of ['http://mernokvagyok.hu/x', 'https://evil.example/mernokvagyok.hu', 'https://mernokvagyok.hu.evil.example/x', 'https://user:pw@mernokvagyok.hu/x', 'javascript:alert(1)', 'mernokvagyok.hu/nevjegyzek', 'https://notmernokvagyok.hu/']) {
     assert.throws(() => cleanTeam([member('b', 'B', { chamber_url: bad })]), /kamarai link/, bad);
