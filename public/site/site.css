@@ -355,3 +355,13 @@ h3 { font-size: 21px; }
 .member-contact-details p { margin: 6px 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .member-contact-details p span { color: var(--muted, #687078); min-width: 64px; }
 .member-contact-details[hidden] { display: none; }
+
+.rich-text u { text-decoration-thickness: 1px; text-underline-offset: .18em; }
+.rich-text .rt-size-12 { font-size:12px; } .rich-text .rt-size-14 { font-size:14px; }
+.rich-text .rt-size-16 { font-size:16px; } .rich-text .rt-size-18 { font-size:18px; }
+.rich-text .rt-size-20 { font-size:20px; } .rich-text .rt-size-24 { font-size:24px; }
+.rich-text .rt-size-28 { font-size:28px; } .rich-text .rt-size-32 { font-size:32px; }
+.rich-text .rt-size-36 { font-size:36px; } .rich-text .rt-size-42 { font-size:42px; }
+.rich-text .rt-font-sans { font-family:Arial, sans-serif; }
+.rich-text .rt-font-serif { font-family:Georgia, 'Times New Roman', serif; }
+.rich-text .rt-font-mono { font-family:Consolas, monospace; }
