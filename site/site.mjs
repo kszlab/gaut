@@ -41,6 +41,31 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;'
 // A free text block: an empty line starts a new paragraph, a single line break stays a line break. Everything is escaped.
 // It is used for the general introduction of the team (full width, under the section heading); an empty value renders nothing.
 export const paragraphsHtml = text => String(text ?? '').trim().split(/\n\s*\n/).map(p => p.trim()).filter(Boolean).map(p => `<p>${esc(p).replace(/\n/g, '<br>')}</p>`).join('');
+// Limited Markdown renderer: raw HTML is escaped and external links are restricted to http(s).
+export function richTextHtml(source) {
+  const inline = raw => {
+    let out = esc(raw);
+    out = out.replace(/\\[([^\\]]+)\\]\\((https?:\\/\\/[^\\s)]+)\\)/g, (_, label, url) => '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + label + '</a>');
+    out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
+    out = out.replace(/\\*\\*([^*]+)\\*\\*/g, '<strong>$1</strong>');
+    out = out.replace(/\\*([^*]+)\\*/g, '<em>$1</em>');
+    return out;
+  };
+  const lines = String(source ?? '').replace(/\\r\\n/g, '\\n').split('\\n');
+  const html = []; let paragraph = [], list = [];
+  const flushP = () => { if (paragraph.length) { html.push('<p>' + paragraph.map(inline).join('<br>') + '</p>'); paragraph = []; } };
+  const flushL = () => { if (list.length) { html.push('<ul>' + list.map(x => '<li>' + inline(x) + '</li>').join('') + '</ul>'); list = []; } };
+  for (const line of lines) {
+    const item = /^\\s*[-*]\\s+(.+)$/.exec(line);
+    const heading = /^(#{1,3})\\s+(.+)$/.exec(line);
+    if (!line.trim()) { flushP(); flushL(); continue; }
+    if (item) { flushP(); list.push(item[1]); continue; }
+    flushL();
+    if (heading) { flushP(); const n = heading[1].length + 1; html.push('<h' + n + '>' + inline(heading[2]) + '</h' + n + '>'); continue; }
+    paragraph.push(line);
+  }
+  flushP(); flushL(); return html.join('');
+}
 const teamIntroHtml = text => { const html = paragraphsHtml(text); return html ? `<div class="team-intro">${html}</div>` : ''; };
 
 export const parseTheme =value => THEMES.includes(value) ? value : THEME_ALIASES[value] || 'rendszer';
@@ -94,7 +119,7 @@ const TEXT = {
   hu: {
     htmlLang: 'hu', title: 'GAUT Mérnökiroda | Gépészeti automatika és épületfelügyelet',
     description: 'A GAUT gépészeti automatika- és épületfelügyeleti rendszereket tervező mérnökiroda.',
-    nav: [['szakteruletek', 'Szakterületek'], ['szemlelet', 'Szemlélet'], ['referenciak', 'Referenciák'], ['csapat', 'Csapat'], ['kapcsolat', 'Kapcsolat']],
+    nav: [['bemutatkozas', 'Bemutatkozás'], ['szakteruletek', 'Szakterületek'], ['szemlelet', 'Szemlélet'], ['referenciak', 'Referenciák'], ['csapat', 'Csapat'], ['kapcsolat', 'Kapcsolat']],
     teamKicker: 'Csapat', teamTitle: 'A tervezők, akikkel dolgozhat', teamIntro: '',
     teamNote: 'Helyőrző bemutatkozások. A fotók és a szövegek a kollégáktól érkeznek majd.', photoSoon: 'Fotó hamarosan',
     chamberLabel: 'Mérnöki kamarai névjegyzék', chamberOpen: 'megnyitás',
@@ -102,6 +127,8 @@ const TEXT = {
     hero: { rendszer: 'Összehangolt rendszerek.', struktura: 'Átgondolt tervezés. Biztos működés.', szinkron: 'Intelligens épületek. Összhangban.' },
     sub: 'Gépészeti automatika és épületfelügyelet', cta: 'Kapcsolat', cta2: 'Referenciák',
     lead: 'Az épületgépészet és a villamos szakágak találkozásánál dolgozunk: egy tervben hangoljuk össze a rendszereket, hogy az épület biztonságosan, gazdaságosan és jól üzemeltethetően működjön.',
+    aboutTitle: 'Mérnöki szemlélet, összehangolt rendszerek',
+    aboutText: 'A GAUT Kft. épületgépészeti automatika- és épületfelügyeleti rendszerek tervezésével foglalkozó mérnökiroda. Munkánk középpontjában az épületgépészeti technológia, a villamos vezérlések és a felügyeleti rendszerek összehangolt, következetes megtervezése áll.\n\nA tervezés során a teljes rendszer működéséből indulunk ki: megvizsgáljuk a gépészeti berendezések feladatait, a szabályozási és biztonsági követelményeket, a villamos kapcsolódásokat, valamint az üzemeltetéshez szükséges információkat. Ennek alapján alakítjuk ki az automatika architektúráját, a vezérlési és szabályozási funkciókat, a terepi eszközök és vezérlőberendezések körét, továbbá az épületfelügyeleti kommunikációt.\n\nA feladat jellegéhez igazodva részt veszünk a koncepcióalkotásban, a tender- és kiviteli tervezésben, valamint a részletes gyártmánytervezésben. Célunk, hogy a dokumentáció ne csupán a berendezések felsorolása legyen, hanem egyértelműen meghatározza a rendszer működését, a szakági határfelületeket és a megvalósítás műszaki feltételeit.\n\nA jó terv a kivitelezés és a későbbi üzemeltetés alapja: legyen áttekinthető, ellenőrizhető, bővíthető és a projekt valós igényeihez illeszkedő.',
     areasKicker: 'Szakterületek', areasTitle: 'Amit tervezünk',
     areas: [
       ['Gépészeti automatika', 'Légtechnikai, fűtési, hűtési, valamint speciális tűzvédelmi, hő- és füstelvezető rendszerek vezérlése és szabályozása. DDC- és PLC-készülékek, terepi elemek kiválasztása a projekt igényeihez.'],
@@ -113,7 +140,8 @@ const TEXT = {
     principles: [
       ['Szakágak összehangolva', 'Épületgépészet, villamos rendszerek és épületfelügyelet egy közös terv részeként.'],
       ['Gyártófüggetlen választás', 'A feladathoz illő megoldást keressük, nem egyetlen gyártó termékcsaládját.'],
-      ['Hosszú távú üzemeltethetőség', 'Biztonságos, előírásszerű működés, energiapazarlást és hibákat megelőző tervezés.']
+      ['Hosszú távú üzemeltethetőség', 'Biztonságos, előírásszerű működés, energiapazarlást és hibákat megelőző tervezés.'],
+      ['Átlátható dokumentáció', 'Követhető működési leírások, egyértelmű szakági határfelületek és a kivitelezést támogató részletes tervanyag.']
     ],
     vendorsLabel: 'Dolgozunk többek között a következő gyártók megoldásaival',
     vendors: ['Honeywell', 'Siemens', 'CIMON', 'ELCON', 'Schneider Electric', 'Johnson Controls', 'WAGO'],
@@ -133,7 +161,7 @@ const TEXT = {
   en: {
     htmlLang: 'en', title: 'GAUT Engineering | Building automation and building management design',
     description: 'GAUT is an engineering consultancy designing mechanical automation and building management systems.',
-    nav: [['szakteruletek', 'Services'], ['szemlelet', 'Approach'], ['referenciak', 'Projects'], ['csapat', 'Team'], ['kapcsolat', 'Contact']],
+    nav: [['bemutatkozas', 'About'], ['szakteruletek', 'Services'], ['szemlelet', 'Approach'], ['referenciak', 'Projects'], ['csapat', 'Team'], ['kapcsolat', 'Contact']],
     teamKicker: 'Team', teamTitle: 'The engineers you will work with', teamIntro: '',
     teamNote: 'Placeholder introductions. Photos and texts will come from the colleagues.', photoSoon: 'Photo coming soon',
     chamberLabel: 'Chamber of Engineers register', chamberOpen: 'open',
@@ -141,6 +169,8 @@ const TEXT = {
     hero: { rendszer: 'Coordinated systems.', struktura: 'Considered design. Reliable operation.', szinkron: 'Intelligent buildings. In harmony.' },
     sub: 'Building automation and building management', cta: 'Contact', cta2: 'Projects',
     lead: 'We work where building services and electrical disciplines meet: one design that brings the systems together so a building runs safely, economically and is easy to operate.',
+    aboutTitle: 'Engineering perspective. Coordinated systems.',
+    aboutText: 'GAUT Ltd. is an engineering consultancy specialising in building services automation and building management system design. Our work focuses on the coordinated design of mechanical building services, electrical controls and supervisory systems.\n\nWe approach each project as a complete operating system. We consider the functions of the mechanical equipment, control and safety requirements, electrical interfaces and the information needed for effective operation. On this basis, we define the automation architecture, control sequences, field devices and controllers, as well as communication with the building management system.\n\nDepending on the project, our work can cover concept development, tender design, detailed implementation design and shop design. Our aim is to produce documentation that does more than list equipment: it clearly defines system behaviour, discipline interfaces and the technical conditions for implementation.\n\nGood design is the foundation of construction and long-term operation. It should be clear, verifiable, maintainable, expandable and aligned with the actual needs of the project.',
     areasKicker: 'Services', areasTitle: 'What we design',
     areas: [
       ['Mechanical automation', 'Control and regulation of ventilation, heating, cooling and special fire-protection, smoke and heat exhaust systems. Selection of DDC and PLC devices and field elements to suit each project.'],
@@ -152,7 +182,8 @@ const TEXT = {
     principles: [
       ['Disciplines coordinated', 'Building services, electrical systems and building management as parts of one design.'],
       ['Vendor-independent selection', 'We look for the solution that fits the task, not one manufacturer\'s product range.'],
-      ['Long-term operability', 'Safe, compliant operation, designed to prevent faults and wasted energy.']
+      ['Long-term operability', 'Safe, compliant operation, designed to prevent faults and wasted energy.'],
+      ['Clear documentation', 'Traceable control descriptions, well-defined discipline interfaces and detailed design information that supports implementation.']
     ],
     vendorsLabel: 'We work with solutions from manufacturers including',
     vendors: ['Honeywell', 'Siemens', 'CIMON', 'ELCON', 'Schneider Electric', 'Johnson Controls', 'WAGO'],
@@ -255,6 +286,10 @@ ${sub ? phasesMain(t.phases, { esc, paragraphs: paragraphsHtml }) : `<section cl
       <ul class="sys-icons" aria-hidden="true">${['fan', 'thermo', 'bulb', 'panel', 'monitor'].map(i => `<li>${ICONS[i]}</li>`).join('')}</ul>
     </div>
   </div>
+</section>
+
+<section id="bemutatkozas" class="block about-section">
+  <div class="wrap"><p class="kicker">${lang === 'hu' ? 'Bemutatkozás' : 'About'}</p><h2>${esc(t.aboutTitle)}</h2><div class="rich-text">${richTextHtml(t.aboutText)}</div></div>
 </section>
 
 <section id="szakteruletek" class="block">
