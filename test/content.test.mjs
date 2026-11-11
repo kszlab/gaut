@@ -37,6 +37,9 @@ test('long-form introduction supports safe Markdown and four principles render',
   assert.ok(html.includes('<h3>Mérnöki tervezés</h3>'));
   assert.ok(html.includes('<strong>Pontos</strong>'));
   assert.ok(html.includes('<em>átlátható</em>'));
+  const styled = richTextHtml('[[36|serif]]Nagy cím[[/]] és ++aláhúzott++');
+  assert.ok(styled.includes('<span class="rt-size-36 rt-font-serif">Nagy cím</span>'));
+  assert.ok(styled.includes('<u>aláhúzott</u>'));
   assert.ok(html.includes('<ul><li>Automatika</li><li>Felügyelet</li></ul>'));
   assert.ok(html.includes('&lt;script&gt;'));
   assert.ok(!html.includes('<script>'));
