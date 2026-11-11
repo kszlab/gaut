@@ -344,6 +344,17 @@ h3 { font-size: 21px; }
 .about-section .rich-text ul { padding-left: 1.3em; margin: .5em 0 1.2em; }
 .about-section .rich-text li { padding-left: .25em; margin: .35em 0; }
 .about-section .rich-text a { color: var(--accent-text); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.principles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media(max-width: 760px) { .principles { grid-template-columns: 1fr; } .about-section .rich-text { font-size: 16px; } }
+.activity-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:30px 0 42px}.activity-card{display:flex;flex-direction:column;overflow:hidden;border:1px solid #d9dedf;background:#fff;color:#182b36;text-decoration:none;transition:transform .2s,border-color .2s}.activity-card:hover{transform:translateY(-3px);border-color:#9badb5}.activity-card-image{display:block;aspect-ratio:16/9;background:#e8eef1;overflow:hidden}.activity-card-image img{width:100%;height:100%;object-fit:cover}.activity-card-copy{display:flex;flex-direction:column;gap:8px;padding:18px}.activity-card-copy strong{font-size:18px;line-height:1.25}.activity-card-copy>span{font-size:14px;color:#5e6d73}.activity-card-copy small{font-size:11px;color:#5e6d73;margin-top:auto}@media(max-width:850px){.activity-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.activity-cards{grid-template-columns:1fr}}
+
+/* Long-form company introduction and four approach principles. */
+.about-section .rich-text { max-width: 920px; color: var(--muted); font-size: 17px; line-height: 1.85; }
+.about-section .rich-text p { margin: 0 0 1.15em; }
+.about-section .rich-text h3 { color: var(--ink); margin: 1.5em 0 .5em; }
+.about-section .rich-text ul { padding-left: 1.3em; margin: .5em 0 1.2em; }
+.about-section .rich-text li { padding-left: .25em; margin: .35em 0; }
+.about-section .rich-text a { color: var(--accent-text); text-decoration-thickness: 1px; text-underline-offset: 3px; }
 @media(max-width: 760px) { .principles { grid-template-columns: 1fr; } .about-section .rich-text { font-size: 16px; } }
 
 /* Public reference taxonomy: a compact second row for the selected main category. */
