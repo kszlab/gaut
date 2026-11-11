@@ -39,7 +39,7 @@ export const CATEGORY_REVIEW_STATUSES = ['Jóváhagyott', 'Ellenőrzendő', 'Bes
 
 // Proposed initial mapping based on the existing reference descriptions. Uncertain cases stay flagged for review.
 export const INITIAL_REFERENCE_CLASSIFICATION = {
-  'GAUT-REF-001': ['kozintézmenyek','kereskedelmi-szolgaltato','Ellenőrzendő'],
+  'GAUT-REF-001': ['kozintezmenyek','kereskedelmi-szolgaltato','Ellenőrzendő'],
   'GAUT-REF-002': ['egyeb-letesitmenyek','szallodak','Ellenőrzendő'],
   'GAUT-REF-003': ['egyeb-letesitmenyek','bankok','Ellenőrzendő'],
   'GAUT-REF-004': ['kozintezmenyek','kulturalis-intezmenyek','Ellenőrzendő'],
