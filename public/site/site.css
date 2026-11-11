@@ -339,5 +339,4 @@ h3 { font-size: 21px; }
 .about-section .rich-text ul { padding-left: 1.3em; margin: .5em 0 1.2em; }
 .about-section .rich-text li { padding-left: .25em; margin: .35em 0; }
 .about-section .rich-text a { color: var(--accent-text); text-decoration-thickness: 1px; text-underline-offset: 3px; }
-.principles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 @media(max-width: 760px) { .principles { grid-template-columns: 1fr; } .about-section .rich-text { font-size: 16px; } }
