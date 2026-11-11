@@ -145,6 +145,8 @@ const TEXT = {
     vendors: ['Honeywell', 'Siemens', 'CIMON', 'ELCON', 'Schneider Electric', 'Johnson Controls', 'WAGO'],
     sectorsLabel: 'Tapasztalatunk területei',
     sectors: ['Ipari létesítmények', 'Kereskedelmi létesítmények', 'Szállodák', 'Közösségi épületek', 'Oktatási intézmények', 'Egészségügyi beruházások'],
+    activitiesLabel: 'Tevékenységeink',
+    activities: ['Tervezés', 'Tervellenőrzés', 'Műszaki ellenőrzés'],
     refsKicker: 'Referenciák', refsTitle: 'Válogatás a munkáinkból',
     refsNote: 'Bemutató mintaprojektek. A látható projektek kitaláltak, a végleges oldalon valós referenciák szerepelnek majd.',
     all: 'Mind', sample: 'Minta', designYear: 'Tervév', mosaicOpen: 'Megnyitás', mosaicClose: 'Bezárás', mosaicPrev: 'Előző referencia', mosaicNext: 'Következő referencia', mosaicDetail: 'Referencia részletei',
@@ -187,6 +189,8 @@ const TEXT = {
     vendors: ['Honeywell', 'Siemens', 'CIMON', 'ELCON', 'Schneider Electric', 'Johnson Controls', 'WAGO'],
     sectorsLabel: 'Where we have experience',
     sectors: ['Industrial facilities', 'Commercial facilities', 'Hotels', 'Community buildings', 'Educational institutions', 'Healthcare projects'],
+    activitiesLabel: 'Our services',
+    activities: ['Design', 'Design review', 'Technical supervision'],
     refsKicker: 'Projects', refsTitle: 'Selected work',
     refsNote: 'Illustrative sample projects. The projects shown are invented; the final site will list real references.',
     all: 'All', sample: 'Sample', designYear: 'Design year', mosaicOpen: 'Open', mosaicClose: 'Close', mosaicPrev: 'Previous project', mosaicNext: 'Next project', mosaicDetail: 'Project details',
@@ -298,6 +302,8 @@ ${sub ? phasesMain(t.phases, { esc, paragraphs: paragraphsHtml }) : `<section cl
     <div class="areas">${t.areas.map(([h, p], i) => `<article class="area"><span class="area-icon">${ICONS[['fan', 'switches', 'monitor'][i]]}</span><span class="num">0${i + 1}</span><h3>${esc(h)}</h3><p>${esc(p)}</p></article>`).join('')}</div>
     <p class="sectors-label">${esc(t.sectorsLabel)}</p>
     <ul class="chips">${t.sectors.map(s => `<li>${esc(s)}</li>`).join('')}</ul>
+    <p class="sectors-label activities-label">${esc(t.activitiesLabel)}</p>
+    <ul class="chips activities-chips">${t.activities.map(s => `<li>${esc(s)}</li>`).join('')}</ul>
   </div>
 </section>
 
