@@ -142,7 +142,11 @@ export function cleanTeam(list) {
     const chamberNo = oneLine(m.chamber_no ?? '', 40, `${i + 1}. tag kamarai azonosítója`);
     // Registration numbers come in many formats, so only markup characters are refused (the output is escaped anyway).
     if (/[<>"]/.test(chamberNo)) fail(400, 'A kamarai azonosító nem tartalmazhat <, > vagy idézőjel karaktert.');
-    return { id: m.id, name: pair(m.name, 'name', 80, `${i + 1}. tag neve`, true), role: pair(m.role, 'role', 80, `${i + 1}. tag szerepköre`), bio, focus, chamber_no: chamberNo, chamber_url: chamberUrl(m.chamber_url ?? '', i) };
+    const email = oneLine(m.email ?? '', 120, \`\${i + 1}. tag e-mail-címe\`);
+    if (email && !/^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(email)) fail(400, 'Érvénytelen e-mail-cím.');
+    const phone = oneLine(m.phone ?? '', 40, \`\${i + 1}. tag telefonszáma\`);
+    if (phone && !/^[0-9+()\-\s/.]{5,40}$/.test(phone)) fail(400, 'Érvénytelen telefonszám.');
+    return { id: m.id, name: pair(m.name, 'name', 80, \`\${i + 1}. tag neve\`, true), role: pair(m.role, 'role', 80, \`\${i + 1}. tag szerepköre\`), bio, focus, chamber_no: chamberNo, chamber_url: chamberUrl(m.chamber_url ?? '', i), email, phone };
   });
 }
 
