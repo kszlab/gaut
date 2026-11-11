@@ -20,3 +20,4 @@
 input.stale{color:#b42318;border-color:#b42318;background:#fff5f4}.stale-note{display:block;margin-top:6px;color:#b42318;font-weight:600}
 
 .category-assignment{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;padding:14px;margin:0 0 18px;background:#f5f8f9;border:1px solid var(--line);border-radius:6px}.category-assignment label{margin:0;font-size:11px}.category-assignment select{margin-top:6px}@media(max-width:760px){.category-assignment{grid-template-columns:1fr}}
+.category-assignment .category-review-note{grid-column:1/-1}.category-assignment .category-review-note textarea{margin-top:6px;min-height:70px}.category-review-note-text{display:block;margin-top:6px;color:#805b14;white-space:normal;line-height:1.5}
