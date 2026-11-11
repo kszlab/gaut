@@ -63,7 +63,7 @@ test('activity category cards are validated, persisted and rendered with categor
   assert.deepEqual(clean.categoryCards[0].categoryIds, ['irodahazak', 'bankok']);
   assert.throws(() => cleanOverrides({ categoryCards: [{ ...cards[0], id: 'bad id' }] }), /azonosító/);
   assert.throws(() => cleanOverrides({ categoryCards: [{ ...cards[0], categoryIds: ['irodahazak', 'irodahazak'] }] }), /kategória/);
-  assert.throws(() => cleanOverrides({ categoryCards: [{ ...cards[0], image: 'not-a-uuid' }] }), /képazonosító/);
+  assert.throws(() => cleanOverrides({ categoryCards: [{ ...cards[0], image: 'not-a-uuid' }] }), /kártyakép-azonosító/);
   const store = contentStore(new DatabaseSync(':memory:'));
   assert.equal(store.draft().overrides.categoryCards.length, 7);
   const saved = store.saveDraft(0, { categoryCards: cards });
