@@ -97,7 +97,7 @@ export function toPublicReference(record) {
   const titleHu = str(record.website_title_hu || record.name, 160);
   if (!titleHu) return null;
   return {
-    id: String(record.id), kind: kindFor(record.id), category: str(record.category, 80), categoryMainId: str(record.category_main_id, 100), categorySubId: str(record.category_sub_id, 100), categoryIds: [record.category_main_id, record.category_sub_id].filter(Boolean).map(String), categoryApproved: record.category_review_status === 'Jóváhagyott' && !!record.category_main_id && !!record.category_sub_id, year: str(record.design_year, 40),
+    id: String(record.id), kind: kindFor(record.id), category: str(record.category, 80), categoryMainId: str(record.category_main_id, 100), categorySubId: str(record.category_sub_id, 100), categoryApproved: record.category_review_status === 'Jóváhagyott' && !!record.category_main_id && !!record.category_sub_id, year: str(record.design_year, 40),
     place: { hu: str(record.city, 80), en: str(record.city, 80) },
     title: { hu: titleHu, en: str(record.website_title_en, 160) },
     summary: { hu: str(record.website_copy_hu, 900), en: str(record.website_copy_en, 900) },
@@ -236,13 +236,7 @@ function teamCard(m, lang, t) {
 </article>`;
 }
 
-function renderCategoryCards(cards, tree, lang){
- const active=(cards||[]).filter(c=>c.enabled);if(!active.length)return '';
- const cats=(tree||[]).flatMap(g=>g.categories||[]);
- return `<div class="activity-cards">${active.map(c=>{const m=c.imageMedia,title=pick(c.title,lang),desc=pick(c.description,lang),names=c.categoryIds.map(id=>cats.find(x=>x.id===id)?.name||(tree||[]).find(g=>g.id===id)?.name).filter(Boolean);const img=m?`<img src="/media/${m.id}/${m.widths.includes(800)?800:m.widths[0]}.webp" alt="" loading="lazy" decoding="async">`:'';return `<a class="activity-card" href="#referenciak" data-category-card data-categories="${esc(c.categoryIds.join(','))}"><span class="activity-card-image">${img}</span><span class="activity-card-copy"><strong>${esc(title)}</strong>${desc?`<span>${esc(desc)}</span>`:''}<small>${esc(names.join(' · '))}</small></span></a>`;}).join('')}</div>`;
-}
-
-export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampleReferences(), categories = [], team = sampleTeam(), content = null, draft = false, media = {}, categoryCards = [], page = 'home' } = {}) {
+export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampleReferences(), categories = [], team = sampleTeam(), content = null, draft = false, media = {}, page = 'home' } = {}) {
   lang = LANGS.includes(lang) ? lang : 'hu';
   theme = parseTheme(theme);
   const t = applyContent(TEXT[lang], content?.[lang]);
@@ -322,7 +316,6 @@ ${sub ? phasesMain(t.phases, { esc, paragraphs: paragraphsHtml }) : `<section cl
   <div class="wrap">
     <p class="kicker">${esc(t.refsKicker)}</p><h2>${esc(t.refsTitle)}</h2>
     ${t.refsNote && (references.some(r => r.sample) || content?.[lang]?.refsNote !== undefined) ? `<p class="note">${esc(t.refsNote)}</p>` : ''}
-    ${renderCategoryCards(categoryCards, categories, lang)}
     ${renderMosaic(references, { lang, categories, categoryLabel: c => categoryLabel(c, lang), labels: { all: t.all, filter: t.refsKicker, open: t.mosaicOpen, close: t.mosaicClose, prev: t.mosaicPrev, next: t.mosaicNext, detail: t.mosaicDetail, sample: t.sample, designYear: t.designYear, subcategories: lang === 'hu' ? 'Alkategóriák' : 'Subcategories' } })}
   </div>
 </section>
