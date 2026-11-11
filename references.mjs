@@ -160,17 +160,18 @@ export function referenceStore(db) {
   function createCategory(data) {
     if (!data || typeof data !== 'object') fail(400,'Hibás kategóriaadat.');
     const name = categoryName(data.name), created = new Date().toISOString(), id = randomUUID();
-    if (data.kind === 'group') { const order = Number.isInteger(data.sort_order)?data.sort_order:db.prepare('SELECT COALESCE(MAX(sort_order),0)+10 AS n FROM reference_category_groups').get().n; db.prepare('INSERT INTO reference_category_groups VALUES(?,?,?,?)').run(id,name,order,created); }
+    if (data.kind === 'group') { if (db.prepare('SELECT 1 FROM reference_category_groups WHERE name=?').get(name)) fail(409,'Ez a főkategória már létezik.'); const order = Number.isInteger(data.sort_order)?data.sort_order:db.prepare('SELECT COALESCE(MAX(sort_order),0)+10 AS n FROM reference_category_groups').get().n; db.prepare('INSERT INTO reference_category_groups VALUES(?,?,?,?)').run(id,name,order,created); }
     else if (data.kind === 'subcategory') {
       if (typeof data.parent_id !== 'string' || !db.prepare('SELECT 1 FROM reference_category_groups WHERE id=?').get(data.parent_id)) fail(400,'Válassz létező főkategóriát.');
+      if (db.prepare('SELECT 1 FROM reference_categories WHERE parent_id=? AND name=?').get(data.parent_id,name)) fail(409,'Ez az alkategória már létezik ebben a főkategóriában.');
       const order = Number.isInteger(data.sort_order)?data.sort_order:db.prepare('SELECT COALESCE(MAX(sort_order),0)+10 AS n FROM reference_categories WHERE parent_id=?').get(data.parent_id).n; db.prepare('INSERT INTO reference_categories VALUES(?,?,?,?,?)').run(id,data.parent_id,name,order,created);
     } else fail(400,'A kategória típusa főkategória vagy alkategória lehet.');
     return categoryTree();
   }
   function updateCategory(id,data) {
     const name = categoryName(data?.name);
-    if (db.prepare('SELECT 1 FROM reference_category_groups WHERE id=?').get(id)) db.prepare('UPDATE reference_category_groups SET name=?,sort_order=? WHERE id=?').run(name,Number.isInteger(data.sort_order)?data.sort_order:100,id);
-    else if (db.prepare('SELECT 1 FROM reference_categories WHERE id=?').get(id)) db.prepare('UPDATE reference_categories SET name=?,sort_order=? WHERE id=?').run(name,Number.isInteger(data.sort_order)?data.sort_order:100,id);
+    if (db.prepare('SELECT 1 FROM reference_category_groups WHERE id=?').get(id)) { if (db.prepare('SELECT 1 FROM reference_category_groups WHERE name=? AND id<>?').get(name,id)) fail(409,'Ez a főkategória már létezik.'); db.prepare('UPDATE reference_category_groups SET name=?,sort_order=? WHERE id=?').run(name,Number.isInteger(data.sort_order)?data.sort_order:100,id); }
+    else if (db.prepare('SELECT parent_id FROM reference_categories WHERE id=?').get(id)) { const current=db.prepare('SELECT parent_id FROM reference_categories WHERE id=?').get(id); if (db.prepare('SELECT 1 FROM reference_categories WHERE parent_id=? AND name=? AND id<>?').get(current.parent_id,name,id)) fail(409,'Ez az alkategória már létezik ebben a főkategóriában.'); db.prepare('UPDATE reference_categories SET name=?,sort_order=? WHERE id=?').run(name,Number.isInteger(data.sort_order)?data.sort_order:100,id); }
     else fail(404,'A kategória nem található.');
     return categoryTree();
   }
