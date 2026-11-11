@@ -20,7 +20,7 @@ export function renderMosaic(references, { lang = 'hu', labels, categoryLabel, c
       ? imgTag(cm, title, big ? '(max-width: 640px) 100vw, (max-width: 1040px) 100vw, 800px' : '(max-width: 640px) 100vw, (max-width: 1040px) 50vw, 400px')
       : r.sample ? `<span class="mt-art">${buildingSvg(r.kind)}</span>` : `<span class="mt-type"><span>${esc(title)}</span></span>`;
     const detailImg = cm ? imgTag(cm, title, '(max-width: 900px) 100vw, 900px') : r.sample ? `<span class="mt-art">${buildingSvg(r.kind)}</span>` : '';
-    return `<article class="mt${big ? ' big' : ''}${cm ? '' : ' nophoto'}" data-cat="${esc(r.category)}" data-main="${esc(r.categoryApproved ? r.categoryMainId : '')}" data-sub="${esc(r.categoryApproved ? r.categorySubId : '')}" data-index="${i}">
+    return `<article class="mt${big ? ' big' : ''}${cm ? '' : ' nophoto'}" data-cat="${esc(r.category)}" data-cats="${esc((r.categoryIds || []).join(','))}" data-main="${esc(r.categoryApproved ? r.categoryMainId : '')}" data-sub="${esc(r.categoryApproved ? r.categorySubId : '')}" data-index="${i}">
   <button class="mt-open" type="button" aria-haspopup="dialog" aria-label="${esc(labels.open)}: ${esc(title)}">
     <span class="mt-face">${face}${r.sample ? `<span class="badge">${esc(labels.sample)}</span>` : ''}</span>
     <span class="mt-cap"><strong>${esc(title)}</strong><small>${meta}</small></span>
