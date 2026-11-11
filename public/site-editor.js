@@ -1,7 +1,7 @@
 const $ = s => document.querySelector(s);
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const date = v => new Intl.DateTimeFormat('hu-HU', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(v));
-const state = { references: [], referenceCategories: [], fields: [], slots: [], media: {}, altEdits: {}, defaults: { hu: {}, en: {} }, values: { hu: {}, en: {}, media: {} }, revision: 0, live: null, versions: [], dirty: false, busy: false };
+const state = { references: [], referenceCategories: [], initialCategoryCards: '[]', fields: [], slots: [], media: {}, altEdits: {}, defaults: { hu: {}, en: {} }, values: { hu: {}, en: {}, media: {} }, revision: 0, live: null, versions: [], dirty: false, busy: false };
 const MAX_UPLOAD = 20 * 1024 * 1024;
 
 async function api(path, method = 'GET', data) {
@@ -172,7 +172,7 @@ function cellHtml(f, lang) {
 }
 const rowHtml = f => `<div class="row"><div class="row-label">${esc(f.label)}<small>legfeljebb ${f.max} karakter</small></div>${cellHtml(f, 'hu')}${cellHtml(f, 'en')}</div>`;
 
-function changedCount() { return ['hu', 'en', 'media'].reduce((n, l) => n + Object.keys(state.values[l]).length, 0) + (state.values.team ? 1 : 0) + (state.values.categoryCards ? 1 : 0); }
+function changedCount() { return ['hu', 'en', 'media'].reduce((n, l) => n + Object.keys(state.values[l]).length, 0) + (state.values.team ? 1 : 0) + (JSON.stringify(state.values.categoryCards || []) !== state.initialCategoryCards ? 1 : 0); }
 function renderStatus() {
   const live = state.live ? `Élő verzió: <strong>${esc(date(state.live.created_at))}</strong>${state.live.note ? ` (${esc(state.live.note)})` : ''}` : 'Még nincs közzétett verzió, az oldal az alapszövegeket mutatja.';
   $('#status').innerHTML = `Vázlat: <strong>${changedCount()}</strong> módosított mező${state.dirty ? ' <span class="dirty">· mentetlen változtatások</span>' : ''}<br>${live}`;
