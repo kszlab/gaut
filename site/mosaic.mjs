@@ -40,7 +40,7 @@ export function renderMosaic(references, { lang = 'hu', labels, categoryLabel, c
     : cats.length > 1
       ? `<div class="filters" role="group" aria-label="${esc(labels.filter)}"><button type="button" class="chip on" data-filter="*">${esc(labels.all)}</button>${cats.map(c => `<button type="button" class="chip" data-filter="${esc(c)}">${esc(categoryLabel(c))}</button>`).join('')}</div>`
       : '';
-  const categoryData = hasTree ? `<script type="application/json" class="category-tree-data">${JSON.stringify(categories.map(g=>({id:g.id,name:g.name,categories:(g.categories||[]).map(c=>({id:c.id,name:c.name}))})).replace(/</g,'\\u003c'))}</script>` : '';
+  const categoryData = hasTree ? `<script type="application/json" class="category-tree-data">${JSON.stringify(categories.map(g=>({id:g.id,name:g.name,categories:(g.categories||[]).map(c=>({id:c.id,name:c.name}))}))).replace(/</g,'\\u003c')}</script>` : '';
   return `${categoryData}${chips}
 <div class="mosaic" data-total="${references.length}">${tiles}</div>
 <dialog class="mosaic-dialog" aria-label="${esc(labels.detail)}"><div class="md-nav"><button type="button" data-md="prev" aria-label="${esc(labels.prev)}">←</button><button type="button" data-md="next" aria-label="${esc(labels.next)}">→</button><button type="button" data-md="close" aria-label="${esc(labels.close)}">×</button></div><div class="md-content"></div></dialog>`;
