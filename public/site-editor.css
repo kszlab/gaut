@@ -60,3 +60,16 @@
 .site-editor .markdown-preview h3,.site-editor .markdown-preview h4 { margin:12px 0 6px; }
 .site-editor .markdown-preview ul { padding-left:20px; margin:6px 0 10px; }
 .site-editor .markdown-preview code { background:#e9eff2; padding:1px 4px; border-radius:3px; }
+
+.site-editor .markdown-toolbar { align-items: center; }
+.site-editor .md-select-label { display:inline-flex; align-items:center; gap:5px; margin:0; color:var(--muted); font-size:11px; }
+.site-editor .md-select-label select { width:auto; min-width:76px; margin:0; padding:6px 7px; border:1px solid var(--line); border-radius:4px; background:#fff; color:var(--ink); font:inherit; }
+.site-editor .markdown-preview u { text-underline-offset:3px; }
+.site-editor .markdown-preview .rt-size-12 { font-size:12px; } .site-editor .markdown-preview .rt-size-14 { font-size:14px; }
+.site-editor .markdown-preview .rt-size-16 { font-size:16px; } .site-editor .markdown-preview .rt-size-18 { font-size:18px; }
+.site-editor .markdown-preview .rt-size-20 { font-size:20px; } .site-editor .markdown-preview .rt-size-24 { font-size:24px; }
+.site-editor .markdown-preview .rt-size-28 { font-size:28px; } .site-editor .markdown-preview .rt-size-32 { font-size:32px; }
+.site-editor .markdown-preview .rt-size-36 { font-size:36px; } .site-editor .markdown-preview .rt-size-42 { font-size:42px; }
+.site-editor .markdown-preview .rt-font-sans { font-family:Arial, sans-serif; }
+.site-editor .markdown-preview .rt-font-serif { font-family:Georgia, 'Times New Roman', serif; }
+.site-editor .markdown-preview .rt-font-mono { font-family:Consolas, monospace; }
