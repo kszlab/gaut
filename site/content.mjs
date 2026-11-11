@@ -172,7 +172,9 @@ export function cleanOverrides(input) {
       const field = BY_PATH.get(path);
       if (!field) fail(400, `Ismeretlen mező: ${path}`);
       if (typeof raw !== 'string') fail(400, 'A mezők szöveget tartalmazzanak.');
-      const value = (field.type === 'line' ? raw.replace(/\s+/g, ' ') : raw.replace(/\r\n/g, '\n')).trim();
+      // Preserve a single non-breaking space in the team heading as an intentional visually blank title.
+      // Ordinary whitespace is still normalised for all other fields.
+      const value = path === 'teamTitle' && raw === '\u00a0' ? '\u00a0' : (field.type === 'line' ? raw.replace(/\s+/g, ' ') : raw.replace(/\r\n/g, '\n')).trim();
       if (/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(value)) fail(400, 'Érvénytelen karakter a szövegben.');
       if (value.length > field.max) fail(400, `Túl hosszú szöveg: ${field.label} (legfeljebb ${field.max} karakter).`);
       if (path === 'contact.email' && value && !/^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(value)) fail(400, 'Érvénytelen e-mail cím.');
