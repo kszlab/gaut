@@ -215,7 +215,8 @@ $('#groups').addEventListener('change', e => {
 $('#groups').addEventListener('input', e => {
   const t = e.target; if (!t.dataset.path || t.dataset.hide) return;
   const { lang, path } = t.dataset, value = t.value;
-  if (value.trim() === '') delete state.values[lang][path]; else state.values[lang][path] = value;
+  // Keep the intentional NBSP sentinel for the team heading; String.trim() treats it as empty.
+  if (value.trim() === '' && !(path === 'teamTitle' && value === '\u00a0')) delete state.values[lang][path]; else state.values[lang][path] = value;
   const preview = t.closest('.markdown-editor')?.querySelector('.markdown-preview');
   if (preview) preview.innerHTML = '<small>Előnézet</small>' + markdownPreview(value || state.defaults[lang][path]);
   t.closest('.cell').classList.toggle('changed', value.trim() !== '');
