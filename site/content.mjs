@@ -59,6 +59,28 @@ export const FIELDS = [
   line('phases.backgroundTitle', PH, 'Szabályozási háttér · cím', 120),
   text('phases.backgroundText', PH, 'Szabályozási háttér · szöveg (üres sor: új bekezdés)', 1500)
 ];
+export const CATEGORY_CARD_DEFAULTS = [
+{id:'office',enabled:true,title:{hu:'Irodai és kereskedelmi épületek',en:'Office and commercial buildings'},description:{hu:'Irodaházak, üzletközpontok és szolgáltató létesítmények.',en:'Office buildings, retail centres and service facilities.'},image:'',categoryIds:['irodahazak','kereskedelmi-szolgaltato','bankok']},
+{id:'industry',enabled:true,title:{hu:'Ipari és logisztikai létesítmények',en:'Industrial and logistics facilities'},description:{hu:'Gyártócsarnokok, ipari épületek és logisztikai központok.',en:'Manufacturing, industrial buildings and logistics centres.'},image:'',categoryIds:['ipari-letesitmenyek','logisztikai-letesitmenyek']},
+{id:'healthcare',enabled:true,title:{hu:'Egészségügyi létesítmények',en:'Healthcare facilities'},description:{hu:'Egészségügyi intézmények és speciális ellátóépületek.',en:'Healthcare institutions and specialist care facilities.'},image:'',categoryIds:['egeszsegugyi-intezmenyek']},
+{id:'public',enabled:true,title:{hu:'Középületek, oktatási és kulturális létesítmények',en:'Public, educational and cultural buildings'},description:{hu:'Oktatási, kulturális, igazgatási és rendezvényépületek.',en:'Educational, cultural, administrative and event buildings.'},image:'',categoryIds:['oktatasi-intezmenyek','kulturalis-intezmenyek','igazgatasi-intezmenyek','konferencia-es-rendezveny']},
+{id:'leisure',enabled:true,title:{hu:'Sport-, szabadidős és turisztikai létesítmények',en:'Sports, leisure and tourism facilities'},description:{hu:'Sportlétesítmények, szállodák és turisztikai épületek.',en:'Sports facilities, hotels and tourism buildings.'},image:'',categoryIds:['sportletesitmenyek','szallodak','allatkerti-bemutato']},
+{id:'residential',enabled:true,title:{hu:'Lakóépületek és lakóparkok',en:'Residential buildings and housing developments'},description:{hu:'Társasházak, lakóépületek és lakóparkok.',en:'Apartment buildings, residential properties and housing developments.'},image:'',categoryIds:['lakoeepuletek','csaladi-hazak']},
+{id:'infrastructure',enabled:true,title:{hu:'Energia- és infrastruktúra-létesítmények',en:'Energy and infrastructure facilities'},description:{hu:'Energetikai, közmű- és közlekedési infrastruktúra.',en:'Energy, utility and transport infrastructure.'},image:'',categoryIds:['energetikai-kozmu','kozlekedesi-infrastruktura']}
+];
+export function cleanCategoryCards(list){
+ if(!Array.isArray(list)||list.length>20)fail(400,'Legfeljebb 20 tevékenységi kategóriakártya adható meg.');
+ const ids=new Set();
+ return list.map((c,i)=>{
+  if(!c||typeof c!=='object'||Array.isArray(c)||!/^[a-z0-9-]{1,40}$/.test(c.id||'')||ids.has(c.id))fail(400,'Hibás vagy ismétlődő kategóriakártya-azonosító.');
+  ids.add(c.id);if(typeof c.enabled!=='boolean')fail(400,'A kártya aktív állapota logikai érték legyen.');
+  const pair=k=>({hu:String(c[k]?.hu??'').trim().slice(0,160),en:String(c[k]?.en??'').trim().slice(0,160)});
+  const categoryIds=c.categoryIds??[];if(!Array.isArray(categoryIds)||categoryIds.length>30||categoryIds.some(x=>typeof x!=='string'||x.length>100)||new Set(categoryIds).size!==categoryIds.length)fail(400,'Érvénytelen vagy ismétlődő referenciakategória.');
+  const image=c.image??'';if(image!==''&&(typeof image!=='string'||!UUID.test(image)))fail(400,'Érvénytelen kártyakép-azonosító.');
+  return {id:c.id,enabled:c.enabled,title:pair('title'),description:pair('description'),image,categoryIds};
+ });
+}
+
 const BY_PATH = new Map(FIELDS.map(f => [f.path, f]));
 // Fields marked hideable may be saved empty on purpose: an empty override hides the text instead of using the default.
 const MAY_BE_EMPTY = new Set(FIELDS.filter(f => f.hideable).map(f => f.path));
@@ -149,7 +171,7 @@ export function cleanTeam(list) {
 // Validates and normalises overrides: {hu: {path: value}, en: {...}, media: {slot: imageId}, team?: [...]}.
 export function cleanOverrides(input) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) fail(400, 'Hibás tartalom.');
-  const out = { hu: {}, en: {}, media: {} };
+  const out = { hu: {}, en: {}, media: {}, categoryCards: cleanCategoryCards(input.categoryCards ?? CATEGORY_CARD_DEFAULTS) };
   if (input.team !== undefined && input.team !== null) out.team = cleanTeam(input.team);
   const media = input.media ?? {};
   if (typeof media !== 'object' || Array.isArray(media)) fail(400, 'Hibás képhozzárendelés.');
@@ -182,7 +204,7 @@ export function contentStore(db) {
   db.exec(`CREATE TABLE IF NOT EXISTS site_draft(id INTEGER PRIMARY KEY CHECK(id=1), payload TEXT NOT NULL, revision INTEGER NOT NULL, updated_at TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS site_versions(seq INTEGER PRIMARY KEY AUTOINCREMENT, id TEXT NOT NULL UNIQUE, payload TEXT NOT NULL, note TEXT NOT NULL, created_at TEXT NOT NULL)`);
   const now = () => new Date().toISOString();
-  const empty = () => ({ hu: {}, en: {}, media: {} });
+  const empty = () => ({ hu: {}, en: {}, media: {}, categoryCards: structuredClone(CATEGORY_CARD_DEFAULTS) });
   const parse = payload => ({ hu: {}, en: {}, media: {}, categoryCards: structuredClone(CATEGORY_CARD_DEFAULTS), ...JSON.parse(payload) });
   let liveCache; // undefined = not loaded
   function draftRow() {

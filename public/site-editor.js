@@ -1,7 +1,7 @@
 const $ = s => document.querySelector(s);
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const date = v => new Intl.DateTimeFormat('hu-HU', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(v));
-const state = { references: [], fields: [], slots: [], media: {}, altEdits: {}, defaults: { hu: {}, en: {} }, values: { hu: {}, en: {}, media: {} }, revision: 0, live: null, versions: [], dirty: false, busy: false };
+const state = { references: [], referenceCategories: [], fields: [], slots: [], media: {}, altEdits: {}, defaults: { hu: {}, en: {} }, values: { hu: {}, en: {}, media: {} }, revision: 0, live: null, versions: [], dirty: false, busy: false };
 const MAX_UPLOAD = 20 * 1024 * 1024;
 
 async function api(path, method = 'GET', data) {
@@ -76,6 +76,16 @@ function renderRefs() {
   $('#refs').innerHTML = `<section class="group"><h2>Referenciák</h2><p class="field-hint">A referenciákat a <a href="/munkater/referenciak">Referenciaműhelyben</a> szerkesztheted (honlapos cím, leírás, borítókép, „Honlapon megjeleníthető” jelölés). A lista a Közzététel pillanatában rögzül: a későbbi módosítások csak az újabb közzététel után látszanak. Ha egyetlen referencia sincs megjelölve, a „Minta” jelzésű mintaprojektek maradnak az oldalon.</p>
     ${list.length ? `<p><strong>${list.length}</strong> referencia kerül ki közzétételkor${flagged ? `, ebből <strong>${flagged}</strong> hiányos honlapos adatokkal (figyelmeztetés, nem akadály)` : ''}.</p><ul class="ref-overview">${list.map(r => `<li><strong>${esc(r.name)}</strong>${r.featured ? ' <span class="current-tag">KIEMELT</span>' : ''}${r.warnings.length ? `<ul class="ref-warn">${r.warnings.map(w => `<li>${esc(w)}</li>`).join('')}</ul>` : ' <small>rendben</small>'}</li>`).join('')}</ul>` : '<p class="muted">Jelenleg nincs „Honlapon megjeleníthető” referencia, ezért a mintaprojektek látszanak.</p>'}</section>`;
 }
+
+function renderCategoryCards(){
+ const cards=state.values.categoryCards||[];
+ $('#category-cards').innerHTML=`<section class="group"><h2>Tevékenységi kategóriakártyák</h2><p class="field-hint">Egy kártyához több referenciakategória rendelhető. A szűrés VAGY (OR) logikával működik. A kategóriák a referenciatárból származnak.</p><div class="activity-editor-list">${cards.map((c,i)=>{const m=c.image&&state.media[c.image],src=m?`/media/${m.id}/${m.widths.includes(800)?800:m.widths[0]}.webp`:'';return `<article class="activity-editor-card"><div class="activity-editor-image">${src?`<img src="${esc(src)}" alt="">`:'<span>Nincs kép</span>'}<label class="secondary file-btn">Kép feltöltése / cseréje<input type="file" accept="image/jpeg,image/png,image/webp" data-card-upload="${esc(c.id)}" hidden></label>${m?`<button type="button" class="secondary" data-card-clear="${esc(c.id)}">Kép törlése</button>`:''}</div><div class="activity-editor-fields"><label class="activity-enabled"><input type="checkbox" data-card-enabled="${esc(c.id)}" ${c.enabled?'checked':''}> Aktív kártya</label><div class="two"><label>Cím (HU)<input data-card-field="title.hu" data-card-id="${esc(c.id)}" maxlength="160" value="${esc(c.title.hu)}"></label><label>Title (EN)<input data-card-field="title.en" data-card-id="${esc(c.id)}" maxlength="160" value="${esc(c.title.en)}"></label></div><div class="two"><label>Leírás (HU)<textarea data-card-field="description.hu" data-card-id="${esc(c.id)}" maxlength="160">${esc(c.description.hu)}</textarea></label><label>Description (EN)<textarea data-card-field="description.en" data-card-id="${esc(c.id)}" maxlength="160">${esc(c.description.en)}</textarea></label></div><fieldset class="activity-categories"><legend>Referenciakategóriák</legend>${state.referenceCategories.map(g=>`<div class="activity-category-group"><strong>${esc(g.name)}</strong><div>${(g.categories||[]).map(cat=>`<label><input type="checkbox" data-card-category="${esc(cat.id)}" data-card-id="${esc(c.id)}" ${c.categoryIds.includes(cat.id)?'checked':''}> ${esc(cat.name)} <small>(${cat.reference_count||0})</small></label>`).join('')}</div></div>`).join('')}</fieldset><div class="slot-actions"><button type="button" class="secondary" data-card-move="up" data-card-id="${esc(c.id)}" ${i===0?'disabled':''}>↑ Feljebb</button><button type="button" class="secondary" data-card-move="down" data-card-id="${esc(c.id)}" ${i===cards.length-1?'disabled':''}>↓ Lejjebb</button></div></div></article>`;}).join('')}</div></section>`;
+}
+const cardDirty=()=>{state.dirty=true;renderStatus();};
+$('#category-cards').addEventListener('input',e=>{const t=e.target,c=state.values.categoryCards?.find(x=>x.id===t.dataset.cardId);if(!c||!t.dataset.cardField)return;const [k,l]=t.dataset.cardField.split('.');c[k][l]=t.value;cardDirty();});
+$('#category-cards').addEventListener('change',e=>{const t=e.target,c=state.values.categoryCards?.find(x=>x.id===t.dataset.cardId);if(!c)return;if(t.dataset.cardEnabled!==undefined)c.enabled=t.checked;if(t.dataset.cardCategory){const ids=new Set(c.categoryIds);t.checked?ids.add(t.dataset.cardCategory):ids.delete(t.dataset.cardCategory);c.categoryIds=[...ids];}cardDirty();});
+$('#category-cards').addEventListener('click',e=>{const x=e.target.closest('[data-card-clear]');if(x){state.values.categoryCards.find(c=>c.id===x.dataset.cardClear).image='';cardDirty();renderCategoryCards();return;}const b=e.target.closest('[data-card-move]');if(!b)return;const a=state.values.categoryCards,i=a.findIndex(c=>c.id===b.dataset.cardId),j=i+(b.dataset.cardMove==='up'?-1:1);if(j>=0&&j<a.length){[a[i],a[j]]=[a[j],a[i]];cardDirty();renderCategoryCards();}});
+$('#category-cards').addEventListener('change',async e=>{const input=e.target.closest('[data-card-upload]');if(!input)return;const file=input.files[0];input.value='';if(!file)return;if(file.size>MAX_UPLOAD||!/^image\/(jpeg|png|webp)$/.test(file.type)){message('JPG, PNG vagy WebP kép tölthető fel, legfeljebb 20 MB méretben.',true);return;}const id=input.dataset.cardUpload;run(async()=>{const r=await api('/api/site/media','POST',{filename:file.name,content:await readBase64(file)});state.media[r.media.id]=r.media;state.values.categoryCards.find(c=>c.id===id).image=r.media.id;cardDirty();renderCategoryCards();},'A kártyakép feltöltve. Mentsd a vázlatot.');});
 
 // ---- Team list ----
 const TEAM_MAX = 12;
@@ -162,7 +172,7 @@ function cellHtml(f, lang) {
 }
 const rowHtml = f => `<div class="row"><div class="row-label">${esc(f.label)}<small>legfeljebb ${f.max} karakter</small></div>${cellHtml(f, 'hu')}${cellHtml(f, 'en')}</div>`;
 
-function changedCount() { return ['hu', 'en', 'media'].reduce((n, l) => n + Object.keys(state.values[l]).length, 0) + (state.values.team ? 1 : 0); }
+function changedCount() { return ['hu', 'en', 'media'].reduce((n, l) => n + Object.keys(state.values[l]).length, 0) + (state.values.team ? 1 : 0) + (state.values.categoryCards ? 1 : 0); }
 function renderStatus() {
   const live = state.live ? `Élő verzió: <strong>${esc(date(state.live.created_at))}</strong>${state.live.note ? ` (${esc(state.live.note)})` : ''}` : 'Még nincs közzétett verzió, az oldal az alapszövegeket mutatja.';
   $('#status').innerHTML = `Vázlat: <strong>${changedCount()}</strong> módosított mező${state.dirty ? ' <span class="dirty">· mentetlen változtatások</span>' : ''}<br>${live}`;
@@ -172,7 +182,7 @@ function renderStatus() {
 function renderVersions() {
   $('#versions').innerHTML = state.versions.length ? state.versions.map((v, i) => `<div class="version-row"><span class="version-number">${state.versions.length - i}</span><div><strong>${esc(date(v.created_at))}${i === 0 ? '<span class="current-tag">ÉLŐ</span>' : ''}</strong><small>${esc(v.note || 'Nincs megjegyzés')} · ${v.changes} módosított mező</small></div><button class="secondary" type="button" data-restore="${esc(v.id)}">Vázlatba töltés</button></div>`).join('') : '<p class="muted">Még nincs közzétett verzió.</p>';
 }
-function renderAll() { renderImages(); renderTeam(); renderRefs(); renderGroups(); renderStatus(); renderVersions(); }
+function renderAll() { renderImages(); renderTeam(); renderCategoryCards(); renderRefs(); renderGroups(); renderStatus(); renderVersions(); }
 
 async function run(fn, done) {
   if (state.busy) return; state.busy = true; renderStatus();

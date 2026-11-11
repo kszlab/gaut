@@ -3,7 +3,7 @@ import { referenceStore } from './references.mjs';
 import { renderSite, parseTheme, defaultText, toPublicReference, publicReferences } from './site/site.mjs';
 import { websiteWarnings } from './public/site-readiness.js';
 import { renderConcept, renderConceptIndex } from './site/concepts.mjs';
-import { contentStore, defaultsFor, FIELDS, HERO_SLOTS } from './site/content.mjs';
+import { contentStore, defaultsFor, FIELDS, HERO_SLOTS, CATEGORY_CARD_DEFAULTS } from './site/content.mjs';
 import { mediaStore } from './site/media.mjs';
 import { photoStore } from './photos.mjs';
 import { streamBackup, backupFileName } from './backup.mjs';
@@ -74,13 +74,14 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
     const shown = draft ? siteContent.draft().overrides : siteContent.live()?.overrides ?? null;
     const media = resolveMedia(shown?.media);
     const team = shown?.team?.map(m => ({ ...m, sample: false, photoMedia: media[`team.${m.id}`] }));
+    const categoryCards = (shown?.categoryCards ?? CATEGORY_CARD_DEFAULTS).map(c => ({ ...c, imageMedia: c.image ? siteMedia.get(c.image) ?? undefined : undefined }));
     const frozen = draft ? publicReferences(references.list()) : siteContent.live()?.overrides.references;
     const refs = frozen?.length ? frozen.map(r => ({ ...r, coverMedia: r.cover ? siteMedia.get(r.cover) ?? undefined : undefined })) : undefined;
-    return { content: shown, media, team, references: refs, hasLive: Boolean(siteContent.live()) };
+    return { content: shown, media, team, categoryCards, referenceCategories: references.categories(), references: refs, hasLive: Boolean(siteContent.live()) };
   }
   const siteState = () => {
     const live = siteContent.live();
-    return { fields: FIELDS, slots: HERO_SLOTS.map(([slot, label, fallback]) => ({ slot, label, fallback })), defaults: { hu: defaultsFor(defaultText('hu')), en: defaultsFor(defaultText('en')) }, draft: siteContent.draft(), live: live && { id: live.id, created_at: live.created_at, note: live.note, changes: live.changes }, versions: siteContent.versions(), media: siteMedia.list(), references: referenceOverview() };
+    return { fields: FIELDS, slots: HERO_SLOTS.map(([slot, label, fallback]) => ({ slot, label, fallback })), defaults: { hu: defaultsFor(defaultText('hu')), en: defaultsFor(defaultText('en')) }, draft: siteContent.draft(), live: live && { id: live.id, created_at: live.created_at, note: live.note, changes: live.changes }, versions: siteContent.versions(), media: siteMedia.list(), references: referenceOverview(), referenceCategories: references.categories() };
   };
   const photos = photoStore(db, dataDir);
   const attempts = new Map();
@@ -280,7 +281,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         // ?elonezet=1 shows the unpublished draft, but only to a signed-in workspace user; everyone else gets the live version.
         const draft = url.searchParams.get('elonezet') === '1' && Boolean(session(req));
         const view = siteView(draft);
-        const html = renderSite({ lang: sitePage.lang, page: sitePage.page, theme: parseTheme(url.searchParams.get('tema')), content: view.content, draft, media: view.media, ...(view.team ? { team: view.team } : {}), ...(view.references ? { references: view.references } : {}) });
+        const html = renderSite({ lang: sitePage.lang, page: sitePage.page, theme: parseTheme(url.searchParams.get('tema')), content: view.content, draft, media: view.media, ...(view.team ? { team: view.team } : {}), ...(view.references ? { references: view.references } : {}), categoryCards: view.categoryCards, referenceCategories: view.referenceCategories });
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         return res.end(req.method === 'HEAD' ? undefined : html);
