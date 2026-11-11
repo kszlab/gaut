@@ -280,7 +280,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         // ?elonezet=1 shows the unpublished draft, but only to a signed-in workspace user; everyone else gets the live version.
         const draft = url.searchParams.get('elonezet') === '1' && Boolean(session(req));
         const view = siteView(draft);
-        const html = renderSite({ lang: sitePage.lang, page: sitePage.page, theme: parseTheme(url.searchParams.get('tema')), content: view.content, draft, media: view.media, ...(view.team ? { team: view.team } : {}), ...(view.references ? { references: view.references } : {}) });
+        const html = renderSite({ lang: sitePage.lang, page: sitePage.page, categories: references.categories(), theme: parseTheme(url.searchParams.get('tema')), content: view.content, draft, media: view.media, ...(view.team ? { team: view.team } : {}), ...(view.references ? { references: view.references } : {}) });
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         return res.end(req.method === 'HEAD' ? undefined : html);
