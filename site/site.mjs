@@ -48,6 +48,9 @@ export function richTextHtml(source) {
     let out = esc(raw);
     out = out.replace(/\[([^]]+)\]\((https?:\/\/[^\s)]+)\)/g, (_, label, url) => '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + label + '</a>');
     out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
+    const stylePattern = /\\[\\[(12|14|16|18|20|24|28|32|36|42)\\|(sans|serif|mono)\\]\\]([\\s\\S]*?)\\[\\[\\/\\]\\]/g;
+    for (let i = 0; i < 8 && stylePattern.test(out); i++) { stylePattern.lastIndex = 0; out = out.replace(stylePattern, (_, size, font, inner) => '<span class="rt-size-' + size + ' rt-font-' + font + '">' + inner + '</span>'); }
+    out = out.replace(/\\+\\+([^+]+)\\+\\+/g, '<u>$1</u>');
     out = out.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
     out = out.replace(/\*([^*]+)\*/g, '<em>$1</em>');
     return out;
