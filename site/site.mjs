@@ -45,13 +45,13 @@ export const paragraphsHtml = text => String(text ?? '').trim().split(/\n\s*\n/)
 export function richTextHtml(source) {
   const inline = raw => {
     let out = esc(raw);
-    out = out.replace(/\\[([^\\]]+)\\]\\((https?:\\/\\/[^\\s)]+)\\)/g, (_, label, url) => '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + label + '</a>');
+    out = out.replace(/\[([^]]+)\]\((https?:\/\/[^\s)]+)\)/g, (_, label, url) => '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + label + '</a>');
     out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
-    out = out.replace(/\\*\\*([^*]+)\\*\\*/g, '<strong>$1</strong>');
-    out = out.replace(/\\*([^*]+)\\*/g, '<em>$1</em>');
+    out = out.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    out = out.replace(/\*([^*]+)\*/g, '<em>$1</em>');
     return out;
   };
-  const lines = String(source ?? '').replace(/\\r\\n/g, '\\n').split('\\n');
+  const lines = String(source ?? '').replace(/\r\n/g, '\n').split('\n');
   const html = []; let paragraph = [], list = [];
   const flushP = () => { if (paragraph.length) { html.push('<p>' + paragraph.map(inline).join('<br>') + '</p>'); paragraph = []; } };
   const flushL = () => { if (list.length) { html.push('<ul>' + list.map(x => '<li>' + inline(x) + '</li>').join('') + '</ul>'); list = []; } };
