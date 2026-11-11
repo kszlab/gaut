@@ -101,15 +101,15 @@ test('draft, publish, restore and conflicts work on the store', () => {
   assert.throws(() => store.restore('00000000-0000-0000-0000-000000000000', 3), /nem található/);
 });
 
-test('rendered text is escaped and contact details render as links', () => {
-  const html = renderSite({ lang: 'hu', content: { hu: { sub: '<img src=x onerror=alert(1)>', 'contact.email': 'info@pelda.hu', 'contact.phone': '+36 1 234 5678', 'contact.address': 'Példa utca 1.', refsNote: '' }, en: {} } });
+test('contact section shows office and company data in two cards, with optional company fields', () => {
+  const html = renderSite({ lang: 'hu', content: { hu: { sub: '<img src=x onerror=alert(1)>', 'contact.email': 'info@pelda.hu', 'contact.phone': '+36 1 234 5678', 'contact.office': 'Példa iroda 1.', 'contact.map': 'https://maps.google.com/?q=pelda', 'company.name': 'GAUT Kft.', 'company.address': 'Példa székhely 2.', 'company.taxNumber': '12345678-2-41', refsNote: '' }, en: {} } });
   assert.ok(!html.includes('<img src=x'));
   assert.match(html, /&lt;img src=x onerror=alert\(1\)&gt;/);
   assert.match(html, /href="mailto:info@pelda\.hu"/);
   assert.match(html, /href="tel:\+3612345678"/);
   assert.match(html, /Példa utca 1\./);
   assert.ok(!html.includes('Bemutató mintaprojektek'), 'an empty hideable note is hidden');
-  assert.ok(!renderSite({ lang: 'hu', content: { hu: { 'contact.email': 'a@b.hu', 'contact.phone': '+36 30 111 2222', 'contact.address': 'X' } } }).includes('class="pending"'));
+  assert.ok(!renderSite({ lang: 'hu' }).includes('class="pending"'));
 });
 
 test('workspace API requires login; public pages show only published text; draft preview needs a session', async () => {
