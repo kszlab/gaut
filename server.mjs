@@ -178,6 +178,11 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
       if (path.startsWith('/api/')) {
         const user = session(req); if (!user) fail(401, 'A folytatáshoz jelentkezz be.');
         if (path === '/api/reference-photos/import' && req.method === 'POST') return json(res,200,photos.import(await body(req)));
+        if (path === '/api/reference-categories' && req.method === 'GET') return json(res, 200, { groups: references.categories() });
+        if (path === '/api/reference-categories' && req.method === 'POST') return json(res, 201, { groups: references.createCategory(await body(req, 8192)) });
+        const categoryMatch = /^\/api\/reference-categories\/([a-zA-Z0-9_-]{1,100})$/.exec(path);
+        if (categoryMatch && req.method === 'PUT') return json(res, 200, { groups: references.updateCategory(categoryMatch[1], await body(req, 8192)) });
+        if (categoryMatch && req.method === 'DELETE') return json(res, 200, { groups: references.deleteCategory(categoryMatch[1]) });
         if (path === '/api/references' && req.method === 'GET') return json(res, 200, { references: references.list().map(r=>{const active=photos.list(r.id).filter(p=>!p.deleted_at);return {...r,photo_count:active.length,photo_cover_id:active[0]?.id||null,photo_research:photos.research(r.id)};}) });
         if (path === '/api/references' && req.method === 'POST') { const data = await body(req, 1024*1024); await prepareCover(null, data); return json(res, 201, { reference: references.create(data) }); }
         if (path === '/api/references/export' && req.method === 'GET') return json(res, 200, {...references.bundle(),photos:photos.all(),photo_export_note:'A JSON a képek metaadatait tartalmazza. A képfájlok külön tölthetők le az adatlapokról; teljes mentéshez a DATA_DIR könyvtár is szükséges.'});
@@ -312,7 +317,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         res.setHeader('Content-Type', types[mediaMatch[3]]);
         return res.end(req.method === 'HEAD' ? undefined : readFileSync(file));
       }
-      const assets = { '/munkater/honlap': ['site-editor.html', 'text/html'], '/munkater/referenciak': ['references.html', 'text/html'], '/munkater': ['index.html', 'text/html'], '/site-editor.js': ['site-editor.js', 'text/javascript'], '/site-editor.css': ['site-editor.css', 'text/css'], '/site-readiness.js': ['site-readiness.js', 'text/javascript'], '/reference-search.js': ['reference-search.js', 'text/javascript'], '/reference-photos.js': ['reference-photos.js', 'text/javascript'], '/references.js': ['references.js', 'text/javascript'], '/references.css': ['references.css', 'text/css'], '/app.js': ['app.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'], '/favicon.svg': ['favicon.svg', 'image/svg+xml'] };
+      const assets = { '/munkater/kategoriak': ['category-manager.html', 'text/html'], '/category-manager.js': ['category-manager.js', 'text/javascript'], '/category-manager.css': ['category-manager.css', 'text/css'], '/munkater/honlap': ['site-editor.html', 'text/html'], '/munkater/referenciak': ['references.html', 'text/html'], '/munkater': ['index.html', 'text/html'], '/site-editor.js': ['site-editor.js', 'text/javascript'], '/site-editor.css': ['site-editor.css', 'text/css'], '/site-readiness.js': ['site-readiness.js', 'text/javascript'], '/reference-search.js': ['reference-search.js', 'text/javascript'], '/reference-photos.js': ['reference-photos.js', 'text/javascript'], '/references.js': ['references.js', 'text/javascript'], '/references.css': ['references.css', 'text/css'], '/app.js': ['app.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'], '/favicon.svg': ['favicon.svg', 'image/svg+xml'] };
       if (!assets[path] || !['GET', 'HEAD'].includes(req.method)) fail(404, 'Az oldal nem található.');
       const [name, type] = assets[path];
       res.setHeader('Content-Type', `${type}; charset=utf-8`);

@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { makeServer } from '../server.mjs';
 import { FIELDS, cleanOverrides, applyContent, contentStore, defaultsFor } from '../site/content.mjs';
-import { renderSite, defaultText } from '../site/site.mjs';
+import { renderSite, defaultText, richTextHtml } from '../site/site.mjs';
 
 const PASSWORD = 'teszt-jelszo-123456';
 async function withServer(fn) {
@@ -31,12 +31,29 @@ test('every editable field has a default in both languages', () => {
   }
 });
 
+
+test('long-form introduction supports safe Markdown and four principles render', () => {
+  const html = richTextHtml('## Mérnöki tervezés\n\n**Pontos** és *átlátható*.\n- Automatika\n- Felügyelet\n\n<script>alert(1)</script>');
+  assert.ok(html.includes('<h3>Mérnöki tervezés</h3>'));
+  assert.ok(html.includes('<strong>Pontos</strong>'));
+  assert.ok(html.includes('<em>átlátható</em>'));
+  assert.ok(html.includes('<ul><li>Automatika</li><li>Felügyelet</li></ul>'));
+  assert.ok(html.includes('&lt;script&gt;'));
+  assert.ok(!html.includes('<script>'));
+  const page = renderSite({ lang: 'hu' });
+  assert.match(page, /id="bemutatkozas"/);
+  assert.match(page, /Átlátható dokumentáció/);
+  assert.equal((page.match(/class="principles"/g) || []).length, 1);
+});
+
 test('overrides are validated and normalised', () => {
   const ok = cleanOverrides({ hu: { sub: '  Új   alcím ', 'areas.1.title': 'Cím', 'contact.email': 'info@pelda.hu', lead: '' }, en: { sub: 'New subtitle' } });
   assert.deepEqual(ok.hu, { sub: 'Új alcím', 'areas.1.title': 'Cím', 'contact.email': 'info@pelda.hu' });
   assert.deepEqual(ok.en, { sub: 'New subtitle' });
   assert.throws(() => cleanOverrides({ hu: { 'nincs.ilyen': 'x' } }), /Ismeretlen mező/);
   assert.throws(() => cleanOverrides({ hu: { sub: 'x'.repeat(500) } }), /Túl hosszú/);
+  assert.equal(cleanOverrides({ hu: { aboutText: 'x'.repeat(8000) } }).hu.aboutText.length, 8000);
+  assert.throws(() => cleanOverrides({ hu: { aboutText: 'x'.repeat(8001) } }), /Túl hosszú/);
   assert.throws(() => cleanOverrides({ hu: { sub: 5 } }), /szöveget/);
   assert.throws(() => cleanOverrides({ hu: { 'contact.email': 'nem email' } }), /e-mail/);
   assert.throws(() => cleanOverrides({ hu: { 'contact.phone': '<script>' } }), /telefon/);

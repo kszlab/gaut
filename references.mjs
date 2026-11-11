@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
+import { isReferenceCategory, normalizeReferenceCategory, INITIAL_CATEGORY_TREE, INITIAL_REFERENCE_CLASSIFICATION, INITIAL_REFERENCE_REVIEW_NOTES, CATEGORY_REVIEW_STATUSES } from './reference-categories.mjs';
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
 const LABELS={common:'Közös',misi:'Misi',nandi:'Nándi',attila:'Attila',krisztian:'Krisztián'};
 const OWNERS = ['common', 'misi', 'nandi', 'attila', 'krisztian'];
@@ -7,8 +8,22 @@ export function referenceStore(db) {
   const seed = JSON.parse(readFileSync(new URL('./seed/references.json', import.meta.url), 'utf8'));
   db.exec('CREATE TABLE IF NOT EXISTS reference_records(id TEXT PRIMARY KEY,payload TEXT NOT NULL,revision INTEGER NOT NULL,updated_at TEXT NOT NULL); CREATE TABLE IF NOT EXISTS reference_meta(key TEXT PRIMARY KEY,value TEXT NOT NULL)');
   db.exec('CREATE TABLE IF NOT EXISTS reference_merges(id TEXT PRIMARY KEY,payload TEXT NOT NULL,created_at TEXT NOT NULL,undone_at TEXT)');
+  db.exec('CREATE TABLE IF NOT EXISTS reference_category_groups(id TEXT PRIMARY KEY,name TEXT NOT NULL,sort_order INTEGER NOT NULL,created_at TEXT NOT NULL); CREATE TABLE IF NOT EXISTS reference_categories(id TEXT PRIMARY KEY,parent_id TEXT NOT NULL REFERENCES reference_category_groups(id),name TEXT NOT NULL,sort_order INTEGER NOT NULL,created_at TEXT NOT NULL,UNIQUE(parent_id,name))');
   const insert = db.prepare('INSERT INTO reference_records VALUES(?,?,1,?)');
-  const get = id => { const r = db.prepare('SELECT * FROM reference_records WHERE id=?').get(id); if (!r) fail(404,'A referencia nem található.'); const p=JSON.parse(r.payload); return { deleted_at:null, website_publishable:false, website_role_confirmed:false, website_photo_rights:false, website_featured:false, website_title_hu:'', website_title_en:'', website_title_en_source:'', website_copy_hu:'', website_copy_en:'', website_cover_photo:'', website_cover_media:'', ...p, sections:p.sections||[p.section||'common'], revision:r.revision, updated_at:r.updated_at }; };
+  // Seed the editable hierarchical taxonomy once. Category IDs are stable and references store IDs, not labels.
+  if (!db.prepare("SELECT 1 FROM reference_meta WHERE key='category-tree-seed-v1'").get()) {
+    db.exec('BEGIN IMMEDIATE');
+    try {
+      const created = new Date().toISOString();
+      for (const group of INITIAL_CATEGORY_TREE) {
+        db.prepare('INSERT OR IGNORE INTO reference_category_groups VALUES(?,?,?,?)').run(group.id,group.name,group.sort_order,created);
+        for (const sub of group.categories) db.prepare('INSERT OR IGNORE INTO reference_categories VALUES(?,?,?,?,?)').run(sub.id,group.id,sub.name,sub.sort_order,created);
+      }
+      db.prepare('INSERT INTO reference_meta VALUES(?,?)').run('category-tree-seed-v1','1'); db.exec('COMMIT');
+    } catch(e) { db.exec('ROLLBACK'); throw e; }
+  }
+
+  const get = id => { const r = db.prepare('SELECT * FROM reference_records WHERE id=?').get(id); if (!r) fail(404,'A referencia nem található.'); const p=JSON.parse(r.payload); return { deleted_at:null, website_publishable:false, website_role_confirmed:false, website_photo_rights:false, website_featured:false, website_title_hu:'', website_title_en:'', website_title_en_source:'', website_copy_hu:'', website_copy_en:'', website_cover_photo:'', website_cover_media:'', category_main_id:null, category_sub_id:null, category_review_status:'Besorolatlan', category_review_note:'', category_legacy:'', ...p, sections:p.sections||[p.section||'common'], revision:r.revision, updated_at:r.updated_at }; };
   function validate(p) {
     if (!p || typeof p !== 'object' || Array.isArray(p)) fail(400,'Hibás referencia.');
     const r = structuredClone(p); delete r.revision; delete r.updated_at; delete r.photo_count; delete r.photo_cover_id; delete r.photo_research;
@@ -23,7 +38,20 @@ export function referenceStore(db) {
     r.sections=OWNERS.filter(x=>r.sections.includes(x));r.section=r.sections[0];
     if (!/^[a-zA-Z0-9_-]{1,100}$/.test(r.id || '')) fail(400,'Érvénytelen azonosító.');
     if (typeof r.name !== 'string' || !r.name.trim() || r.name.length>500) fail(400,'A projekt neve kötelező, legfeljebb 500 karakter.');
-    for (const key of ['design_year','category','city','address','identification_status','scope_from_pdf','background','questions','publication_status','attribution','website_copy_draft','technical_detail','website_title_hu','website_title_en','website_title_en_source','website_copy_hu','website_copy_en','website_cover_photo','website_cover_media']) { if(r[key]===undefined) r[key]=''; if(typeof r[key]!=='string') fail(400,'A szöveges mezőkben szöveget adj meg.'); }
+    for (const key of ['design_year','category','city','address','identification_status','scope_from_pdf','background','questions','publication_status','attribution','website_copy_draft','technical_detail','website_title_hu','website_title_en','website_title_en_source','website_copy_hu','website_copy_en','website_cover_photo','website_cover_media','category_legacy','category_review_note']) { if(r[key]===undefined) r[key]=''; if(typeof r[key]!=='string') fail(400,'A szöveges mezőkben szöveget adj meg.'); }
+    if (!isReferenceCategory(r.category)) { r.category_legacy = r.category_legacy || r.category || ''; r.category = normalizeReferenceCategory(r.category); } else r.category = normalizeReferenceCategory(r.category);
+    if (r.category_main_id === undefined) r.category_main_id = null;
+    if (r.category_sub_id === undefined) r.category_sub_id = null;
+    if (r.category_main_id !== null && typeof r.category_main_id !== 'string') fail(400,'Érvénytelen főkategória.');
+    if (r.category_sub_id !== null && typeof r.category_sub_id !== 'string') fail(400,'Érvénytelen alkategória.');
+    if (r.category_review_note.length > 1200) fail(400,'A kategória-ellenőrzési megjegyzés legfeljebb 1200 karakter lehet.');
+    if (!CATEGORY_REVIEW_STATUSES.includes(r.category_review_status || 'Besorolatlan')) fail(400,'Érvénytelen kategória-ellenőrzési állapot.');
+    r.category_review_status ||= 'Besorolatlan';
+    if (r.category_main_id || r.category_sub_id) {
+      const group = r.category_main_id && db.prepare('SELECT id FROM reference_category_groups WHERE id=?').get(r.category_main_id);
+      const sub = r.category_sub_id && db.prepare('SELECT parent_id FROM reference_categories WHERE id=?').get(r.category_sub_id);
+      if (!group || !sub || sub.parent_id !== group.id) fail(400,'Válassz egymáshoz tartozó főkategóriát és alkategóriát.');
+    } else r.category_review_status = 'Besorolatlan';
     for (const [key,max] of [['website_title_hu',160],['website_title_en',160],['website_title_en_source',160],['website_copy_hu',900],['website_copy_en',900]]) if(r[key].length>max) fail(400,'Túl hosszú honlapos szöveg: '+key+' (legfeljebb '+max+' karakter).');
     for (const key of ['website_role_confirmed','website_photo_rights','website_featured']) { if(r[key]===undefined) r[key]=false; if(typeof r[key]!=='boolean') fail(400,'Invalid website flag: '+key); }
     for (const [k,v] of Object.entries(r)) if (typeof v==='string' && v.length>30000) fail(400,`Túl hosszú mező: ${k}`);
@@ -63,6 +91,45 @@ export function referenceStore(db) {
       db.prepare('INSERT INTO reference_meta VALUES(?,?)').run('owners-v1','1'); db.exec('COMMIT');
     } catch(e) { db.exec('ROLLBACK'); throw e; }
   }
+  // One-time taxonomy migration: keep existing category values where canonical; preserve unknown legacy labels.
+  if (!db.prepare("SELECT 1 FROM reference_meta WHERE key='categories-v1'").get()) {
+    db.exec('BEGIN IMMEDIATE');
+    try {
+      for (const row of db.prepare('SELECT * FROM reference_records').all()) {
+        const p = JSON.parse(row.payload), old = String(p.category || '');
+        if (!isReferenceCategory(old)) {
+          p.category_legacy = old;
+          p.category = normalizeReferenceCategory(old);
+          db.prepare('UPDATE reference_records SET payload=?,revision=revision+1 WHERE id=?').run(JSON.stringify(p), row.id);
+        } else {
+          const canonical = normalizeReferenceCategory(old);
+          if (canonical !== old) { p.category = canonical; db.prepare('UPDATE reference_records SET payload=?,revision=revision+1 WHERE id=?').run(JSON.stringify(p), row.id); }
+        }
+      }
+      db.prepare('INSERT INTO reference_meta VALUES(?,?)').run('categories-v1','1'); db.exec('COMMIT');
+    } catch(e) { db.exec('ROLLBACK'); throw e; }
+  }
+  // Initial proposal for every existing reference. Nothing is silently approved: every imported suggestion is flagged for review.
+  if (!db.prepare("SELECT 1 FROM reference_meta WHERE key='category-assignments-v1'").get()) {
+    db.exec('BEGIN IMMEDIATE');
+    try {
+      const timestamp = new Date().toISOString();
+      for (const row of db.prepare('SELECT * FROM reference_records ORDER BY id').all()) {
+        const p = JSON.parse(row.payload), suggestion = INITIAL_REFERENCE_CLASSIFICATION[row.id];
+        if (suggestion) {
+          p.category_main_id = suggestion[0].replace('kozintézmenyek','kozintezmenyek');
+          p.category_sub_id = suggestion[1];
+          p.category_review_status = suggestion[2];
+          p.category_review_note = INITIAL_REFERENCE_REVIEW_NOTES[row.id] || '';
+        } else {
+          p.category_main_id = null; p.category_sub_id = null; p.category_review_status = 'Besorolatlan'; p.category_review_note = '';
+        }
+        p.category_legacy = p.category_legacy || p.category || '';
+        db.prepare('UPDATE reference_records SET payload=?,revision=revision+1,updated_at=? WHERE id=?').run(JSON.stringify(p),timestamp,row.id);
+      }
+      db.prepare('INSERT INTO reference_meta VALUES(?,?)').run('category-assignments-v1','1'); db.exec('COMMIT');
+    } catch(e) { db.exec('ROLLBACK'); throw e; }
+  }
   // Website titles. The Hungarian title always holds a value (the project name when left empty). The English title remembers
   // which Hungarian title it was written for (website_title_en_source); when the two differ, the English one needs a review.
   // The source is kept by the server: it moves only when the English title itself is edited.
@@ -75,8 +142,58 @@ export function referenceStore(db) {
     else r.website_title_en_source = old.website_title_en_source || titleOf(old);
     return r;
   }
+  function categoryTree() {
+    const groups = db.prepare('SELECT id,name,sort_order,created_at FROM reference_category_groups ORDER BY sort_order,name').all();
+    const records = db.prepare('SELECT payload FROM reference_records').all().map(row=>JSON.parse(row.payload));
+    return groups.map(g => ({
+      ...g,
+      categories: db.prepare('SELECT id,parent_id,name,sort_order,created_at FROM reference_categories WHERE parent_id=? ORDER BY sort_order,name').all(g.id).map(c => ({
+        ...c, reference_count: records.filter(r=>r.category_sub_id===c.id).length
+      })),
+      reference_count: records.filter(r=>r.category_main_id===g.id).length
+    }));
+  }
+  const categoryName = value => {
+    if (typeof value !== 'string' || !value.trim() || value.trim().length > 100 || /[\u0000-\u001f\u007f]/.test(value)) fail(400,'A kategórianév 1–100 karakter legyen.');
+    return value.trim();
+  };
+  function createCategory(data) {
+    if (!data || typeof data !== 'object') fail(400,'Hibás kategóriaadat.');
+    const name = categoryName(data.name), created = new Date().toISOString(), id = randomUUID();
+    if (data.kind === 'group') { if (db.prepare('SELECT 1 FROM reference_category_groups WHERE name=?').get(name)) fail(409,'Ez a főkategória már létezik.'); const order = Number.isInteger(data.sort_order)?data.sort_order:db.prepare('SELECT COALESCE(MAX(sort_order),0)+10 AS n FROM reference_category_groups').get().n; db.prepare('INSERT INTO reference_category_groups VALUES(?,?,?,?)').run(id,name,order,created); }
+    else if (data.kind === 'subcategory') {
+      if (typeof data.parent_id !== 'string' || !db.prepare('SELECT 1 FROM reference_category_groups WHERE id=?').get(data.parent_id)) fail(400,'Válassz létező főkategóriát.');
+      if (db.prepare('SELECT 1 FROM reference_categories WHERE parent_id=? AND name=?').get(data.parent_id,name)) fail(409,'Ez az alkategória már létezik ebben a főkategóriában.');
+      const order = Number.isInteger(data.sort_order)?data.sort_order:db.prepare('SELECT COALESCE(MAX(sort_order),0)+10 AS n FROM reference_categories WHERE parent_id=?').get(data.parent_id).n; db.prepare('INSERT INTO reference_categories VALUES(?,?,?,?,?)').run(id,data.parent_id,name,order,created);
+    } else fail(400,'A kategória típusa főkategória vagy alkategória lehet.');
+    return categoryTree();
+  }
+  function updateCategory(id,data) {
+    const name = categoryName(data?.name);
+    const group = db.prepare('SELECT sort_order FROM reference_category_groups WHERE id=?').get(id);
+    if (group) { if (db.prepare('SELECT 1 FROM reference_category_groups WHERE name=? AND id<>?').get(name,id)) fail(409,'Ez a főkategória már létezik.'); db.prepare('UPDATE reference_category_groups SET name=?,sort_order=? WHERE id=?').run(name,Number.isInteger(data.sort_order)?data.sort_order:group.sort_order,id); }
+    else { const current=db.prepare('SELECT parent_id,sort_order FROM reference_categories WHERE id=?').get(id); if (current) { if (db.prepare('SELECT 1 FROM reference_categories WHERE parent_id=? AND name=? AND id<>?').get(current.parent_id,name,id)) fail(409,'Ez az alkategória már létezik ebben a főkategóriában.'); db.prepare('UPDATE reference_categories SET name=?,sort_order=? WHERE id=?').run(name,Number.isInteger(data.sort_order)?data.sort_order:current.sort_order,id); } else fail(404,'A kategória nem található.'); }
+    return categoryTree();
+  }
+  function deleteCategory(id) {
+    const group = db.prepare('SELECT 1 FROM reference_category_groups WHERE id=?').get(id);
+    if (group) {
+      if (db.prepare('SELECT 1 FROM reference_categories WHERE parent_id=? LIMIT 1').get(id)) fail(409,'A főkategória nem törölhető, amíg alkategóriái vannak.');
+      if (db.prepare('SELECT payload FROM reference_records').all().some(row=>JSON.parse(row.payload).category_main_id===id)) fail(409,'A főkategória még referenciákhoz tartozik.');
+      db.prepare('DELETE FROM reference_category_groups WHERE id=?').run(id);
+    } else if (db.prepare('SELECT 1 FROM reference_categories WHERE id=?').get(id)) {
+      if (db.prepare('SELECT payload FROM reference_records').all().some(row=>JSON.parse(row.payload).category_sub_id===id)) fail(409,'Az alkategória még referenciákhoz tartozik. Előbb sorold át a referenciákat.');
+      db.prepare('DELETE FROM reference_categories WHERE id=?').run(id);
+    } else fail(404,'A kategória nem található.');
+    return categoryTree();
+  }
+
   const store = {
     get:id=>get(id),
+    categories:categoryTree,
+    createCategory,
+    updateCategory,
+    deleteCategory,
     // One step for every reference: an empty Hungarian website title takes the project name, an empty English one takes the
     // given translation. Filled titles are never overwritten; merged-away records are left alone.
     fillWebsiteTitles(titles) {

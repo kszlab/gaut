@@ -6,6 +6,7 @@ const fail = (status, message) => { throw Object.assign(new Error(message), { st
 
 const line = (path, group, label, max = 200) => ({ path, group, label, type: 'line', max });
 const text = (path, group, label, max = 1200, hideable = false) => ({ path, group, label, type: 'text', max, ...(hideable ? { hideable: true } : {}) });
+const markdown = (path, group, label, max = 8000) => ({ path, group, label, type: 'markdown', max });
 
 const PH = 'Tervezési fázisok';
 export const FIELDS = [
@@ -16,13 +17,15 @@ export const FIELDS = [
   text('lead', 'Nyitóoldal', 'Bevezető szöveg', 500),
   line('cta', 'Nyitóoldal', 'Gomb: kapcsolat', 40),
   line('cta2', 'Nyitóoldal', 'Gomb: referenciák', 40),
+  line('aboutTitle', 'Bemutatkozás', 'Szekció címe', 120),
+  markdown('aboutText', 'Bemutatkozás', 'Részletes bemutatkozás', 8000),
   line('areasTitle', 'Szakterületek', 'Szekció címe', 120),
   ...[0, 1, 2].flatMap(i => [line(`areas.${i}.title`, 'Szakterületek', `${i + 1}. szakterület címe`, 100), text(`areas.${i}.text`, 'Szakterületek', `${i + 1}. szakterület leírása`, 600)]),
   line('sectorsLabel', 'Szakterületek', 'Területek felirata', 120),
   ...[0, 1, 2, 3, 4, 5].map(i => line(`sectors.${i}`, 'Szakterületek', `${i + 1}. terület`, 80)),
   line('approachTitle', 'Szemlélet', 'Szekció címe', 120),
   text('approachText', 'Szemlélet', 'Szemlélet leírása', 900),
-  ...[0, 1, 2].flatMap(i => [line(`principles.${i}.title`, 'Szemlélet', `${i + 1}. alapelv címe`, 100), text(`principles.${i}.text`, 'Szemlélet', `${i + 1}. alapelv leírása`, 400)]),
+  ...[0, 1, 2, 3].flatMap(i => [line(`principles.${i}.title`, 'Szemlélet', `${i + 1}. alapelv címe`, 100), text(`principles.${i}.text`, 'Szemlélet', `${i + 1}. alapelv leírása`, 400)]),
   line('vendorsLabel', 'Szemlélet', 'Gyártók felirata', 160),
   line('refsTitle', 'Referenciák', 'Szekció címe', 120),
   text('refsNote', 'Referenciák', 'Megjegyzés a szekció alatt', 400, true),
