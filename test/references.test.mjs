@@ -5,11 +5,12 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { makeServer } from '../server.mjs';
 import { DatabaseSync } from 'node:sqlite';
+import { REFERENCE_CATEGORIES, normalizeReferenceCategory } from '../reference-categories.mjs';
 test('Referenciák: belépés, import, módosítás, ütközés és újraindítás',async()=>{
  const dataDir=mkdtempSync(join(tmpdir(),'gaut-ref-')),password='reference-test-password';let server,base,cookie='';
  async function start(){server=makeServer({dataDir,password});await new Promise(r=>server.listen(0,'127.0.0.1',r));base=`http://127.0.0.1:${server.address().port}`;}
  async function request(path,method='GET',data){const r=await fetch(base+path,{method,headers:{'Content-Type':'application/json','X-Gaut-Request':'1',Cookie:cookie},body:data===undefined?undefined:JSON.stringify(data)});const b=await r.json();return {status:r.status,data:b,headers:r.headers};}
- try{await start();assert.equal((await request('/api/references')).status,401);const login=await request('/api/login','POST',{password});cookie=login.headers.get('set-cookie').split(';')[0];let rows=(await request('/api/references')).data.references;assert.equal(rows.length,43);assert.equal(rows.flatMap(r=>r.locations).length,50);
+ try{await start();assert.equal((await request('/api/references')).status,401);const login=await request('/api/login','POST',{password});cookie=login.headers.get('set-cookie').split(';')[0];const taxonomy=await request('/api/reference-categories');assert.equal(taxonomy.status,200);assert.equal(taxonomy.data.categories.length,REFERENCE_CATEGORIES.length);assert.equal(normalizeReferenceCategory('Szálloda'),'Szálloda és turizmus');let rows=(await request('/api/references')).data.references;assert.equal(rows.length,43);assert.equal(rows.flatMap(r=>r.locations).length,50);
  assert.equal(rows.filter(r=>r.section==='krisztian').length,43);
  assert.ok(rows.every(r=>r.website_publishable===false));
  const old=rows[0],changed={...old,section:'misi',website_publishable:true,name:'Módosított referencia',locations:old.locations.map(l=>({...l,latitude:47.5,longitude:19.05}))};assert.equal((await request(`/api/references/${old.id}`,'PUT',changed)).status,200);assert.equal((await request(`/api/references/${old.id}`,'PUT',old)).status,409);
