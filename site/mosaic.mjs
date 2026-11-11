@@ -28,19 +28,30 @@ export function renderMosaic(references, { lang = 'hu', labels, categoryLabel, c
   <template class="mt-detail">${detailImg ? `<figure class="md-fig">${detailImg}</figure>` : ''}<div class="md-body"><p class="md-meta">${meta}</p><h3>${esc(title)}</h3>${summary ? `<p>${esc(summary)}</p>` : ''}</div></template>
 </article>`;
   }).join('');
-  const hasTree = categories.some(g => (g.categories || []).length);
+  // Only expose taxonomy nodes that have at least one publicly approved reference.
+  const approvedCounts = new Map();
+  for (const r of references) {
+    if (!r.categoryApproved || !r.categoryMainId || !r.categorySubId) continue;
+    const key = r.categoryMainId + ':' + r.categorySubId;
+    approvedCounts.set(key, (approvedCounts.get(key) || 0) + 1);
+  }
+  const visibleCategories = categories.map(g => ({
+    ...g,
+    categories: (g.categories || []).filter(sub => approvedCounts.has(g.id + ':' + sub.id))
+  })).filter(g => g.categories.length > 0);
+  const hasTree = visibleCategories.length > 0;
   const chips = hasTree
     ? `<div class="category-filter" data-category-filter>
       <div class="filters main-filters" role="group" aria-label="${esc(labels.filter)}">
         <button type="button" class="chip on" data-main-filter="*">${esc(labels.all)}</button>
-        ${categories.map(g => `<button type="button" class="chip" data-main-filter="${esc(g.id)}">${esc(g.name)}</button>`).join('')}
+        ${visibleCategories.map(g => `<button type="button" class="chip" data-main-filter="${esc(g.id)}">${esc(g.name)}</button>`).join('')}
       </div>
       <div class="filters sub-filters" role="group" aria-label="${esc(labels.subcategories)}" hidden></div>
     </div>`
     : cats.length > 1
       ? `<div class="filters" role="group" aria-label="${esc(labels.filter)}"><button type="button" class="chip on" data-filter="*">${esc(labels.all)}</button>${cats.map(c => `<button type="button" class="chip" data-filter="${esc(c)}">${esc(categoryLabel(c))}</button>`).join('')}</div>`
       : '';
-  const categoryData = hasTree ? `<script type="application/json" class="category-tree-data">${JSON.stringify(categories.map(g=>({id:g.id,name:g.name,categories:(g.categories||[]).map(c=>({id:c.id,name:c.name}))}))).replace(/</g,'\\u003c')}</script>` : '';
+  const categoryData = hasTree ? `<script type="application/json" class="category-tree-data">${JSON.stringify(visibleCategories.map(g=>({id:g.id,name:g.name,categories:(g.categories||[]).map(c=>({id:c.id,name:c.name}))}))).replace(/</g,'\\u003c')}</script>` : '';
   return `${categoryData}${chips}
 <div class="mosaic" data-total="${references.length}">${tiles}</div>
 <dialog class="mosaic-dialog" aria-label="${esc(labels.detail)}"><div class="md-nav"><button type="button" data-md="prev" aria-label="${esc(labels.prev)}">←</button><button type="button" data-md="next" aria-label="${esc(labels.next)}">→</button><button type="button" data-md="close" aria-label="${esc(labels.close)}">×</button></div><div class="md-content"></div></dialog>`;
