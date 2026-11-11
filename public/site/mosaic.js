@@ -23,7 +23,7 @@ if (box) {
   }
   if (mainButtons.length) {
     mainButtons.forEach(chip => chip.addEventListener('click', () => {
-      activeMain = chip.dataset.mainFilter; activeSub = '*'; selectedCategories = null;
+      activeMain = chip.dataset.mainFilter; activeSub = '*'; if (activeMain === '*') selectedCategories = null;
       mainButtons.forEach(c => c.classList.toggle('on', c === chip));
       const group = tree.find(g => g.id === activeMain);
       if (group?.categories?.length) {
