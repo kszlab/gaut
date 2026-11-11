@@ -79,7 +79,7 @@ function renderRefs() {
 
 // ---- Team list ----
 const TEAM_MAX = 12;
-const newMember = () => ({ id: `tag-${Math.random().toString(36).slice(2, 8)}`, name: { hu: '', en: '' }, role: { hu: '', en: '' }, bio: { hu: '', en: '' }, focus: { hu: [], en: [] }, chamber_no: '', chamber_url: '' });
+const newMember = () => ({ id: `tag-${Math.random().toString(36).slice(2, 8)}`, name: { hu: '', en: '' }, role: { hu: '', en: '' }, bio: { hu: '', en: '' }, focus: { hu: [], en: [] }, chamber_no: '', chamber_url: '', email: '', phone: '' });
 function renderTeam() {
   const team = state.values.team;
   let body;
@@ -106,6 +106,8 @@ function memberHtml(m, i, n) {
       <div class="two">${cell('hu', 'bio', 'Bemutatkozás', 'textarea', 700)}${cell('en', 'bio', 'Bemutatkozás', 'textarea', 700)}</div><div class="two">${cell('hu', 'focus', 'Szakterület-címkék (vesszővel, legfeljebb 4)')}${cell('en', 'focus', 'Szakterület-címkék (vesszővel, legfeljebb 4)')}</div>
       <div class="two"><label>Kamarai azonosító szám<input data-member="${esc(m.id)}" data-mf="chamber_no" maxlength="40" value="${esc(m.chamber_no || '')}"></label><label>Link a mérnöki kamara névjegyzékére<input data-member="${esc(m.id)}" data-mf="chamber_url" maxlength="300" placeholder="https://mernokvagyok.hu/nevjegyzek/?id=…" value="${esc(m.chamber_url || '')}"></label></div>
       <p class="field-hint">A kamarai adatok nem kötelezők, mindkét nyelven ugyanúgy jelennek meg. A link csak https:// címmel kezdődő mernokvagyok.hu vagy mmk.hu oldal lehet.</p>
+      <div class="two"><label>E-mail-cím (opcionális)<input type="email" data-member="${esc(m.id)}" data-mf="email" maxlength="120" autocomplete="off" placeholder="nev@pelda.hu" value="${esc(m.email || '')}"></label><label>Telefonszám (opcionális)<input type="tel" data-member="${esc(m.id)}" data-mf="phone" maxlength="40" autocomplete="off" placeholder="+36 …" value="${esc(m.phone || '')}"></label></div>
+      <p class="field-hint">A kitöltött elérhetőségek a nyilvános adatlapon csak a „Kapcsolati adatok megjelenítése” gomb megnyomása után kérhetők le. Az üres mező nem jelenik meg.</p>
       <div class="slot-actions"><button type="button" class="secondary" data-team-action="up" data-member-id="${esc(m.id)}" ${i === 0 ? 'disabled' : ''}>↑ Feljebb</button><button type="button" class="secondary" data-team-action="down" data-member-id="${esc(m.id)}" ${i === n - 1 ? 'disabled' : ''}>↓ Lejjebb</button><button type="button" class="danger" data-team-action="remove" data-member-id="${esc(m.id)}">Törlés</button></div></div></div>`;
 }
 $('#team').addEventListener('input', e => {
