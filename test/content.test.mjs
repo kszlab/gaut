@@ -47,6 +47,8 @@ test('long-form introduction supports safe Markdown and four principles render',
   assert.match(page, /id="bemutatkozas"/);
   assert.match(page, /Átlátható dokumentáció/);
   assert.equal((page.match(/class="principles"/g) || []).length, 1);
+  assert.match(page, /Tevékenységeink/);
+  assert.match(page, /<li>Tervezés<\/li><li>Tervellenőrzés<\/li><li>Műszaki ellenőrzés<\/li>/);
 });
 
 test('overrides are validated and normalised', () => {
@@ -72,6 +74,9 @@ test('applyContent overrides text without touching the defaults', () => {
   assert.equal(next.sectors[5], 'Hatodik'); assert.equal(next.hero.szinkron, 'Új főcím.');
   assert.notEqual(base.sub, 'Másik alcím');
   assert.equal(applyContent(base, { 'nincs.ilyen': 'x' }).sub, base.sub);
+  const activity = applyContent(base, { activitiesLabel: 'Szolgáltatásaink', 'activities.0': 'Koncepciótervezés' });
+  assert.equal(activity.activitiesLabel, 'Szolgáltatásaink');
+  assert.equal(activity.activities[0], 'Koncepciótervezés');
 });
 
 test('draft, publish, restore and conflicts work on the store', () => {
