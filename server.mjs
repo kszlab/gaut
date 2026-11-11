@@ -180,7 +180,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         if (path === '/api/reference-photos/import' && req.method === 'POST') return json(res,200,photos.import(await body(req)));
         if (path === '/api/reference-categories' && req.method === 'GET') return json(res, 200, { groups: references.categories() });
         if (path === '/api/reference-categories' && req.method === 'POST') return json(res, 201, { groups: references.createCategory(await body(req, 8192)) });
-        const categoryMatch = /^\\/api\\/reference-categories\\/([a-f0-9-]{36})$/.exec(path);
+        const categoryMatch = /^\/api\/reference-categories\/([a-f0-9-]{36})$/.exec(path);
         if (categoryMatch && req.method === 'PUT') return json(res, 200, { groups: references.updateCategory(categoryMatch[1], await body(req, 8192)) });
         if (categoryMatch && req.method === 'DELETE') return json(res, 200, { groups: references.deleteCategory(categoryMatch[1]) });
         if (path === '/api/references' && req.method === 'GET') return json(res, 200, { references: references.list().map(r=>{const active=photos.list(r.id).filter(p=>!p.deleted_at);return {...r,photo_count:active.length,photo_cover_id:active[0]?.id||null,photo_research:photos.research(r.id)};}) });
