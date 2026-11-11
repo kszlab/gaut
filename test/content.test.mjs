@@ -115,7 +115,7 @@ test('contact section shows office and company data in two cards, with optional 
   assert.ok(!html.includes('Beszéljük meg a projektet'));
   assert.ok(!html.includes('Írjon vagy hívjon minket'));
   assert.ok(!html.includes('Bemutató mintaprojektek'), 'an empty hideable note is hidden');
-  assert.ok(!renderSite({ lang: 'hu' }).includes('class="pending"'));
+  assert.ok(renderSite({ lang: 'hu' }).includes('class="pending"'), 'phone placeholder remains visible');
 });
 
 test('workspace API requires login; public pages show only published text; draft preview needs a session', async () => {
