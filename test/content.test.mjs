@@ -57,6 +57,7 @@ test('overrides are validated and normalised', () => {
   assert.deepEqual(ok.en, { sub: 'New subtitle' });
   assert.equal(cleanOverrides({ hu: { teamTitle: '\u00a0' } }).hu.teamTitle, '\u00a0', 'team title preserves an intentional non-breaking space');
   assert.equal(cleanOverrides({ hu: { 'contact.address': 'Régi iroda cím' } }).hu['contact.office'], 'Régi iroda cím', 'legacy office address is migrated');
+  assert.deepEqual(cleanOverrides({ hu: { contactTitle: 'Régi cím', contactText: 'Régi bevezető' } }).hu, {}, 'retired contact intro fields are discarded');
   assert.equal(cleanOverrides({ hu: { 'contact.address': 'Régi cím', 'contact.office': 'Új cím' } }).hu['contact.office'], 'Új cím', 'canonical office address wins over legacy value');
   assert.throws(() => cleanOverrides({ hu: { 'nincs.ilyen': 'x' } }), /Ismeretlen mező/);
   assert.throws(() => cleanOverrides({ hu: { sub: 'x'.repeat(500) } }), /Túl hosszú/);
