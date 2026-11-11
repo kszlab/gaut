@@ -84,3 +84,14 @@ export const INITIAL_REFERENCE_CLASSIFICATION = {
   'GAUT-REF-042': ['egyeb-letesitmenyek','szallodak','Ellenőrzendő'],
   'GAUT-REF-043': ['kozintezmenyek','oktatasi-intezmenyek','Ellenőrzendő']
 };
+
+export const INITIAL_REFERENCE_REVIEW_NOTES = {
+  'GAUT-REF-005': 'Állatházak termálvizes hőellátása: az épület funkciója állatkerti állattartó létesítmény, nem egyértelműen illeszkedik a kulturális/közintézményi vagy az energetikai kategóriába.',
+  'GAUT-REF-019': 'A Liszt terem egyetemi épületen belüli rendezvény- vagy koncerttér lehet; az oktatási és kulturális besorolás közötti elsődleges funkciót ellenőrizni kell.',
+  'GAUT-REF-020': 'A HungaroControl ANS III jégakkumulációs rendszere alapján nem egyértelmű, hogy az objektumot közlekedési infrastruktúraként vagy energetikai/műszaki létesítményként célszerű besorolni.',
+  'GAUT-REF-024': 'A Cápasuli/Cápanevelde állatkerti állattartó és látogatói funkciót is betölthet; a kulturális intézményi besorolás ellenőrzendő.',
+  'GAUT-REF-026': 'Az AVL iroda- és tesztépület vegyes funkciójú; az irodaház alkategória csak akkor megfelelő, ha a tesztfunkció nem elsődleges.',
+  'GAUT-REF-030': 'A BalaLand FamilyPark és a hotel közös referenciaként szerepel; a szállodák alkategória a hotelre illik, az élménypark funkcióját külön is mérlegelni kell.',
+  'GAUT-REF-033': 'Az oktatási és konferenciaközpont konferencia-/rendezvényfunkciója miatt az oktatási és a kereskedelmi-szolgáltató besorolás közötti elsődleges funkció megerősítendő.',
+  'GAUT-REF-043': 'A Ranolder iskola és a Reischl-sörház vegyes funkciójú fejlesztés; az iskola vagy a kulturális/rendezvény funkció legyen-e az elsődleges besorolás, ellenőrizendő.'
+};
