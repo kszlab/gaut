@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
-import { isReferenceCategory, normalizeReferenceCategory, INITIAL_CATEGORY_TREE, INITIAL_REFERENCE_CLASSIFICATION, CATEGORY_REVIEW_STATUSES } from './reference-categories.mjs';
+import { isReferenceCategory, normalizeReferenceCategory, INITIAL_CATEGORY_TREE, INITIAL_REFERENCE_CLASSIFICATION, INITIAL_REFERENCE_REVIEW_NOTES, CATEGORY_REVIEW_STATUSES } from './reference-categories.mjs';
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
 const LABELS={common:'Közös',misi:'Misi',nandi:'Nándi',attila:'Attila',krisztian:'Krisztián'};
 const OWNERS = ['common', 'misi', 'nandi', 'attila', 'krisztian'];
@@ -23,7 +23,7 @@ export function referenceStore(db) {
     } catch(e) { db.exec('ROLLBACK'); throw e; }
   }
 
-  const get = id => { const r = db.prepare('SELECT * FROM reference_records WHERE id=?').get(id); if (!r) fail(404,'A referencia nem található.'); const p=JSON.parse(r.payload); return { deleted_at:null, website_publishable:false, website_role_confirmed:false, website_photo_rights:false, website_featured:false, website_title_hu:'', website_title_en:'', website_title_en_source:'', website_copy_hu:'', website_copy_en:'', website_cover_photo:'', website_cover_media:'', category_main_id:null, category_sub_id:null, category_review_status:'Besorolatlan', category_legacy:'', ...p, sections:p.sections||[p.section||'common'], revision:r.revision, updated_at:r.updated_at }; };
+  const get = id => { const r = db.prepare('SELECT * FROM reference_records WHERE id=?').get(id); if (!r) fail(404,'A referencia nem található.'); const p=JSON.parse(r.payload); return { deleted_at:null, website_publishable:false, website_role_confirmed:false, website_photo_rights:false, website_featured:false, website_title_hu:'', website_title_en:'', website_title_en_source:'', website_copy_hu:'', website_copy_en:'', website_cover_photo:'', website_cover_media:'', category_main_id:null, category_sub_id:null, category_review_status:'Besorolatlan', category_review_note:'', category_legacy:'', ...p, sections:p.sections||[p.section||'common'], revision:r.revision, updated_at:r.updated_at }; };
   function validate(p) {
     if (!p || typeof p !== 'object' || Array.isArray(p)) fail(400,'Hibás referencia.');
     const r = structuredClone(p); delete r.revision; delete r.updated_at; delete r.photo_count; delete r.photo_cover_id; delete r.photo_research;
@@ -38,12 +38,13 @@ export function referenceStore(db) {
     r.sections=OWNERS.filter(x=>r.sections.includes(x));r.section=r.sections[0];
     if (!/^[a-zA-Z0-9_-]{1,100}$/.test(r.id || '')) fail(400,'Érvénytelen azonosító.');
     if (typeof r.name !== 'string' || !r.name.trim() || r.name.length>500) fail(400,'A projekt neve kötelező, legfeljebb 500 karakter.');
-    for (const key of ['design_year','category','city','address','identification_status','scope_from_pdf','background','questions','publication_status','attribution','website_copy_draft','technical_detail','website_title_hu','website_title_en','website_title_en_source','website_copy_hu','website_copy_en','website_cover_photo','website_cover_media','category_legacy']) { if(r[key]===undefined) r[key]=''; if(typeof r[key]!=='string') fail(400,'A szöveges mezőkben szöveget adj meg.'); }
+    for (const key of ['design_year','category','city','address','identification_status','scope_from_pdf','background','questions','publication_status','attribution','website_copy_draft','technical_detail','website_title_hu','website_title_en','website_title_en_source','website_copy_hu','website_copy_en','website_cover_photo','website_cover_media','category_legacy','category_review_note']) { if(r[key]===undefined) r[key]=''; if(typeof r[key]!=='string') fail(400,'A szöveges mezőkben szöveget adj meg.'); }
     if (!isReferenceCategory(r.category)) { r.category_legacy = r.category_legacy || r.category || ''; r.category = normalizeReferenceCategory(r.category); } else r.category = normalizeReferenceCategory(r.category);
     if (r.category_main_id === undefined) r.category_main_id = null;
     if (r.category_sub_id === undefined) r.category_sub_id = null;
     if (r.category_main_id !== null && typeof r.category_main_id !== 'string') fail(400,'Érvénytelen főkategória.');
     if (r.category_sub_id !== null && typeof r.category_sub_id !== 'string') fail(400,'Érvénytelen alkategória.');
+    if (r.category_review_note.length > 1200) fail(400,'A kategória-ellenőrzési megjegyzés legfeljebb 1200 karakter lehet.');
     if (!CATEGORY_REVIEW_STATUSES.includes(r.category_review_status || 'Besorolatlan')) fail(400,'Érvénytelen kategória-ellenőrzési állapot.');
     r.category_review_status ||= 'Besorolatlan';
     if (r.category_main_id || r.category_sub_id) {
@@ -119,8 +120,9 @@ export function referenceStore(db) {
           p.category_main_id = suggestion[0].replace('kozintézmenyek','kozintezmenyek');
           p.category_sub_id = suggestion[1];
           p.category_review_status = suggestion[2];
+          p.category_review_note = INITIAL_REFERENCE_REVIEW_NOTES[row.id] || '';
         } else {
-          p.category_main_id = null; p.category_sub_id = null; p.category_review_status = 'Besorolatlan';
+          p.category_main_id = null; p.category_sub_id = null; p.category_review_status = 'Besorolatlan'; p.category_review_note = '';
         }
         p.category_legacy = p.category_legacy || p.category || '';
         db.prepare('UPDATE reference_records SET payload=?,revision=revision+1,updated_at=? WHERE id=?').run(JSON.stringify(p),timestamp,row.id);
