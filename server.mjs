@@ -85,6 +85,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
   };
   const photos = photoStore(db, dataDir);
   const attempts = new Map();
+  const contactAttempts = new Map();
   // An optional long random token lets an unattended job (e.g. a nightly task on the owner's PC) download the backup without the shared password.
   if (backupToken && backupToken.length < 32) { console.error('GAUT_BACKUP_TOKEN is shorter than 32 characters and is ignored.'); backupToken = undefined; }
   const tokenHash = backupToken ? hash(backupToken) : null;
@@ -161,6 +162,20 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         return json(res, 200, { user: cleanUser(user) });
       }
       if (path === '/api/health' && req.method === 'GET') return json(res, 200, { ok: true, version: '1.5.1' });
+      if (path === '/api/public/team-contact' && req.method === 'POST') {
+        const ip = String(req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown').split(',')[0].trim().slice(0, 100);
+        const timestamp = Date.now(), windowMs = 10 * 60 * 1000;
+        for (const [key, value] of contactAttempts) if (value.until <= timestamp) contactAttempts.delete(key);
+        const attempt = contactAttempts.get(ip) || { count: 0, until: timestamp + windowMs };
+        if (attempt.count >= 12) { contactAttempts.set(ip, attempt); res.setHeader('Retry-After', String(Math.ceil((attempt.until - timestamp) / 1000))); return json(res, 429, { error: 'Túl sok lekérés. Próbáld újra néhány perc múlva.' }); }
+        attempt.count++; contactAttempts.set(ip, attempt);
+        const request = await body(req, 4096);
+        if (typeof request.id !== 'string' || !/^[a-z0-9-]{1,40}$/.test(request.id)) fail(400, 'Érvénytelen tervezőazonosító.');
+        const publishedTeam = siteContent.live()?.overrides?.team || [];
+        const member = publishedTeam.find(person => person.id === request.id);
+        if (!member || (!member.email && !member.phone)) fail(404, 'Ehhez a tervezőhöz nincs közzétett elérhetőség.');
+        return json(res, 200, { ...(member.email ? { email: member.email } : {}), ...(member.phone ? { phone: member.phone } : {}) });
+      }
       if (path === '/api/backup' && req.method === 'GET') {
         let allowed = Boolean(session(req));
         const bearer = /^Bearer\s+(\S{1,512})$/.exec(req.headers.authorization || '')?.[1];
