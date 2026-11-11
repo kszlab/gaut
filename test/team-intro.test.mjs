@@ -6,7 +6,6 @@ import { join } from 'node:path';
 import { makeServer } from '../server.mjs';
 import { FIELDS, cleanOverrides } from '../site/content.mjs';
 import { renderSite, paragraphsHtml } from '../site/site.mjs';
-import { renderConcept } from '../site/concepts.mjs';
 
 test('the team introduction is an editable, optional text field of the Csapat group', () => {
   const field = FIELDS.find(f => f.path === 'teamIntro');
@@ -45,17 +44,6 @@ test('the site shows the introduction full width under the team heading; English
 import { readFileSync } from 'node:fs';
 const readCss = () => readFileSync(new URL('../public/site/site.css', import.meta.url), 'utf8');
 
-test('every concept shows the introduction between the heading and the people', () => {
-  const view = { content: { hu: { teamIntro: 'Csapatbemutató szöveg.\n\nMásodik rész.' }, en: {} } };
-  for (const key of ['a', 'b', 'c']) {
-    const html = renderConcept(key, view);
-    assert.ok(html.includes('<div class="team-intro"><p>Csapatbemutató szöveg.</p><p>Második rész.</p></div>'), key);
-    const at = html.indexOf('class="team-intro"');
-    assert.ok(at > html.indexOf('id="csapat"') && at < html.indexOf('class="people"'), `${key}: introduction before the people`);
-    assert.ok(!renderConcept(key).includes('team-intro'), `${key}: nothing without text`);
-  }
-});
-
 test('edit, draft preview and publish of the introduction end to end', async () => {
   const password = 'teszt-jelszo-123456';
   const dataDir = mkdtempSync(join(tmpdir(), 'gaut-teamintro-'));
@@ -77,7 +65,6 @@ test('edit, draft preview and publish of the introduction end to end', async () 
     assert.equal((await call('/api/site/publish', 'POST', { revision: state.draft.revision, note: 'bemutató' })).status, 200);
     assert.ok((await (await fetch(`${base}/`)).text()).includes('Közös csapatbemutató.'));
     assert.ok((await (await fetch(`${base}/en`)).text()).includes('Közös csapatbemutató.'), 'English falls back to Hungarian');
-    assert.ok((await (await fetch(`${base}/koncepcio/c`)).text()).includes('Közös csapatbemutató.'), 'the concepts show it as well');
     assert.equal((await call('/api/site/content', 'PUT', { revision: (await (await call('/api/site/content')).json()).draft.revision, overrides: { hu: { teamIntro: 'x'.repeat(2500) }, en: {}, media: {} } })).status, 400);
   } finally { await new Promise(r => server.close(r)); rmSync(dataDir, { recursive: true, force: true }); }
 });

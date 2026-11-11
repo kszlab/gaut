@@ -1,7 +1,7 @@
 import { buildingSvg } from './art.mjs';
 
 // Reference mosaic: a grid of image tiles of different sizes (featured references are double-size tiles), a category
-// filter and a detail dialog. Used by the public site and by design concept B; the behaviour is in public/site/mosaic.js.
+// filter and a detail dialog. The behaviour is in public/site/mosaic.js.
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const pick = (pair, lang) => (pair?.[lang] || pair?.hu || '');
 
