@@ -15,11 +15,12 @@ export const REFERENCE_CATEGORIES = [
   { value: 'Egészségügy', label_hu: 'Egészségügy', label_en: 'Healthcare', group: 'public' },
   { value: 'Sport és fürdő', label_hu: 'Sport és fürdő', label_en: 'Sport & spa', group: 'public' },
   { value: 'Műemlék és kultúra', label_hu: 'Műemlék és kultúra', label_en: 'Heritage & culture', group: 'public' },
+  { value: 'Közösségi épület', label_hu: 'Közösségi épület', label_en: 'Community building', group: 'public' },
   { value: 'Lakóépület', label_hu: 'Lakóépület', label_en: 'Residential', group: 'residential' },
   { value: 'Egyéb', label_hu: 'Egyéb', label_en: 'Other', group: 'other' }
 ];
 const BY_VALUE = new Map(REFERENCE_CATEGORIES.map(c => [c.value, c]));
-const ALIASES = new Map([['Iroda', 'Iroda és kereskedelem'], ['Oktatás', 'Oktatás és középület'], ['Szálloda', 'Szálloda és turizmus'], ['Közösségi épület', 'Oktatás és középület']]);
+const ALIASES = new Map([['Iroda', 'Iroda és kereskedelem'], ['Oktatás', 'Oktatás és középület'], ['Szálloda', 'Szálloda és turizmus'], ['Közösségi épület', 'Közösségi épület']]);
 export const isReferenceCategory = value => BY_VALUE.has(value);
 export const normalizeReferenceCategory = value => ALIASES.get(String(value || '').trim()) || (isReferenceCategory(value) ? value : 'Egyéb');
 export const referenceCategoryLabel = (value, lang = 'hu') => BY_VALUE.get(value)?.[lang === 'en' ? 'label_en' : 'label_hu'] || value || '';
