@@ -40,10 +40,10 @@ export const FIELDS = [
   line('contact.phone', 'Kapcsolat és lábléc', 'Telefon', 40),
   line('company.name', 'Kapcsolat és lábléc', 'Cégnév', 160),
   line('company.address', 'Kapcsolat és lábléc', 'Székhely', 240),
-  line('company.taxNumber', 'Kapcsolat és lábléc', 'Adószám', 40),
-  line('company.registrationNumber', 'Kapcsolat és lábléc', 'Cégjegyzékszám', 40),
-  line('company.bank', 'Kapcsolat és lábléc', 'Számlavezető bank', 120),
-  line('company.account', 'Kapcsolat és lábléc', 'Bankszámlaszám', 40),
+  { ...line('company.taxNumber', 'Kapcsolat és lábléc', 'Adószám', 40), optional: true },
+  { ...line('company.registrationNumber', 'Kapcsolat és lábléc', 'Cégjegyzékszám', 40), optional: true },
+  { ...line('company.bank', 'Kapcsolat és lábléc', 'Számlavezető bank', 120), optional: true },
+  { ...line('company.account', 'Kapcsolat és lábléc', 'Bankszámlaszám', 40), optional: true },
   line('footer', 'Kapcsolat és lábléc', 'Lábléc szövege', 200),
   // "Tervezési fázisok" subpage (/tervezesi-fazisok). Six fixed phases; in the list fields every line is one list item.
   line('phases.navLabel', PH, 'Menüpont felirata', 40),
@@ -184,6 +184,7 @@ export function cleanOverrides(input) {
       if (value.length > field.max) fail(400, `Túl hosszú szöveg: ${field.label} (legfeljebb ${field.max} karakter).`);
       if (path === 'contact.email' && value && !/^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(value)) fail(400, 'Érvénytelen e-mail cím.');
       if (path === 'contact.phone' && value && !/^[0-9+()\-\s/.]{5,40}$/.test(value)) fail(400, 'Érvénytelen telefonszám.');
+      if (path === 'contact.map' && value) { let u; try { u = new URL(value); } catch { fail(400, 'Érvénytelen Google Térkép hivatkozás.'); } if (u.protocol !== 'https:' || !['google.com', 'www.google.com', 'maps.google.com', 'maps.app.goo.gl'].includes(u.hostname)) fail(400, 'A térképhivatkozás biztonságos Google Térkép URL legyen.'); }
       if (value === '' && !MAY_BE_EMPTY.has(path)) continue; // empty means "use the default"
       out[lang][path] = value;
     }
