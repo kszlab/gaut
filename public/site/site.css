@@ -331,3 +331,13 @@ h3 { font-size: 21px; }
   .phase summary { gap: 14px; padding: 18px 16px; } .ph-head h3, .phase.key .ph-head h3 { font-size: 19px; }
   .ph-body { padding: 0 16px 22px; }
 }
+
+/* Long-form company introduction and four approach principles. */
+.about-section .rich-text { max-width: 920px; color: var(--muted); font-size: 17px; line-height: 1.85; }
+.about-section .rich-text p { margin: 0 0 1.15em; }
+.about-section .rich-text h3 { color: var(--ink); margin: 1.5em 0 .5em; }
+.about-section .rich-text ul { padding-left: 1.3em; margin: .5em 0 1.2em; }
+.about-section .rich-text li { padding-left: .25em; margin: .35em 0; }
+.about-section .rich-text a { color: var(--accent-text); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.principles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media(max-width: 760px) { .principles { grid-template-columns: 1fr; } .about-section .rich-text { font-size: 16px; } }
