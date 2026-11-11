@@ -97,7 +97,7 @@ export function toPublicReference(record) {
   const titleHu = str(record.website_title_hu || record.name, 160);
   if (!titleHu) return null;
   return {
-    id: String(record.id), kind: kindFor(record.id), category: str(record.category, 80), categoryMainId: str(record.category_main_id, 100), categorySubId: str(record.category_sub_id, 100), categoryApproved: record.category_review_status === 'Jóváhagyott' && !!record.category_main_id && !!record.category_sub_id, year: str(record.design_year, 40),
+    id: String(record.id), kind: kindFor(record.id), category: str(record.category, 80), categoryId: str(record.category_id, 100), year: str(record.design_year, 40),
     place: { hu: str(record.city, 80), en: str(record.city, 80) },
     title: { hu: titleHu, en: str(record.website_title_en, 160) },
     summary: { hu: str(record.website_copy_hu, 900), en: str(record.website_copy_en, 900) },
@@ -316,7 +316,7 @@ ${sub ? phasesMain(t.phases, { esc, paragraphs: paragraphsHtml }) : `<section cl
   <div class="wrap">
     <p class="kicker">${esc(t.refsKicker)}</p><h2>${esc(t.refsTitle)}</h2>
     ${t.refsNote && (references.some(r => r.sample) || content?.[lang]?.refsNote !== undefined) ? `<p class="note">${esc(t.refsNote)}</p>` : ''}
-    ${renderMosaic(references, { lang, categories, categoryLabel: c => categoryLabel(c, lang), labels: { all: t.all, filter: t.refsKicker, open: t.mosaicOpen, close: t.mosaicClose, prev: t.mosaicPrev, next: t.mosaicNext, detail: t.mosaicDetail, sample: t.sample, designYear: t.designYear, subcategories: lang === 'hu' ? 'Alkategóriák' : 'Subcategories' } })}
+    ${renderMosaic(references, { lang, categories, categoryLabel: r => { const c = categories.find(x => x.id === r.categoryId); return c ? (lang === 'en' && c.name_en ? c.name_en : c.name) : categoryLabel(r.category, lang); }, labels: { all: t.all, filter: t.refsKicker, open: t.mosaicOpen, close: t.mosaicClose, prev: t.mosaicPrev, next: t.mosaicNext, detail: t.mosaicDetail, sample: t.sample, designYear: t.designYear } })}
   </div>
 </section>
 

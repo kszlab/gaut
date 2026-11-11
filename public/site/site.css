@@ -346,12 +346,6 @@ h3 { font-size: 21px; }
 .about-section .rich-text a { color: var(--accent-text); text-decoration-thickness: 1px; text-underline-offset: 3px; }
 @media(max-width: 760px) { .principles { grid-template-columns: 1fr; } .about-section .rich-text { font-size: 16px; } }
 
-/* Public reference taxonomy: a compact second row for the selected main category. */
-.category-filter { display: grid; gap: 8px; margin-bottom: 28px; }
-.category-filter .filters { margin: 0; }
-.sub-filters { padding: 10px 12px; border-left: 2px solid var(--accent); background: color-mix(in srgb, var(--surface) 65%, transparent); }
-.sub-filters[hidden] { display: none; }
-
 .member-contact { margin-top: 14px; }
 .contact-reveal { border: 1px solid var(--line, #d8d2c8); background: transparent; color: inherit; padding: 9px 13px; font: inherit; cursor: pointer; }
 .contact-reveal:hover { background: var(--surface-alt, rgba(0,0,0,.04)); }

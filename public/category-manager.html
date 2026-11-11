@@ -4,14 +4,14 @@
 <body class="reference-page category-manager">
 <header class="reference-header"><a href="/munkater/referenciak">← Referenciatár</a><strong>GAUT / KATEGÓRIÁK</strong></header>
 <main class="reference-main">
-  <p class="eyebrow">REFERENCIATÁR · KÖZPONTI BESOROLÁS</p>
+  <p class="eyebrow">REFERENCIATÁR · KATEGÓRIÁK</p>
   <h1>Kategóriák kezelése<span>.</span></h1>
-  <p class="muted">A főkategóriák és alkategóriák központi listája. Az itt létrehozott alkategóriák minden referencia adatlapján azonnal választhatók. A használt kategória csak átsorolás után törölhető.</p>
+  <p class="muted">A referenciák kategóriáinak egyetlen, közös listája. Az itt felvett kategória minden referencia adatlapján azonnal választható. A kategóriák átnevezhetők és átrendezhetők, de nem törölhetők, így egy besorolt referencia sosem veszíti el a kategóriáját. Az angol név az angol nyelvű honlapon jelenik meg; üresen a magyar név látszik.</p>
   <p id="message" role="status" class="category-message"></p>
   <section class="category-add">
-    <h2>Új főkategória</h2>
-    <form id="add-group"><label>Főkategória neve<input name="name" maxlength="100" required placeholder="pl. Közlekedési létesítmények"></label><button class="primary" type="submit">Főkategória hozzáadása</button></form>
+    <h2>Új kategória</h2>
+    <form id="add-category"><label>Kategória neve<input name="name" maxlength="100" required placeholder="pl. Adatközpontok"></label><label>Angol neve<input name="name_en" maxlength="100" placeholder="pl. Data centres"></label><button class="primary" type="submit">Kategória hozzáadása</button></form>
   </section>
-  <div id="groups" class="category-groups"></div>
+  <div id="categories" class="category-groups"></div>
 </main>
 </body></html>

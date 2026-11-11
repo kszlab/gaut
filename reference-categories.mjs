@@ -1,4 +1,19 @@
-// Reference taxonomy. Main categories and subcategories are seeded once, then maintained in the database.
+// Reference categories: one flat list, seeded once and then maintained in the workspace (it can be extended and edited,
+// never deleted, so a categorised reference cannot lose its category). References store the category id.
+export const INITIAL_CATEGORY_LIST = [
+  { id: 'irodahazak', name: 'Irodaházak', name_en: 'Office buildings' },
+  { id: 'kereskedelmi-letesitmenyek', name: 'Kereskedelmi létesítmények', name_en: 'Retail and commercial facilities' },
+  { id: 'ipari-logisztikai', name: 'Ipari és logisztikai létesítmények', name_en: 'Industrial and logistics facilities' },
+  { id: 'egeszsegugyi-intezmenyek', name: 'Egészségügyi intézmények', name_en: 'Healthcare facilities' },
+  { id: 'kulturalis-muemlek', name: 'Kulturális és műemlék épületek', name_en: 'Cultural and heritage buildings' },
+  { id: 'oktatasi-kozintezmenyek', name: 'Oktatási és közintézmények', name_en: 'Educational and public buildings' },
+  { id: 'sport-furdo', name: 'Sport- és fürdőlétesítmények', name_en: 'Sports and spa facilities' },
+  { id: 'szallodak', name: 'Szállodák', name_en: 'Hotels' },
+  { id: 'lakoepuletek', name: 'Lakóépületek', name_en: 'Residential buildings' },
+  { id: 'energia-infrastruktura', name: 'Energia és infrastruktúra', name_en: 'Energy and infrastructure' }
+].map((c, i) => ({ ...c, sort_order: (i + 1) * 10 }));
+
+// ---- Earlier two-level taxonomy. Kept only so existing databases and their stored values stay readable; nothing new uses it.
 export const INITIAL_CATEGORY_TREE = [
   { id: 'kozintezmenyek', name: 'Közintézmények', sort_order: 10, categories: [
     { id: 'oktatasi-intezmenyek', name: 'Oktatási intézmények', sort_order: 10 },
