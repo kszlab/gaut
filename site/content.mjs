@@ -173,7 +173,14 @@ export function cleanOverrides(input) {
   for (const lang of ['hu', 'en']) {
     const values = input[lang] ?? {};
     if (typeof values !== 'object' || Array.isArray(values)) fail(400, 'Hibás tartalom.');
-    for (const [path, raw] of Object.entries(values)) {
+    // Backward compatibility: older drafts used contact.address for the office address.
+    // Migrate it to contact.office; when both exist, the new canonical field wins.
+    const migratedValues = { ...values };
+    if (Object.hasOwn(migratedValues, 'contact.address')) {
+      if (!Object.hasOwn(migratedValues, 'contact.office')) migratedValues['contact.office'] = migratedValues['contact.address'];
+      delete migratedValues['contact.address'];
+    }
+    for (const [path, raw] of Object.entries(migratedValues)) {
       const field = BY_PATH.get(path);
       if (!field) fail(400, `Ismeretlen mező: ${path}`);
       if (typeof raw !== 'string') fail(400, 'A mezők szöveget tartalmazzanak.');
