@@ -1,6 +1,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { LOGOS, ICONS } from './art.mjs';
 import { applyContent, isChamberUrl } from './content.mjs';
+import { referenceCategoryLabel } from '../reference-categories.mjs';
 import { renderMosaic } from './mosaic.mjs';
 import { PHASES_TEXT, PHASES_PATH, phasesMain } from './phases.mjs';
 
@@ -107,13 +108,7 @@ const firstYear = year => Number(/\d{4}/.exec(year)?.[0] ?? 0);
 export const publicReferences = records => records.map(toPublicReference).filter(Boolean)
   .sort((a, b) => firstYear(b.year) - firstYear(a.year) || a.title.hu.localeCompare(b.title.hu, 'hu'));
 
-const CATEGORIES = {
-  hu: { office: 'Iroda', industry: 'Ipar és logisztika', education: 'Oktatás', hotel: 'Szálloda', health: 'Egészségügy', community: 'Közösségi épület' },
-  en: { office: 'Office', industry: 'Industry & logistics', education: 'Education', hotel: 'Hotel', health: 'Healthcare', community: 'Community building' }
-};
-// English names of the categories used in the reference store (anything else is shown as typed).
-const CATEGORY_EN = { 'Ipar és logisztika': 'Industry & logistics', 'Egészségügy': 'Healthcare', 'Iroda és kereskedelem': 'Office & retail', 'Szálloda és turizmus': 'Hotels & tourism', 'Műemlék és kultúra': 'Heritage & culture', 'Energia és infrastruktúra': 'Energy & infrastructure', 'Sport és fürdő': 'Sport & spa', 'Lakóépület': 'Residential', 'Oktatás és középület': 'Education & public buildings' };
-export const categoryLabel = (category, lang) => CATEGORIES[lang][category] ?? (lang === 'en' ? CATEGORY_EN[category] : undefined) ?? category;
+export const categoryLabel = referenceCategoryLabel;
 
 const TEXT = {
   hu: {
