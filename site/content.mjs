@@ -23,6 +23,8 @@ export const FIELDS = [
   ...[0, 1, 2].flatMap(i => [line(`areas.${i}.title`, 'Szakterületek', `${i + 1}. szakterület címe`, 100), text(`areas.${i}.text`, 'Szakterületek', `${i + 1}. szakterület leírása`, 600)]),
   line('sectorsLabel', 'Szakterületek', 'Területek felirata', 120),
   ...[0, 1, 2, 3, 4, 5].map(i => line(`sectors.${i}`, 'Szakterületek', `${i + 1}. terület`, 80)),
+  line('activitiesLabel', 'Tevékenységeink', 'Szekció címe', 120),
+  ...[0, 1, 2].map(i => line(`activities.${i}`, 'Tevékenységeink', `${i + 1}. tevékenység`, 80)),
   line('approachTitle', 'Szemlélet', 'Szekció címe', 120),
   text('approachText', 'Szemlélet', 'Szemlélet leírása', 900),
   ...[0, 1, 2, 3].flatMap(i => [line(`principles.${i}.title`, 'Szemlélet', `${i + 1}. alapelv címe`, 100), text(`principles.${i}.text`, 'Szemlélet', `${i + 1}. alapelv leírása`, 400)]),
