@@ -135,12 +135,11 @@ $('#images').addEventListener('input', e => {
 });
 
 function markdownPreview(source) {
-  const escHtml = value => String(value).replace(/[&<>\"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;' }[c]));
-  const inline = raw => escHtml(raw).replace(/\\[([^]]+)\\]\\((https?:\\/\\/[^\\s)]+)\\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>').replace(/\\*\\*([^*]+)\\*\\*/g,'<strong>$1</strong>').replace(/\\*([^*]+)\\*/g,'<em>$1</em>').replace(/`([^`]+)`/g,'<code>$1</code>');
-  return String(source || '').split(/\\n\\s*\\n/).map(block => {
-    const lines = block.split('\\n');
-    if (lines.every(line => /^\\s*[-*]\\s+/.test(line))) return '<ul>' + lines.map(line => '<li>' + inline(line.replace(/^\\s*[-*]\\s+/,'')) + '</li>').join('') + '</ul>';
-    const heading = /^(#{1,3})\\s+(.+)$/.exec(lines[0]);
+  const inline = raw => esc(raw).replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/\*([^*]+)\*/g,'<em>$1</em>').replace(/`([^`]+)`/g,'<code>$1</code>');
+  return String(source || '').split(/\n\s*\n/).map(block => {
+    const lines = block.split('\n');
+    if (lines.every(line => /^\s*[-*]\s+/.test(line))) return '<ul>' + lines.map(line => '<li>' + inline(line.replace(/^\s*[-*]\s+/,'')) + '</li>').join('') + '</ul>';
+    const heading = /^(#{1,3})\s+(.+)$/.exec(lines[0]);
     if (heading && lines.length === 1) return '<h' + (heading[1].length + 1) + '>' + inline(heading[2]) + '</h' + (heading[1].length + 1) + '>';
     return '<p>' + lines.map(inline).join('<br>') + '</p>';
   }).filter(Boolean).join('');
