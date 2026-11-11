@@ -74,7 +74,8 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
     const shown = draft ? siteContent.draft().overrides : siteContent.live()?.overrides ?? null;
     const media = resolveMedia(shown?.media);
     const team = shown?.team?.map(m => ({ ...m, sample: false, photoMedia: media[`team.${m.id}`] }));
-    const frozen = draft ? publicReferences(references.list()) : siteContent.live()?.overrides.references;
+    const currentById = new Map(references.list().map(r => [r.id, r]));
+    const frozen = draft ? publicReferences(references.list()) : (siteContent.live()?.overrides.references || []).map(r => { const current = currentById.get(r.id); return { ...r, categoryMainId: current?.category_main_id || '', categorySubId: current?.category_sub_id || '', categoryApproved: current?.category_review_status === 'Jóváhagyott' && !!current?.category_main_id && !!current?.category_sub_id }; });
     const refs = frozen?.length ? frozen.map(r => ({ ...r, coverMedia: r.cover ? siteMedia.get(r.cover) ?? undefined : undefined })) : undefined;
     return { content: shown, media, team, references: refs, hasLive: Boolean(siteContent.live()) };
   }
