@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { makeServer } from '../server.mjs';
-import { FIELDS, cleanOverrides, applyContent, contentStore, defaultsFor } from '../site/content.mjs';
+import { FIELDS, cleanOverrides, applyContent, contentStore, defaultsFor, CATEGORY_CARD_DEFAULTS } from '../site/content.mjs';
 import { renderSite, defaultText, richTextHtml } from '../site/site.mjs';
 
 const PASSWORD = 'teszt-jelszo-123456';
@@ -49,6 +49,29 @@ test('long-form introduction supports safe Markdown and four principles render',
   assert.equal((page.match(/class="principles"/g) || []).length, 1);
   assert.match(page, /Tevékenységeink/);
   assert.match(page, /<li>Tervezés<\/li><li>Tervellenőrzés<\/li><li>Műszaki ellenőrzés<\/li>/);
+});
+
+test('activity category cards are validated, persisted and rendered with category filters', () => {
+  const defaults = cleanOverrides({});
+  assert.equal(defaults.categoryCards.length, 7);
+  assert.deepEqual(defaults.categoryCards.map(c => c.id), CATEGORY_CARD_DEFAULTS.map(c => c.id));
+  const cards = structuredClone(defaults.categoryCards);
+  cards[0].title.hu = 'Irodai projektek';
+  cards[0].categoryIds = ['irodahazak', 'bankok'];
+  const clean = cleanOverrides({ categoryCards: cards });
+  assert.equal(clean.categoryCards[0].title.hu, 'Irodai projektek');
+  assert.deepEqual(clean.categoryCards[0].categoryIds, ['irodahazak', 'bankok']);
+  assert.throws(() => cleanOverrides({ categoryCards: [{ ...cards[0], id: 'bad id' }] }), /azonosító/);
+  assert.throws(() => cleanOverrides({ categoryCards: [{ ...cards[0], categoryIds: ['irodahazak', 'irodahazak'] }] }), /kategória/);
+  assert.throws(() => cleanOverrides({ categoryCards: [{ ...cards[0], image: 'not-a-uuid' }] }), /kártyakép-azonosító/);
+  const store = contentStore(new DatabaseSync(':memory:'));
+  assert.equal(store.draft().overrides.categoryCards.length, 7);
+  const saved = store.saveDraft(0, { categoryCards: cards });
+  assert.equal(saved.overrides.categoryCards[0].title.hu, 'Irodai projektek');
+  const html = renderSite({ lang: 'hu', categoryCards: [cards[0]], categories: [{ id: 'egyeb-letesitmenyek', name: 'Egyéb létesítmények', categories: [{ id: 'irodahazak', name: 'Irodaházak' }] }] });
+  assert.match(html, /class="activity-card"/);
+  assert.match(html, /data-categories="irodahazak,bankok"/);
+  assert.match(html, /Irodai projektek/);
 });
 
 test('overrides are validated and normalised', () => {

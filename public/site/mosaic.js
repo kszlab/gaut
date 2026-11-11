@@ -12,17 +12,18 @@ if (box) {
   const tree = treeNode ? JSON.parse(treeNode.textContent) : [];
   const mainButtons = [...document.querySelectorAll('[data-main-filter]')];
   const subBox = document.querySelector('.sub-filters');
-  let activeMain = '*', activeSub = '*';
+  let activeMain = '*', activeSub = '*', selectedCategories = null;
   function applyFilters() {
     tiles.forEach(t => {
       const mainMatch = activeMain === '*' || t.dataset.main === activeMain;
       const subMatch = activeSub === '*' || t.dataset.sub === activeSub;
-      t.hidden = !(mainMatch && subMatch);
+      const cardMatch = !selectedCategories || (t.dataset.cats || '').split(',').some(id => selectedCategories.has(id));
+      t.hidden = !(mainMatch && subMatch && cardMatch);
     });
   }
   if (mainButtons.length) {
     mainButtons.forEach(chip => chip.addEventListener('click', () => {
-      activeMain = chip.dataset.mainFilter; activeSub = '*';
+      activeMain = chip.dataset.mainFilter; activeSub = '*'; if (activeMain === '*') selectedCategories = null;
       mainButtons.forEach(c => c.classList.toggle('on', c === chip));
       const group = tree.find(g => g.id === activeMain);
       if (group?.categories?.length) {
@@ -44,6 +45,16 @@ if (box) {
       tiles.forEach(t => { t.hidden = f !== '*' && t.dataset.cat !== f; });
     }));
   }
+
+  document.querySelectorAll('[data-category-card]').forEach(card => card.addEventListener('click', e => {
+    e.preventDefault();
+    selectedCategories = new Set((card.dataset.categories || '').split(',').filter(Boolean));
+    activeMain = '*'; activeSub = '*';
+    mainButtons.forEach(c => c.classList.toggle('on', c.dataset.mainFilter === '*'));
+    if (subBox) { subBox.hidden = true; subBox.replaceChildren(); }
+    applyFilters();
+    document.querySelector('#referenciak')?.scrollIntoView({ behavior: 'smooth' });
+  }));
 
   // ---- detail dialog
   const visible = () => tiles.filter(t => !t.hidden);

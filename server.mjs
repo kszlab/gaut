@@ -3,7 +3,7 @@ import { referenceStore } from './references.mjs';
 import { renderSite, parseTheme, defaultText, toPublicReference, publicReferences } from './site/site.mjs';
 import { websiteWarnings } from './public/site-readiness.js';
 import { renderConcept, renderConceptIndex } from './site/concepts.mjs';
-import { contentStore, defaultsFor, FIELDS, HERO_SLOTS } from './site/content.mjs';
+import { contentStore, defaultsFor, FIELDS, HERO_SLOTS, CATEGORY_CARD_DEFAULTS } from './site/content.mjs';
 import { mediaStore } from './site/media.mjs';
 import { photoStore } from './photos.mjs';
 import { streamBackup, backupFileName } from './backup.mjs';
@@ -51,7 +51,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
   const siteContent = contentStore(db);
   const siteMedia = mediaStore(db, dataDir);
   const resolveMedia = (map = {}) => Object.fromEntries(Object.entries(map).map(([slot, id]) => [slot, siteMedia.get(id)]).filter(([, m]) => m));
-  const isPublishedMedia = id => { const live = siteContent.live()?.overrides; return Object.values(live?.media ?? {}).includes(id) || Boolean(live?.references?.some(r => r.cover === id)); };
+  const isPublishedMedia = id => { const live = siteContent.live()?.overrides; return Object.values(live?.media ?? {}).includes(id) || Boolean(live?.categoryCards?.some(c => c.image === id)) || Boolean(live?.references?.some(r => r.cover === id)); };
   // References that a publication would put on the site, with advisory warnings (never blocking).
   const referenceOverview = () => references.list().filter(r => toPublicReference(r)).map(r => ({ id: r.id, name: r.website_title_hu || r.name, featured: r.website_featured === true, warnings: websiteWarnings(r) }));
   // The cover photo of a reference is copied into the site image store (resized WebP, no metadata) when it is chosen, never taken from the client.
@@ -74,14 +74,15 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
     const shown = draft ? siteContent.draft().overrides : siteContent.live()?.overrides ?? null;
     const media = resolveMedia(shown?.media);
     const team = shown?.team?.map(m => ({ ...m, sample: false, photoMedia: media[`team.${m.id}`] }));
+    const categoryCards = (shown?.categoryCards ?? CATEGORY_CARD_DEFAULTS).map(c => ({ ...c, imageMedia: c.image ? siteMedia.get(c.image) ?? undefined : undefined }));
     const currentById = new Map(references.list().map(r => [r.id, r]));
     const frozen = draft ? publicReferences(references.list()) : (siteContent.live()?.overrides.references || []).map(r => { const current = currentById.get(r.id); return { ...r, categoryMainId: current?.category_main_id || '', categorySubId: current?.category_sub_id || '', categoryApproved: current?.category_review_status === 'Jóváhagyott' && !!current?.category_main_id && !!current?.category_sub_id }; });
     const refs = frozen?.length ? frozen.map(r => ({ ...r, coverMedia: r.cover ? siteMedia.get(r.cover) ?? undefined : undefined })) : undefined;
-    return { content: shown, media, team, references: refs, hasLive: Boolean(siteContent.live()) };
+    return { content: shown, media, team, categoryCards, referenceCategories: references.categories(), references: refs, hasLive: Boolean(siteContent.live()) };
   }
   const siteState = () => {
     const live = siteContent.live();
-    return { fields: FIELDS, slots: HERO_SLOTS.map(([slot, label, fallback]) => ({ slot, label, fallback })), defaults: { hu: defaultsFor(defaultText('hu')), en: defaultsFor(defaultText('en')) }, draft: siteContent.draft(), live: live && { id: live.id, created_at: live.created_at, note: live.note, changes: live.changes }, versions: siteContent.versions(), media: siteMedia.list(), references: referenceOverview() };
+    return { fields: FIELDS, slots: HERO_SLOTS.map(([slot, label, fallback]) => ({ slot, label, fallback })), defaults: { hu: defaultsFor(defaultText('hu')), en: defaultsFor(defaultText('en')) }, draft: siteContent.draft(), live: live && { id: live.id, created_at: live.created_at, note: live.note, changes: live.changes }, versions: siteContent.versions(), media: siteMedia.list(), references: referenceOverview(), referenceCategories: references.categories() };
   };
   const photos = photoStore(db, dataDir);
   const attempts = new Map();
@@ -224,7 +225,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         if(referenceMatch && req.method==='DELETE') {const data=await body(req,1024);return json(res,200,{reference:references.trash(referenceMatch[1],data.revision)});}
         if (referenceMatch && req.method === 'PUT') { const data = await body(req, 1024*1024); await prepareCover(referenceMatch[1], data); return json(res, 200, { reference: references.update(referenceMatch[1], data) }); }
         if (path === '/api/site/content' && req.method === 'GET') return json(res, 200, siteState());
-        if (path === '/api/site/content' && req.method === 'PUT') { const b = await body(req, 512 * 1024); siteContent.saveDraft(b.revision, b.overrides); return json(res, 200, siteState()); }
+        if (path === '/api/site/content' && req.method === 'PUT') { const b = await body(req, 512 * 1024); const allowed = new Set(references.categories().flatMap(g => (g.categories || []).map(c => String(c.id)))); for (const card of b.overrides?.categoryCards || []) for (const id of card.categoryIds || []) if (!allowed.has(String(id))) fail(400, 'A kategóriakártya nem létező referenciakategóriára hivatkozik.'); siteContent.saveDraft(b.revision, b.overrides); return json(res, 200, siteState()); }
         if (path === '/api/site/publish' && req.method === 'POST') { const b = await body(req, 4096); const list = publicReferences(references.list()); siteContent.publish(b.revision, b.note ?? '', list.length ? { references: list } : {}); return json(res, 200, siteState()); }
         if (path === '/api/site/media' && req.method === 'POST') {
           const b = await body(req);
@@ -296,7 +297,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         // ?elonezet=1 shows the unpublished draft, but only to a signed-in workspace user; everyone else gets the live version.
         const draft = url.searchParams.get('elonezet') === '1' && Boolean(session(req));
         const view = siteView(draft);
-        const html = renderSite({ lang: sitePage.lang, page: sitePage.page, categories: references.categories(), theme: parseTheme(url.searchParams.get('tema')), content: view.content, draft, media: view.media, ...(view.team ? { team: view.team } : {}), ...(view.references ? { references: view.references } : {}) });
+        const html = renderSite({ lang: sitePage.lang, page: sitePage.page, categories: references.categories(), theme: parseTheme(url.searchParams.get('tema')), content: view.content, draft, media: view.media, ...(view.team ? { team: view.team } : {}), ...(view.references ? { references: view.references } : {}), categoryCards: view.categoryCards, categories: view.referenceCategories });
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         return res.end(req.method === 'HEAD' ? undefined : html);
