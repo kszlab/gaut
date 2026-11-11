@@ -154,7 +154,7 @@ export function referenceStore(db) {
     }));
   }
   const categoryName = value => {
-    if (typeof value !== 'string' || !value.trim() || value.trim().length > 100 || /[\\u0000-\\u001f\\u007f]/.test(value)) fail(400,'A kategórianév 1–100 karakter legyen.');
+    if (typeof value !== 'string' || !value.trim() || value.trim().length > 100 || /[\u0000-\u001f\u007f]/.test(value)) fail(400,'A kategórianév 1–100 karakter legyen.');
     return value.trim();
   };
   function createCategory(data) {
