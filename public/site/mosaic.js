@@ -7,12 +7,43 @@ if (box) {
   const tiles = [...box.querySelectorAll('.mt')];
   let current = null, opener = null;
 
-  // ---- filter: hiding tiles lets the dense grid close the gaps
-  document.querySelectorAll('.filters .chip').forEach(chip => chip.addEventListener('click', () => {
-    document.querySelectorAll('.filters .chip').forEach(c => c.classList.toggle('on', c === chip));
-    const f = chip.dataset.filter;
-    tiles.forEach(t => { t.hidden = f !== '*' && t.dataset.cat !== f; });
-  }));
+  // ---- hierarchical filter: main category first, then its subcategories
+  const treeNode = document.querySelector('.category-tree-data');
+  const tree = treeNode ? JSON.parse(treeNode.textContent) : [];
+  const mainButtons = [...document.querySelectorAll('[data-main-filter]')];
+  const subBox = document.querySelector('.sub-filters');
+  let activeMain = '*', activeSub = '*';
+  function applyFilters() {
+    tiles.forEach(t => {
+      const mainMatch = activeMain === '*' || t.dataset.main === activeMain;
+      const subMatch = activeSub === '*' || t.dataset.sub === activeSub;
+      t.hidden = !(mainMatch && subMatch);
+    });
+  }
+  if (mainButtons.length) {
+    mainButtons.forEach(chip => chip.addEventListener('click', () => {
+      activeMain = chip.dataset.mainFilter; activeSub = '*';
+      mainButtons.forEach(c => c.classList.toggle('on', c === chip));
+      const group = tree.find(g => g.id === activeMain);
+      if (group?.categories?.length) {
+        subBox.hidden = false;
+        subBox.innerHTML = '<button type="button" class="chip on" data-sub-filter="*">' + (document.documentElement.lang === 'hu' ? 'Minden alkategória' : 'All subcategories') + '</button>' +
+          group.categories.map(c => '<button type="button" class="chip" data-sub-filter="' + c.id.replace(/[&<>]/g, '') + '">' + c.name.replace(/[&<>]/g, '') + '</button>').join('');
+        subBox.querySelectorAll('[data-sub-filter]').forEach(sub => sub.addEventListener('click', () => {
+          activeSub = sub.dataset.subFilter;
+          subBox.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c === sub));
+          applyFilters();
+        }));
+      } else { subBox.hidden = true; subBox.replaceChildren(); }
+      applyFilters();
+    }));
+  } else {
+    document.querySelectorAll('.filters .chip').forEach(chip => chip.addEventListener('click', () => {
+      document.querySelectorAll('.filters .chip').forEach(c => c.classList.toggle('on', c === chip));
+      const f = chip.dataset.filter;
+      tiles.forEach(t => { t.hidden = f !== '*' && t.dataset.cat !== f; });
+    }));
+  }
 
   // ---- detail dialog
   const visible = () => tiles.filter(t => !t.hidden);
