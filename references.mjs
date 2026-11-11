@@ -160,10 +160,10 @@ export function referenceStore(db) {
   function createCategory(data) {
     if (!data || typeof data !== 'object') fail(400,'Hibás kategóriaadat.');
     const name = categoryName(data.name), created = new Date().toISOString(), id = randomUUID();
-    if (data.kind === 'group') db.prepare('INSERT INTO reference_category_groups VALUES(?,?,?,?)').run(id,name,Number.isInteger(data.sort_order)?data.sort_order:100,created);
+    if (data.kind === 'group') { const order = Number.isInteger(data.sort_order)?data.sort_order:db.prepare('SELECT COALESCE(MAX(sort_order),0)+10 AS n FROM reference_category_groups').get().n; db.prepare('INSERT INTO reference_category_groups VALUES(?,?,?,?)').run(id,name,order,created); }
     else if (data.kind === 'subcategory') {
       if (typeof data.parent_id !== 'string' || !db.prepare('SELECT 1 FROM reference_category_groups WHERE id=?').get(data.parent_id)) fail(400,'Válassz létező főkategóriát.');
-      db.prepare('INSERT INTO reference_categories VALUES(?,?,?,?,?)').run(id,data.parent_id,name,Number.isInteger(data.sort_order)?data.sort_order:100,created);
+      const order = Number.isInteger(data.sort_order)?data.sort_order:db.prepare('SELECT COALESCE(MAX(sort_order),0)+10 AS n FROM reference_categories WHERE parent_id=?').get(data.parent_id).n; db.prepare('INSERT INTO reference_categories VALUES(?,?,?,?,?)').run(id,data.parent_id,name,order,created);
     } else fail(400,'A kategória típusa főkategória vagy alkategória lehet.');
     return categoryTree();
   }
