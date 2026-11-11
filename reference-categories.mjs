@@ -6,7 +6,9 @@ export const INITIAL_CATEGORY_TREE = [
     { id: 'kulturalis-intezmenyek', name: 'Kulturális intézmények', sort_order: 30 },
     { id: 'igazgatasi-intezmenyek', name: 'Igazgatási intézmények', sort_order: 40 },
     { id: 'sportletesitmenyek', name: 'Sportlétesítmények', sort_order: 50 },
-    { id: 'kereskedelmi-szolgaltato', name: 'Kereskedelmi és szolgáltató létesítmények', sort_order: 60 }
+    { id: 'kereskedelmi-szolgaltato', name: 'Kereskedelmi és szolgáltató létesítmények', sort_order: 60 },
+    { id: 'allatkerti-bemutato', name: 'Állatkerti és bemutató létesítmények', sort_order: 70 },
+    { id: 'konferencia-es-rendezveny', name: 'Konferencia- és rendezvényközpontok', sort_order: 80 }
   ]},
   { id: 'egyeb-letesitmenyek', name: 'Egyéb létesítmények', sort_order: 20, categories: [
     { id: 'irodahazak', name: 'Irodaházak', sort_order: 10 },
@@ -19,7 +21,8 @@ export const INITIAL_CATEGORY_TREE = [
     { id: 'egyhazi-letesitmenyek', name: 'Egyházi létesítmények', sort_order: 80 },
     { id: 'energetikai-kozmu', name: 'Energetikai és közműlétesítmények', sort_order: 90 },
     { id: 'kozlekedesi-infrastruktura', name: 'Közlekedési és infrastruktúra-létesítmények', sort_order: 100 },
-    { id: 'egyeb', name: 'Egyéb', sort_order: 110 }
+    { id: 'egyeb', name: 'Egyéb', sort_order: 110 },
+    { id: 'kutatas-fejlesztesi-teszt', name: 'Kutatás-fejlesztési és tesztlétesítmények', sort_order: 120 }
   ]}
 ];
 
@@ -44,7 +47,7 @@ export const INITIAL_REFERENCE_CLASSIFICATION = {
   'GAUT-REF-002': ['egyeb-letesitmenyek','szallodak','Ellenőrzendő'],
   'GAUT-REF-003': ['egyeb-letesitmenyek','bankok','Ellenőrzendő'],
   'GAUT-REF-004': ['kozintezmenyek','kulturalis-intezmenyek','Ellenőrzendő'],
-  'GAUT-REF-005': ['egyeb-letesitmenyek','egyeb','Ellenőrzendő'],
+  'GAUT-REF-005': ['kozintezmenyek','allatkerti-bemutato','Ellenőrzendő'],
   'GAUT-REF-006': ['kozintezmenyek','egeszsegugyi-intezmenyek','Ellenőrzendő'],
   'GAUT-REF-007': ['egyeb-letesitmenyek','ipari-letesitmenyek','Ellenőrzendő'],
   'GAUT-REF-008': ['kozintezmenyek','egeszsegugyi-intezmenyek','Ellenőrzendő'],
@@ -63,16 +66,16 @@ export const INITIAL_REFERENCE_CLASSIFICATION = {
   'GAUT-REF-021': ['kozintezmenyek','egeszsegugyi-intezmenyek','Ellenőrzendő'],
   'GAUT-REF-022': ['egyeb-letesitmenyek','logisztikai-letesitmenyek','Ellenőrzendő'],
   'GAUT-REF-023': ['egyeb-letesitmenyek','lakoeepuletek','Ellenőrzendő'],
-  'GAUT-REF-024': ['kozintezmenyek','kulturalis-intezmenyek','Ellenőrzendő'],
+  'GAUT-REF-024': ['kozintezmenyek','allatkerti-bemutato','Ellenőrzendő'],
   'GAUT-REF-025': ['egyeb-letesitmenyek','ipari-letesitmenyek','Ellenőrzendő'],
-  'GAUT-REF-026': ['egyeb-letesitmenyek','irodahazak','Ellenőrzendő'],
+  'GAUT-REF-026': ['egyeb-letesitmenyek','kutatas-fejlesztesi-teszt','Ellenőrzendő'],
   'GAUT-REF-027': ['kozintezmenyek','kulturalis-intezmenyek','Ellenőrzendő'],
   'GAUT-REF-028': ['kozintezmenyek','sportletesitmenyek','Ellenőrzendő'],
   'GAUT-REF-029': ['egyeb-letesitmenyek','irodahazak','Ellenőrzendő'],
   'GAUT-REF-030': ['egyeb-letesitmenyek','szallodak','Ellenőrzendő'],
   'GAUT-REF-031': ['kozintezmenyek','igazgatasi-intezmenyek','Ellenőrzendő'],
   'GAUT-REF-032': ['egyeb-letesitmenyek','szallodak','Ellenőrzendő'],
-  'GAUT-REF-033': ['kozintezmenyek','oktatasi-intezmenyek','Ellenőrzendő'],
+  'GAUT-REF-033': ['kozintezmenyek','konferencia-es-rendezveny','Ellenőrzendő'],
   'GAUT-REF-034': ['egyeb-letesitmenyek','ipari-letesitmenyek','Ellenőrzendő'],
   'GAUT-REF-035': ['kozintezmenyek','sportletesitmenyek','Ellenőrzendő'],
   'GAUT-REF-036': ['egyeb-letesitmenyek','irodahazak','Ellenőrzendő'],
@@ -87,11 +90,11 @@ export const INITIAL_REFERENCE_CLASSIFICATION = {
 
 export const INITIAL_REFERENCE_REVIEW_NOTES = {
   'GAUT-REF-005': 'Állatházak termálvizes hőellátása: az épület funkciója állatkerti állattartó létesítmény, nem egyértelműen illeszkedik a kulturális/közintézményi vagy az energetikai kategóriába.',
-  'GAUT-REF-019': 'A Liszt terem egyetemi épületen belüli rendezvény- vagy koncerttér lehet; az oktatási és kulturális besorolás közötti elsődleges funkciót ellenőrizni kell.',
+  'GAUT-REF-019': 'A koncerttermi funkció alapján kulturális intézményként szerepel; a pontos munkarész és a terem gépészeti rendszerhatára még ellenőrzendő.',
   'GAUT-REF-020': 'A HungaroControl ANS III jégakkumulációs rendszere alapján nem egyértelmű, hogy az objektumot közlekedési infrastruktúraként vagy energetikai/műszaki létesítményként célszerű besorolni.',
   'GAUT-REF-024': 'A Cápasuli/Cápanevelde állatkerti állattartó és látogatói funkciót is betölthet; a kulturális intézményi besorolás ellenőrzendő.',
-  'GAUT-REF-026': 'Az AVL iroda- és tesztépület vegyes funkciójú; az irodaház alkategória csak akkor megfelelő, ha a tesztfunkció nem elsődleges.',
+  'GAUT-REF-026': 'Az AVL iroda- és tesztépület vegyes funkciójú; a kutatás-fejlesztési/teszt funkció elsődlegességét az iroda funkcióhoz képest ellenőrizni kell.',
   'GAUT-REF-030': 'A BalaLand FamilyPark és a hotel közös referenciaként szerepel; a szállodák alkategória a hotelre illik, az élménypark funkcióját külön is mérlegelni kell.',
-  'GAUT-REF-033': 'Az oktatási és konferenciaközpont konferencia-/rendezvényfunkciója miatt az oktatási és a kereskedelmi-szolgáltató besorolás közötti elsődleges funkció megerősítendő.',
+  'GAUT-REF-033': 'A többépületes komplexum oktatási, konferencia-, szállás- és wellnessfunkciót egyesít; a konferencia/rendezvényközpont elsődlegességét az oktatási és hotel funkciókhoz képest meg kell erősíteni.',
   'GAUT-REF-043': 'A Ranolder iskola és a Reischl-sörház vegyes funkciójú fejlesztés; az iskola vagy a kulturális/rendezvény funkció legyen-e az elsődleges besorolás, ellenőrizendő.'
 };
