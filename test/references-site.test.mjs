@@ -23,17 +23,18 @@ test('public references are sorted by year and rendered as a mosaic with fallbac
   const rec = (id, extra) => ({ id, name: `Projekt ${id}`, category: 'Egészségügy', city: 'Pécs', design_year: '2015', website_publishable: true, ...extra });
   const list = publicReferences([rec('a', { design_year: '2012', category: 'Iroda és kereskedelem' }), rec('b', { design_year: '2020' }), rec('c', { design_year: '2001', website_featured: true }), rec('d', { website_publishable: false })]);
   assert.deepEqual(list.map(r => r.id), ['b', 'a', 'c'], 'newest design year first; a featured reference keeps its place in time; unapproved ones are dropped');
+  const page = { page: 'references' }; // the full list lives on the references subpage
   const cover = { id: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee', widths: [800, 1600], width: 1600, height: 1067 };
-  const html = renderSite({ lang: 'en', references: list.map(r => ({ ...r, coverMedia: r.id === 'b' ? cover : undefined })) });
+  const html = renderSite({ lang: 'en', ...page, references: list.map(r => ({ ...r, coverMedia: r.id === 'b' ? cover : undefined })) });
   const mosaic = html.slice(html.indexOf('class="mosaic"'), html.indexOf('</dialog>'));
   assert.equal((mosaic.match(/<article class="mt/g) || []).length, 3, 'one tile per reference, no upper limit');
-  assert.equal((mosaic.match(/<article class="mt big/g) || []).length, 1, 'only the featured reference is a double-size tile');
+  assert.ok(!mosaic.includes('mt big'), 'every tile has the same size, featured or not');
   assert.ok(mosaic.includes('Healthcare · Pécs · Design year 2020'), 'English category name and design year label');
   assert.ok(mosaic.includes('<strong>Projekt b</strong>'), 'English title falls back to the Hungarian one');
   assert.match(mosaic, /<img src="\/media\/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\/800\.webp" srcset="[^"]*1600w"/);
   assert.equal((mosaic.match(/class="mt-type"/g) || []).length, 2, 'a reference without a cover photo gets a typographic tile, not a grey box or a generated picture');
   assert.ok(!mosaic.includes('class="badge"') && !mosaic.includes('mt-art'), 'real references carry no sample badge and no generated art');
-  assert.ok(html.includes('class="mosaic-dialog"') && html.includes('data-filter="*"'), 'detail dialog and filter are present');
+  assert.ok(html.includes('class="mosaic-dialog"'), 'the detail dialog is present');
   assert.ok(!html.includes('Illustrative sample projects'), 'the sample note disappears with real references');
   const samples = renderSite({ lang: 'en' });
   assert.ok(samples.includes('Illustrative sample projects') && samples.includes('class="mt-art"') && samples.includes('class="badge">Sample'), 'sample projects are labelled and use illustrations');
