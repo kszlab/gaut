@@ -34,10 +34,10 @@ test('every editable field has a default in both languages', () => {
 
 test('long-form introduction supports safe Markdown and four principles render', () => {
   const html = richTextHtml('## Mérnöki tervezés\\n\\n**Pontos** és *átlátható*.\\n- Automatika\\n- Felügyelet\\n\\n<script>alert(1)</script>');
-  assert.match(html, /<h3>Mérnöki tervezés<\\/h3>/);
-  assert.match(html, /<strong>Pontos<\\/strong>/);
-  assert.match(html, /<em>átlátható<\\/em>/);
-  assert.match(html, /<ul><li>Automatika<\\/li><li>Felügyelet<\\/li><\\/ul>/);
+  assert.ok(html.includes('<h3>Mérnöki tervezés</h3>'));
+  assert.ok(html.includes('<strong>Pontos</strong>'));
+  assert.ok(html.includes('<em>átlátható</em>'));
+  assert.ok(html.includes('<ul><li>Automatika</li><li>Felügyelet</li></ul>'));
   assert.ok(html.includes('&lt;script&gt;'));
   assert.ok(!html.includes('<script>'));
   const page = renderSite({ lang: 'hu' });
