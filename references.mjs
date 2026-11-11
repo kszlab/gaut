@@ -173,7 +173,6 @@ export function referenceStore(db) {
     const group = db.prepare('SELECT sort_order FROM reference_category_groups WHERE id=?').get(id);
     if (group) { if (db.prepare('SELECT 1 FROM reference_category_groups WHERE name=? AND id<>?').get(name,id)) fail(409,'Ez a főkategória már létezik.'); db.prepare('UPDATE reference_category_groups SET name=?,sort_order=? WHERE id=?').run(name,Number.isInteger(data.sort_order)?data.sort_order:group.sort_order,id); }
     else { const current=db.prepare('SELECT parent_id,sort_order FROM reference_categories WHERE id=?').get(id); if (current) { if (db.prepare('SELECT 1 FROM reference_categories WHERE parent_id=? AND name=? AND id<>?').get(current.parent_id,name,id)) fail(409,'Ez az alkategória már létezik ebben a főkategóriában.'); db.prepare('UPDATE reference_categories SET name=?,sort_order=? WHERE id=?').run(name,Number.isInteger(data.sort_order)?data.sort_order:current.sort_order,id); } else fail(404,'A kategória nem található.'); }
-    else fail(404,'A kategória nem található.');
     return categoryTree();
   }
   function deleteCategory(id) {
