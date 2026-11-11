@@ -346,3 +346,12 @@ h3 { font-size: 21px; }
 .category-filter .filters { margin: 0; }
 .sub-filters { padding: 10px 12px; border-left: 2px solid var(--accent); background: color-mix(in srgb, var(--surface) 65%, transparent); }
 .sub-filters[hidden] { display: none; }
+
+.member-contact { margin-top: 14px; }
+.contact-reveal { border: 1px solid var(--line, #d8d2c8); background: transparent; color: inherit; padding: 9px 13px; font: inherit; cursor: pointer; }
+.contact-reveal:hover { background: var(--surface-alt, rgba(0,0,0,.04)); }
+.contact-reveal:disabled { opacity: .65; cursor: wait; }
+.member-contact-details { margin-top: 10px; }
+.member-contact-details p { margin: 6px 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.member-contact-details p span { color: var(--muted, #687078); min-width: 64px; }
+.member-contact-details[hidden] { display: none; }
