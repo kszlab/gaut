@@ -150,12 +150,10 @@ const TEXT = {
     refsKicker: 'Referenciák', refsTitle: 'Válogatás a munkáinkból',
     refsNote: 'Bemutató mintaprojektek. A látható projektek kitaláltak, a végleges oldalon valós referenciák szerepelnek majd.',
     all: 'Mind', sample: 'Minta', designYear: 'Tervév', mosaicOpen: 'Megnyitás', mosaicClose: 'Bezárás', mosaicPrev: 'Előző referencia', mosaicNext: 'Következő referencia', mosaicDetail: 'Referencia részletei',
-    contactKicker: 'Kapcsolat', contactTitle: 'Beszéljük meg a projektet',
-    contactText: 'Írjon vagy hívjon minket, és közösen megnézzük, milyen rendszer illik az épületéhez.',
-    contactPending: 'Az elérhetőségek a végleges adatok megérkezése után kerülnek ide.',
-    contactLabels: ['Cím', 'E-mail', 'Telefon'], pending: 'hamarosan',
+    contactKicker: 'Kapcsolat', contactBoxTitle: 'Elérhetőségek', companyBoxTitle: 'Cégadatok',
+    officeLabel: 'Iroda', mapLabel: 'Megtekintés Google Térképen', companyLabels: { name: 'Cégnév', address: 'Székhely', taxNumber: 'Adószám', registrationNumber: 'Cégjegyzékszám', bank: 'Számlavezető bank', account: 'Bankszámlaszám' }, pending: 'hamarosan',
     footer: 'GAUT Kft. Gépészeti automatika és épületfelügyelet tervezése.', preview: 'Előnézet. Az oldal még nem végleges, és a keresők elől rejtve van.',
-    themeLabel: 'Arculat', contact: { address: '', email: '', phone: '' },
+    themeLabel: 'Arculat', contact: { office: '1033 Budapest, Hévízi út 9. 4. lépcsőház, földszint 2.', map: 'https://www.google.com/maps/search/?api=1&query=1033+Budapest+H%C3%A9v%C3%ADzi+%C3%BAt+9.', email: 'gaut@gaut.hu', phone: 'hamarosan' }, company: { name: 'GAUT Kft.', address: '1037 Budapest, Csillagszem utca 12.', taxNumber: '', registrationNumber: '', bank: '', account: '' },
     draftPreview: 'Vázlat előnézete. Ezt a változatot a látogatók még nem látják.'
   },
   en: {
@@ -194,12 +192,10 @@ const TEXT = {
     refsKicker: 'Projects', refsTitle: 'Selected work',
     refsNote: 'Illustrative sample projects. The projects shown are invented; the final site will list real references.',
     all: 'All', sample: 'Sample', designYear: 'Design year', mosaicOpen: 'Open', mosaicClose: 'Close', mosaicPrev: 'Previous project', mosaicNext: 'Next project', mosaicDetail: 'Project details',
-    contactKicker: 'Contact', contactTitle: 'Let\'s talk about your project',
-    contactText: 'Write or call us and we will look together at which system suits your building.',
-    contactPending: 'Contact details will be added when the final information arrives.',
-    contactLabels: ['Address', 'Email', 'Phone'], pending: 'coming soon',
+    contactKicker: 'Contact', contactBoxTitle: 'Contact details', companyBoxTitle: 'Company details',
+    officeLabel: 'Office', mapLabel: 'View on Google Maps', companyLabels: { name: 'Company name', address: 'Registered office', taxNumber: 'Tax number', registrationNumber: 'Company registration no.', bank: 'Bank', account: 'Bank account' }, pending: 'coming soon',
     footer: 'GAUT Ltd. Design of building automation and building management systems.', preview: 'Preview. This page is not final and is hidden from search engines.',
-    themeLabel: 'Identity', contact: { address: '', email: '', phone: '' },
+    themeLabel: 'Identity', contact: { office: 'Hévízi út 9, Building 4, Ground floor 2, 1033 Budapest, Hungary', map: 'https://www.google.com/maps/search/?api=1&query=1033+Budapest+H%C3%A9v%C3%ADzi+%C3%BAt+9.', email: 'gaut@gaut.hu', phone: 'coming soon' }, company: { name: 'GAUT Ltd.', address: 'Csillagszem utca 12, 1037 Budapest, Hungary', taxNumber: '', registrationNumber: '', bank: '', account: '' },
     draftPreview: 'Draft preview. Visitors do not see this version yet.'
   }
 };
@@ -334,16 +330,26 @@ ${team.length ? `<section id="csapat" class="block alt">
 </section>` : ''}
 
 <section id="kapcsolat" class="block contact">
-  <div class="wrap split">
-    <div><p class="kicker">${esc(t.contactKicker)}</p><h2>${esc(t.contactTitle)}</h2><p class="body">${esc(t.contactText)}</p></div>
-    <div class="contact-card">
-      <dl>${t.contactLabels.map((l, i) => {
-        const key = ['address', 'email', 'phone'][i], value = t.contact[key];
-        if (!value) return `<div><dt>${esc(l)}</dt><dd class="pending">${esc(t.pending)}</dd></div>`;
-        const shown = key === 'email' ? `<a href="mailto:${esc(value)}">${esc(value)}</a>` : key === 'phone' ? `<a href="tel:${esc(value.replace(/[^0-9+]/g, ''))}">${esc(value)}</a>` : esc(value);
-        return `<div><dt>${esc(l)}</dt><dd>${shown}</dd></div>`;
-      }).join('')}</dl>
-      ${Object.values(t.contact).every(Boolean) ? '' : `<p class="note">${esc(t.contactPending)}</p>`}
+  <div class="wrap">
+    <p class="kicker">${esc(t.contactKicker)}</p>
+    <div class="contact-grid">
+      <article class="contact-card">
+        <h2>${esc(t.contactBoxTitle)}</h2>
+        <dl>
+          <div><dt>${esc(t.officeLabel)}</dt><dd>${esc(t.contact.office)}${t.contact.map ? `<a class="map-link" href="${esc(t.contact.map)}" target="_blank" rel="noopener noreferrer">${esc(t.mapLabel)} ↗</a>` : ''}</dd></div>
+          <div><dt>E-mail</dt><dd><a href="mailto:${esc(t.contact.email)}">${esc(t.contact.email)}</a></dd></div>
+          <div><dt>Telefon</dt><dd class="pending">${esc(t.contact.phone || t.pending)}</dd></div>
+        </dl>
+      </article>
+      <article class="contact-card">
+        <h2>${esc(t.companyBoxTitle)}</h2>
+        <dl>
+          ${Object.entries(t.companyLabels).map(([key, label]) => {
+            const value = t.company[key];
+            return value ? `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>` : '';
+          }).join('')}
+        </dl>
+      </article>
     </div>
   </div>
 </section>`}
