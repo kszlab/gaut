@@ -1,5 +1,6 @@
 import http from 'node:http';
 import { referenceStore } from './references.mjs';
+import { referenceCategoryOptions } from './reference-categories.mjs';
 import { renderSite, parseTheme, defaultText, toPublicReference, publicReferences } from './site/site.mjs';
 import { websiteWarnings } from './public/site-readiness.js';
 import { renderConcept, renderConceptIndex } from './site/concepts.mjs';
@@ -178,6 +179,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
       if (path.startsWith('/api/')) {
         const user = session(req); if (!user) fail(401, 'A folytatáshoz jelentkezz be.');
         if (path === '/api/reference-photos/import' && req.method === 'POST') return json(res,200,photos.import(await body(req)));
+        if (path === '/api/reference-categories' && req.method === 'GET') return json(res, 200, { groups: referenceCategoryOptions('hu'), categories: referenceCategoryOptions('hu').flatMap(g => g.options) });
         if (path === '/api/references' && req.method === 'GET') return json(res, 200, { references: references.list().map(r=>{const active=photos.list(r.id).filter(p=>!p.deleted_at);return {...r,photo_count:active.length,photo_cover_id:active[0]?.id||null,photo_research:photos.research(r.id)};}) });
         if (path === '/api/references' && req.method === 'POST') { const data = await body(req, 1024*1024); await prepareCover(null, data); return json(res, 201, { reference: references.create(data) }); }
         if (path === '/api/references/export' && req.method === 'GET') return json(res, 200, {...references.bundle(),photos:photos.all(),photo_export_note:'A JSON a képek metaadatait tartalmazza. A képfájlok külön tölthetők le az adatlapokról; teljes mentéshez a DATA_DIR könyvtár is szükséges.'});
