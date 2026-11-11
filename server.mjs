@@ -51,7 +51,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
   const siteContent = contentStore(db);
   const siteMedia = mediaStore(db, dataDir);
   const resolveMedia = (map = {}) => Object.fromEntries(Object.entries(map).map(([slot, id]) => [slot, siteMedia.get(id)]).filter(([, m]) => m));
-  const isPublishedMedia = id => { const live = siteContent.live()?.overrides; return Object.values(live?.media ?? {}).includes(id) || Boolean(live?.references?.some(r => r.cover === id)); };
+  const isPublishedMedia = id => { const live = siteContent.live()?.overrides; return Object.values(live?.media ?? {}).includes(id) || Boolean(live?.categoryCards?.some(c => c.image === id)) || Boolean(live?.references?.some(r => r.cover === id)); };
   // References that a publication would put on the site, with advisory warnings (never blocking).
   const referenceOverview = () => references.list().filter(r => toPublicReference(r)).map(r => ({ id: r.id, name: r.website_title_hu || r.name, featured: r.website_featured === true, warnings: websiteWarnings(r) }));
   // The cover photo of a reference is copied into the site image store (resized WebP, no metadata) when it is chosen, never taken from the client.
@@ -208,7 +208,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         if(referenceMatch && req.method==='DELETE') {const data=await body(req,1024);return json(res,200,{reference:references.trash(referenceMatch[1],data.revision)});}
         if (referenceMatch && req.method === 'PUT') { const data = await body(req, 1024*1024); await prepareCover(referenceMatch[1], data); return json(res, 200, { reference: references.update(referenceMatch[1], data) }); }
         if (path === '/api/site/content' && req.method === 'GET') return json(res, 200, siteState());
-        if (path === '/api/site/content' && req.method === 'PUT') { const b = await body(req, 512 * 1024); siteContent.saveDraft(b.revision, b.overrides); return json(res, 200, siteState()); }
+        if (path === '/api/site/content' && req.method === 'PUT') { const b = await body(req, 512 * 1024); const allowed = new Set(references.categories().flatMap(g => (g.categories || []).map(c => String(c.id)))); for (const card of b.overrides?.categoryCards || []) for (const id of card.categoryIds || []) if (!allowed.has(String(id))) fail(400, 'A kategóriakártya nem létező referenciakategóriára hivatkozik.'); siteContent.saveDraft(b.revision, b.overrides); return json(res, 200, siteState()); }
         if (path === '/api/site/publish' && req.method === 'POST') { const b = await body(req, 4096); const list = publicReferences(references.list()); siteContent.publish(b.revision, b.note ?? '', list.length ? { references: list } : {}); return json(res, 200, siteState()); }
         if (path === '/api/site/media' && req.method === 'POST') {
           const b = await body(req);

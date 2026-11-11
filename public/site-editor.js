@@ -29,7 +29,7 @@ function load(s) {
   state.fields = s.fields; state.slots = s.slots; state.defaults = s.defaults; state.revision = s.draft.revision;
   state.values = structuredClone(s.draft.overrides); state.values.media ??= {};
   for (const m of s.media) state.media[m.id] = m;
-  state.references = s.references; state.altEdits = {}; state.live = s.live; state.versions = s.versions; state.dirty = false;
+  state.references = s.references; state.referenceCategories = s.referenceCategories || []; state.altEdits = {}; state.live = s.live; state.versions = s.versions; state.dirty = false;
 }
 
 // ---- Images: one card per slot (hero image of each identity draft) ----

@@ -183,7 +183,7 @@ export function contentStore(db) {
     CREATE TABLE IF NOT EXISTS site_versions(seq INTEGER PRIMARY KEY AUTOINCREMENT, id TEXT NOT NULL UNIQUE, payload TEXT NOT NULL, note TEXT NOT NULL, created_at TEXT NOT NULL)`);
   const now = () => new Date().toISOString();
   const empty = () => ({ hu: {}, en: {}, media: {} });
-  const parse = payload => ({ hu: {}, en: {}, media: {}, ...JSON.parse(payload) });
+  const parse = payload => ({ hu: {}, en: {}, media: {}, categoryCards: structuredClone(CATEGORY_CARD_DEFAULTS), ...JSON.parse(payload) });
   let liveCache; // undefined = not loaded
   function draftRow() {
     let row = db.prepare('SELECT * FROM site_draft WHERE id=1').get();
