@@ -30,6 +30,8 @@ export const FIELDS = [
   ...[0, 1, 2, 3].flatMap(i => [line(`principles.${i}.title`, 'Szemlélet', `${i + 1}. alapelv címe`, 100), text(`principles.${i}.text`, 'Szemlélet', `${i + 1}. alapelv leírása`, 400)]),
   line('vendorsLabel', 'Szemlélet', 'Gyártók felirata', 160),
   line('refsTitle', 'Referenciák', 'Szekció címe', 120),
+  line('refsAll', 'Referenciák', 'Gomb a főoldalon: összes referencia (a darabszám magától kerül mögé)', 60),
+  line('refsPageTitle', 'Referenciák', 'A referenciaoldal főcíme', 120),
   text('refsNote', 'Referenciák', 'Megjegyzés a szekció alatt', 400, true),
   line('teamTitle', 'Csapat', 'Szekció címe', 120),
   { ...text('teamIntro', 'Csapat', 'Csapat általános bemutatkozása (üres sor: új bekezdés)', 2000), optional: true },

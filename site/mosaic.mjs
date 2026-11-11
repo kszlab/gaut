@@ -10,16 +10,18 @@ const imgTag = (m, alt, sizes, eager = false) =>
 
 // labels: { all, close, prev, next, sample, designYear, open }
 // helpers: { categoryLabel(reference) }; categories: the flat category list, in display order
-export function renderMosaic(references, { lang = 'hu', labels, categoryLabel, categories = [] }) {
+// filter: false leaves the category chips out (home page selection). chipHref(id): the chips become links to an address that
+// carries the category (references subpage); then `all` is the unfiltered list the chips are built from and `active` the chosen id.
+export function renderMosaic(references, { lang = 'hu', labels, categoryLabel, categories = [], filter = true, chipHref = null, all = references, active = '' }) {
   const tiles = references.map((r, i) => {
     const title = pick(r.title, lang), summary = pick(r.summary, lang), place = pick(r.place, lang);
     const meta = [categoryLabel(r), place, r.year ? `${labels.designYear} ${r.year}` : ''].filter(Boolean).map(esc).join(' · ');
-    const cm = r.coverMedia, big = r.featured === true;
+    const cm = r.coverMedia;
     const face = cm
-      ? imgTag(cm, title, big ? '(max-width: 640px) 100vw, (max-width: 1040px) 100vw, 800px' : '(max-width: 640px) 100vw, (max-width: 1040px) 50vw, 400px')
+      ? imgTag(cm, title, '(max-width: 640px) 100vw, (max-width: 1040px) 50vw, 400px')
       : r.sample ? `<span class="mt-art">${buildingSvg(r.kind)}</span>` : `<span class="mt-type"><span>${esc(title)}</span></span>`;
     const detailImg = cm ? imgTag(cm, title, '(max-width: 900px) 100vw, 900px') : r.sample ? `<span class="mt-art">${buildingSvg(r.kind)}</span>` : '';
-    return `<article class="mt${big ? ' big' : ''}${cm ? '' : ' nophoto'}" data-cat="${esc(r.categoryId || r.category || '')}" data-index="${i}">
+    return `<article class="mt${cm ? '' : ' nophoto'}" data-cat="${esc(r.categoryId || r.category || '')}" data-index="${i}">
   <button class="mt-open" type="button" aria-haspopup="dialog" aria-label="${esc(labels.open)}: ${esc(title)}">
     <span class="mt-face">${face}${r.sample ? `<span class="badge">${esc(labels.sample)}</span>` : ''}</span>
     <span class="mt-cap"><strong>${esc(title)}</strong><small>${meta}</small></span>
@@ -29,12 +31,15 @@ export function renderMosaic(references, { lang = 'hu', labels, categoryLabel, c
   }).join('');
   // One chip per category that has at least one reference on the page, in the order of the category list.
   // References without a category from the list (older data, samples) are grouped by their own label after those.
-  const used = new Set(references.map(r => r.categoryId || r.category).filter(Boolean));
+  const used = new Set(all.map(r => r.categoryId || r.category).filter(Boolean));
   const listed = categories.filter(c => used.has(c.id)).map(c => ({ key: c.id, label: categoryLabel({ categoryId: c.id }) }));
   const known = new Set(categories.map(c => c.id));
-  const other = [...new Set(references.filter(r => !known.has(r.categoryId) && r.category).map(r => r.category))].map(c => ({ key: c, label: categoryLabel({ category: c }) }));
+  const other = chipHref ? [] : [...new Set(all.filter(r => !known.has(r.categoryId) && r.category).map(r => r.category))].map(c => ({ key: c, label: categoryLabel({ category: c }) }));
   const cats = [...listed, ...other];
-  const chips = cats.length > 1
+  const link = (key, label) => `<a class="chip${key === active ? ' on' : ''}" href="${esc(chipHref(key))}"${key === active ? ' aria-current="true"' : ''}>${esc(label)}</a>`;
+  const chips = !filter || cats.length < 2 ? '' : chipHref
+    ? `<nav class="filters" aria-label="${esc(labels.filter)}">${link('', labels.all)}${cats.map(c => link(c.key, c.label)).join('')}</nav>`
+    : cats.length > 1
     ? `<div class="filters" role="group" aria-label="${esc(labels.filter)}"><button type="button" class="chip on" data-filter="*">${esc(labels.all)}</button>${cats.map(c => `<button type="button" class="chip" data-filter="${esc(c.key)}">${esc(c.label)}</button>`).join('')}</div>`
     : '';
   return `${chips}

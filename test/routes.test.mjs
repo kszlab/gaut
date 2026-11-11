@@ -38,11 +38,14 @@ test('the root is the public site; the workspace and its pages live under /munka
 
 test('old workspace addresses redirect, keeping the query', async () => {
   await withServer(async base => {
-    for (const [from, to] of [['/referenciak?section=misi', '/munkater/referenciak?section=misi'], ['/honlap', '/munkater/honlap'], ['/munkater/', '/munkater'], ['/munkater/honlap/', '/munkater/honlap']]) {
+    for (const [from, to] of [['/honlap?x=1', '/munkater/honlap?x=1'], ['/honlap', '/munkater/honlap'], ['/munkater/', '/munkater'], ['/munkater/honlap/', '/munkater/honlap']]) {
       const r = await fetch(`${base}${from}`, { redirect: 'manual' });
       assert.equal(r.status, 302, from); assert.equal(r.headers.get('location'), to, from);
     }
-    assert.equal((await fetch(`${base}/referenciak`, { redirect: 'manual', method: 'POST', headers: { 'x-gaut-request': '1' } })).status, 404, 'only GET and HEAD are redirected');
+    assert.equal((await fetch(`${base}/honlap`, { redirect: 'manual', method: 'POST', headers: { 'x-gaut-request': '1' } })).status, 404, 'only GET and HEAD are redirected');
+    const refsPage = await fetch(`${base}/referenciak`, { redirect: 'manual' });
+    assert.equal(refsPage.status, 200, '/referenciak is the public references page now, not a redirect into the workspace');
+    assert.ok((await refsPage.text()).includes('<title>Referenciák | GAUT Mérnökiroda</title>'));
   });
 });
 
@@ -64,7 +67,7 @@ test('no page or script still links to the old workspace addresses', () => {
   assert.ok(files.length >= 6);
   for (const file of files) {
     const text = readFileSync(new URL(file, dir), 'utf8');
-    assert.ok(!/(href=["'`]|replace\(["'`]|href=`)\/(referenciak|honlap)\b/.test(text), `${file} links to an old workspace address`);
+    assert.ok(!/(href=["'`]|replace\(["'`]|href=`)\/(honlap)\b/.test(text), `${file} links to an old workspace address`);
     assert.ok(!/href="\/"/.test(text), `${file} links to the root as if it were the workspace`);
   }
 });

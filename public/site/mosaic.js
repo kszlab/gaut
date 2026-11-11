@@ -8,7 +8,7 @@ if (box) {
   let current = null, opener = null;
 
   // ---- category filter: one row of chips
-  const chips = [...document.querySelectorAll('.filters .chip')];
+  const chips = [...document.querySelectorAll('.filters button.chip[data-filter]')]; // link chips (subpage) navigate on their own
   chips.forEach(chip => chip.addEventListener('click', () => {
     chips.forEach(c => c.classList.toggle('on', c === chip));
     const f = chip.dataset.filter;

@@ -5,6 +5,19 @@ import { referenceCategoryLabel } from '../reference-categories.mjs';
 import { renderMosaic } from './mosaic.mjs';
 import { PHASES_TEXT, PHASES_PATH, phasesMain } from './phases.mjs';
 
+// The references subpage, and the selection of references shown on the home page.
+export const REFERENCES_PATH = { hu: '/referenciak', en: '/en/references' };
+export const HOME_REFERENCES = 9;
+// Today's date in Budapest (YYYY-MM-DD): the home page selection changes once a day, not on every page load.
+export const dayOf = (date = new Date()) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Budapest' }).format(date);
+const mix = text => { let h = 2166136261; for (const c of String(text)) { h ^= c.codePointAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
+// Home page selection: references marked "kiemelt", in an order that depends on the day; when there are fewer than
+// `count`, the newest other references fill the remaining places (the list arrives newest first).
+export function homeReferences(references, day, count = HOME_REFERENCES) {
+  const featured = references.filter(r => r.featured === true).map(r => [mix(`${day}:${r.id}`), r]).sort((a, b) => a[0] - b[0] || String(a[1].id).localeCompare(String(b[1].id))).map(x => x[1]).slice(0, count);
+  return featured.length >= count ? featured : [...featured, ...references.filter(r => r.featured !== true).slice(0, count - featured.length)];
+}
+
 // Hero render for concept n: a high-resolution file (hero-N.webp or hero-N.jpg) wins over the interim
 // crop from the concept board (heroN.png). See docs/HERO-IMAGES.md.
 function heroImage(n) {
@@ -147,7 +160,8 @@ const TEXT = {
     sectors: ['Ipari létesítmények', 'Kereskedelmi létesítmények', 'Szállodák', 'Közösségi épületek', 'Oktatási intézmények', 'Egészségügyi beruházások'],
     activitiesLabel: 'Tevékenységeink',
     activities: ['Tervezés', 'Tervellenőrzés', 'Műszaki ellenőrzés'],
-    refsKicker: 'Referenciák', refsTitle: 'Válogatás a munkáinkból',
+    refsKicker: 'Referenciák', refsTitle: 'Válogatás a munkáinkból', refsAll: 'Összes referencia', refsPageTitle: 'Referenciák',
+    refsMetaTitle: 'Referenciák | GAUT Mérnökiroda', refsMetaDescription: 'A GAUT Mérnökiroda gépészeti automatika- és épületfelügyeleti tervezési referenciái, kategóriák szerint.',
     refsNote: 'Bemutató mintaprojektek. A látható projektek kitaláltak, a végleges oldalon valós referenciák szerepelnek majd.',
     all: 'Mind', sample: 'Minta', designYear: 'Tervév', mosaicOpen: 'Megnyitás', mosaicClose: 'Bezárás', mosaicPrev: 'Előző referencia', mosaicNext: 'Következő referencia', mosaicDetail: 'Referencia részletei',
     contactKicker: 'Kapcsolat', contactBoxTitle: 'Elérhetőségek', companyBoxTitle: 'Cégadatok',
@@ -189,7 +203,8 @@ const TEXT = {
     sectors: ['Industrial facilities', 'Commercial facilities', 'Hotels', 'Community buildings', 'Educational institutions', 'Healthcare projects'],
     activitiesLabel: 'Our services',
     activities: ['Design', 'Design review', 'Technical supervision'],
-    refsKicker: 'Projects', refsTitle: 'Selected work',
+    refsKicker: 'Projects', refsTitle: 'Selected work', refsAll: 'All projects', refsPageTitle: 'Projects',
+    refsMetaTitle: 'Projects | GAUT Engineering', refsMetaDescription: 'Building automation and building management design projects by GAUT Engineering, by category.',
     refsNote: 'Illustrative sample projects. The projects shown are invented; the final site will list real references.',
     all: 'All', sample: 'Sample', designYear: 'Design year', mosaicOpen: 'Open', mosaicClose: 'Close', mosaicPrev: 'Previous project', mosaicNext: 'Next project', mosaicDetail: 'Project details',
     contactKicker: 'Contact', contactBoxTitle: 'Contact details', companyBoxTitle: 'Company details',
@@ -236,15 +251,35 @@ function teamCard(m, lang, t) {
 </article>`;
 }
 
-export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampleReferences(), categories = [], team = sampleTeam(), content = null, draft = false, media = {}, page = 'home' } = {}) {
+export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampleReferences(), categories = [], team = sampleTeam(), content = null, draft = false, media = {}, page = 'home', category = '', day = dayOf() } = {}) {
   lang = LANGS.includes(lang) ? lang : 'hu';
   theme = parseTheme(theme);
   const t = applyContent(TEXT[lang], content?.[lang]);
   const homeOf = l => (l === 'hu' ? '/' : '/en'); // the Hungarian site is the root, English lives at /en
-  const sub = page === 'phases'; // the "Tervezési fázisok" subpage shares the header, footer and themes of the home page
-  const pathOf = l => (sub ? PHASES_PATH[l] : homeOf(l));
+  const sub = page !== 'home'; // the subpages ("Tervezési fázisok", "Referenciák") share the header, footer and themes of the home page
+  const pagePath = page === 'phases' ? PHASES_PATH : page === 'references' ? REFERENCES_PATH : null;
+  const pathOf = l => (pagePath ? pagePath[l] : homeOf(l));
+  const meta = page === 'phases' ? [t.phases.metaTitle, t.phases.metaDescription] : page === 'references' ? [t.refsMetaTitle, t.refsMetaDescription] : [t.title, t.description];
+  const categoryName = r => { const c = categories.find(x => x.id === r.categoryId); return c ? (lang === 'en' && c.name_en ? c.name_en : c.name) : categoryLabel(r.category, lang); };
+  const mosaicLabels = { all: t.all, filter: t.refsKicker, open: t.mosaicOpen, close: t.mosaicClose, prev: t.mosaicPrev, next: t.mosaicNext, detail: t.mosaicDetail, sample: t.sample, designYear: t.designYear };
+  // Home page: a fixed number of references and a link to all of them. Subpage: every reference, filtered by the category in the address.
+  const onHome = homeReferences(references, day);
+  const activeCategory = categories.some(c => c.id === category) && references.some(r => r.categoryId === category) ? category : '';
+  // Links to the references subpage keep the draft preview, so a signed-in editor can click through the unpublished version.
+  const refsHref = (id = '') => { const q = [id ? `kategoria=${encodeURIComponent(id)}` : '', draft ? 'elonezet=1' : ''].filter(Boolean).join('&'); return `${REFERENCES_PATH[lang]}${q ? `?${q}` : ''}`; };
+  const referencesMain = () => `<section class="page-hero refs-hero">
+  <div class="wrap">
+    <p class="kicker">${esc(t.refsKicker)}</p>
+    <h1 class="page-title">${esc(t.refsPageTitle)}</h1>
+  </div>
+</section>
+<section id="referenciak" class="block refs-all">
+  <div class="wrap">
+    ${renderMosaic(activeCategory ? references.filter(r => r.categoryId === activeCategory) : references, { lang, categories, all: references, active: activeCategory, chipHref: id => refsHref(id), categoryLabel: categoryName, labels: mosaicLabels })}
+  </div>
+</section>`;
   const home = homeOf(lang), anchor = id => `${sub ? home : ''}#${id}`;
-  const navLink = ([id, label]) => `<a href="${anchor(id)}">${esc(label)}</a>${id === 'szakteruletek' ? `<a href="${PHASES_PATH[lang]}"${sub ? ' aria-current="page"' : ''}>${esc(t.phases.navLabel)}</a>` : ''}`;
+  const navLink = ([id, label]) => `${id === 'referenciak' && page === 'references' ? `<a href="${REFERENCES_PATH[lang]}" aria-current="page">${esc(label)}</a>` : `<a href="${anchor(id)}">${esc(label)}</a>`}${id === 'szakteruletek' ? `<a href="${PHASES_PATH[lang]}"${page === 'phases' ? ' aria-current="page"' : ''}>${esc(t.phases.navLabel)}</a>` : ''}`;
   const otherLang = lang === 'hu' ? 'en' : 'hu';
   return `<!doctype html>
 <html lang="${t.htmlLang}" data-theme="${theme}">
@@ -252,8 +287,8 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>${esc(sub ? t.phases.metaTitle : t.title)}</title>
-<meta name="description" content="${esc(sub ? t.phases.metaDescription : t.description)}">
+<title>${esc(meta[0])}</title>
+<meta name="description" content="${esc(meta[1])}">
 <link rel="alternate" hreflang="hu" href="${pathOf('hu')}"><link rel="alternate" hreflang="en" href="${pathOf('en')}">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/site/site.css">
@@ -273,7 +308,7 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
   </nav>
 </header>
 <main id="tartalom">
-${sub ? phasesMain(t.phases, { esc, paragraphs: paragraphsHtml }) : `<section class="hero">
+${page === 'phases' ? phasesMain(t.phases, { esc, paragraphs: paragraphsHtml }) : page === 'references' ? referencesMain() : `<section class="hero">
   <div class="wrap hero-grid">
     <div class="hero-copy">
       ${Object.entries(t.hero).map(([k, v]) => heroTitle(k, v)).join('')}
@@ -316,7 +351,8 @@ ${sub ? phasesMain(t.phases, { esc, paragraphs: paragraphsHtml }) : `<section cl
   <div class="wrap">
     <p class="kicker">${esc(t.refsKicker)}</p><h2>${esc(t.refsTitle)}</h2>
     ${t.refsNote && (references.some(r => r.sample) || content?.[lang]?.refsNote !== undefined) ? `<p class="note">${esc(t.refsNote)}</p>` : ''}
-    ${renderMosaic(references, { lang, categories, categoryLabel: r => { const c = categories.find(x => x.id === r.categoryId); return c ? (lang === 'en' && c.name_en ? c.name_en : c.name) : categoryLabel(r.category, lang); }, labels: { all: t.all, filter: t.refsKicker, open: t.mosaicOpen, close: t.mosaicClose, prev: t.mosaicPrev, next: t.mosaicNext, detail: t.mosaicDetail, sample: t.sample, designYear: t.designYear } })}
+    ${renderMosaic(onHome, { lang, categories, filter: false, categoryLabel: categoryName, labels: mosaicLabels })}
+    ${references.length > onHome.length ? `<p class="refs-more"><a class="btn" href="${refsHref()}">${esc(t.refsAll)} (${references.length}) ${arrow}</a></p>` : ''}
   </div>
 </section>
 
