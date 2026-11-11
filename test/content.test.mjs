@@ -55,6 +55,7 @@ test('overrides are validated and normalised', () => {
   const ok = cleanOverrides({ hu: { sub: '  Új   alcím ', 'areas.1.title': 'Cím', 'contact.email': 'info@pelda.hu', lead: '' }, en: { sub: 'New subtitle' } });
   assert.deepEqual(ok.hu, { sub: 'Új alcím', 'areas.1.title': 'Cím', 'contact.email': 'info@pelda.hu' });
   assert.deepEqual(ok.en, { sub: 'New subtitle' });
+  assert.equal(cleanOverrides({ hu: { teamTitle: '\u00a0' } }).hu.teamTitle, '\u00a0', 'team title preserves an intentional non-breaking space');
   assert.throws(() => cleanOverrides({ hu: { 'nincs.ilyen': 'x' } }), /Ismeretlen mező/);
   assert.throws(() => cleanOverrides({ hu: { sub: 'x'.repeat(500) } }), /Túl hosszú/);
   assert.equal(cleanOverrides({ hu: { aboutText: 'x'.repeat(8000) } }).hu.aboutText.length, 8000);
