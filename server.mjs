@@ -73,7 +73,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
     const media = resolveMedia(shown?.media);
     const team = shown?.team?.map(m => ({ ...m, sample: false, photoMedia: media[`team.${m.id}`] }));
     const currentById = new Map(references.list().map(r => [r.id, r]));
-    const frozen = draft ? publicReferences(references.list()) : (siteContent.live()?.overrides.references || []).map(r => { const current = currentById.get(r.id); return { ...r, categoryMainId: current?.category_main_id || '', categorySubId: current?.category_sub_id || '', categoryApproved: current?.category_review_status === 'Jóváhagyott' && !!current?.category_main_id && !!current?.category_sub_id }; });
+    const frozen = draft ? publicReferences(references.list()) : (siteContent.live()?.overrides.references || []).map(r => { const current = currentById.get(r.id); return { ...r, categoryId: current?.category_id || '', category: current?.category ?? r.category }; }); // the category follows the current record, so re-categorising needs no new publication
     const refs = frozen?.length ? frozen.map(r => ({ ...r, coverMedia: r.cover ? siteMedia.get(r.cover) ?? undefined : undefined })) : undefined;
     return { content: shown, media, team, references: refs, hasLive: Boolean(siteContent.live()) };
   }
@@ -192,11 +192,12 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
       if (path.startsWith('/api/')) {
         const user = session(req); if (!user) fail(401, 'A folytatáshoz jelentkezz be.');
         if (path === '/api/reference-photos/import' && req.method === 'POST') return json(res,200,photos.import(await body(req)));
-        if (path === '/api/reference-categories' && req.method === 'GET') return json(res, 200, { groups: references.categories() });
-        if (path === '/api/reference-categories' && req.method === 'POST') return json(res, 201, { groups: references.createCategory(await body(req, 8192)) });
+        if (path === '/api/reference-categories' && req.method === 'GET') return json(res, 200, { categories: references.categories() });
+        if (path === '/api/reference-categories' && req.method === 'POST') return json(res, 201, { categories: references.createCategory(await body(req, 8192)) });
         const categoryMatch = /^\/api\/reference-categories\/([a-zA-Z0-9_-]{1,100})$/.exec(path);
-        if (categoryMatch && req.method === 'PUT') return json(res, 200, { groups: references.updateCategory(categoryMatch[1], await body(req, 8192)) });
-        if (categoryMatch && req.method === 'DELETE') return json(res, 200, { groups: references.deleteCategory(categoryMatch[1]) });
+        if (categoryMatch && req.method === 'PUT') return json(res, 200, { categories: references.updateCategory(categoryMatch[1], await body(req, 8192)) });
+        if (categoryMatch && req.method === 'DELETE') fail(405, 'Kategória nem törölhető, csak átnevezhető.');
+        if (path === '/api/references/category-assignments' && req.method === 'POST') { const b = await body(req, 512*1024); return json(res, 200, references.assignCategories(b.assignments, b.overwrite === true)); }
         if (path === '/api/references' && req.method === 'GET') return json(res, 200, { references: references.list().map(r=>{const active=photos.list(r.id).filter(p=>!p.deleted_at);return {...r,photo_count:active.length,photo_cover_id:active[0]?.id||null,photo_research:photos.research(r.id)};}) });
         if (path === '/api/references' && req.method === 'POST') { const data = await body(req, 1024*1024); await prepareCover(null, data); return json(res, 201, { reference: references.create(data) }); }
         if (path === '/api/references/export' && req.method === 'GET') return json(res, 200, {...references.bundle(),photos:photos.all(),photo_export_note:'A JSON a képek metaadatait tartalmazza. A képfájlok külön tölthetők le az adatlapokról; teljes mentéshez a DATA_DIR könyvtár is szükséges.'});
