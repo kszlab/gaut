@@ -137,7 +137,12 @@ $('#images').addEventListener('input', e => {
 });
 
 function markdownPreview(source) {
-  const inline = raw => esc(raw).replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/\*([^*]+)\*/g,'<em>$1</em>').replace(/`([^`]+)`/g,'<code>$1</code>');
+  const inline = raw => {
+    let out = esc(raw);
+    const stylePattern = /\\[\\[(12|14|16|18|20|24|28|32|36|42)\\|(sans|serif|mono)\\]\\]([\\s\\S]*?)\\[\\[\\/\\]\\]/g;
+    for (let i = 0; i < 8 && stylePattern.test(out); i++) { stylePattern.lastIndex = 0; out = out.replace(stylePattern, (_, size, font, inner) => '<span class="rt-size-' + size + ' rt-font-' + font + '">' + inner + '</span>'); }
+    return out.replace(/\\[([^\\]]+)\\]\\((https?:\\/\\/[^\\s)]+)\\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>').replace(/\\*\\*([^*]+)\\*\\*/g,'<strong>$1</strong>').replace(/\\*([^*]+)\\*/g,'<em>$1</em>').replace(/\\+\\+([^+]+)\\+\\+/g,'<u>$1</u>').replace(/`([^`]+)`/g,'<code>$1</code>');
+  };
   return String(source || '').split(/\n\s*\n/).map(block => {
     const lines = block.split('\n');
     if (lines.every(line => /^\s*[-*]\s+/.test(line))) return '<ul>' + lines.map(line => '<li>' + inline(line.replace(/^\s*[-*]\s+/,'')) + '</li>').join('') + '</ul>';
@@ -155,7 +160,7 @@ function cellHtml(f, lang) {
   const value = state.values[lang][f.path], hidden = f.hideable && value === '';
   const shown = value === undefined || hidden ? '' : value;
   const control = f.type === 'markdown'
-    ? `<div class="markdown-editor"><div class="markdown-toolbar" role="toolbar" aria-label="Formázás"><button type="button" data-md-action="bold" title="Félkövér"><strong>B</strong></button><button type="button" data-md-action="italic" title="Dőlt"><em>I</em></button><button type="button" data-md-action="heading" title="Címsor">H</button><button type="button" data-md-action="list" title="Felsorolás">• Lista</button><button type="button" data-md-action="link" title="Hivatkozás">Link</button></div><textarea class="markdown-input" data-lang="${lang}" data-path="${esc(f.path)}" maxlength="${f.max}" placeholder="${esc(state.defaults[lang][f.path])}" ${hidden ? 'disabled' : ''}>${esc(shown)}</textarea><div class="markdown-preview" data-preview="${lang}:${esc(f.path)}"><small>Előnézet</small>${markdownPreview(shown || state.defaults[lang][f.path])}</div><p class="field-hint">Markdown formázás: **félkövér**, *dőlt*, # címsor, - felsorolás, [hivatkozás](https://...). HTML-kód nem engedélyezett.</p></div>`
+    ? `<div class="markdown-editor"><div class="markdown-toolbar" role="toolbar" aria-label="Formázás"><button type="button" data-md-action="bold" title="Félkövér"><strong>B</strong></button><button type="button" data-md-action="italic" title="Dőlt"><em>I</em></button><button type="button" data-md-action="heading" title="Címsor">H</button><button type="button" data-md-action="list" title="Felsorolás">• Lista</button><button type="button" data-md-action="link" title="Hivatkozás">Link</button><button type="button" data-md-action="underline" title="Aláhúzás"><u>U</u></button><label class="md-select-label">Méret <select data-md-style="size" aria-label="Betűméret"><option value="">—</option><option>12</option><option>14</option><option>16</option><option>18</option><option>20</option><option>24</option><option>28</option><option>32</option><option>36</option><option>42</option></select></label><label class="md-select-label">Betűtípus <select data-md-style="font" aria-label="Betűtípus"><option value="">—</option><option value="sans">Sans</option><option value="serif">Serif</option><option value="mono">Monospace</option></select></label></div><textarea class="markdown-input" data-lang="${lang}" data-path="${esc(f.path)}" maxlength="${f.max}" placeholder="${esc(state.defaults[lang][f.path])}" ${hidden ? 'disabled' : ''}>${esc(shown)}</textarea><div class="markdown-preview" data-preview="${lang}:${esc(f.path)}"><small>Előnézet</small>${markdownPreview(shown || state.defaults[lang][f.path])}</div><p class="field-hint">Formázás: félkövér, dőlt, aláhúzott, címsor, felsorolás, hivatkozás, betűméret és betűtípus. A méret és a betűtípus kijelölt szövegre érvényes. HTML-kód nem engedélyezett.</p></div>`
     : f.type === 'text'
       ? `<textarea data-lang="${lang}" data-path="${esc(f.path)}" maxlength="${f.max}" placeholder="${esc(state.defaults[lang][f.path])}" ${hidden ? 'disabled' : ''}>${esc(shown)}</textarea>`
       : `<input data-lang="${lang}" data-path="${esc(f.path)}" maxlength="${f.max}" placeholder="${esc(state.defaults[lang][f.path])}" value="${esc(shown)}">`;
@@ -189,10 +194,23 @@ $('#groups').addEventListener('click', e => {
   const button = e.target.closest('[data-md-action]'); if (!button) return;
   const editor = button.closest('.markdown-editor'), input = editor.querySelector('.markdown-input');
   const action = button.dataset.mdAction, start = input.selectionStart, end = input.selectionEnd, selected = input.value.slice(start, end);
-  const forms = { bold: ['**','**','félkövér szöveg'], italic: ['*','*','dőlt szöveg'], heading: ['## ','','Címsor'], list: ['- ','','listaelem'], link: ['[','](https://)','hivatkozás'] };
+  const forms = { bold: ['**','**','félkövér szöveg'], italic: ['*','*','dőlt szöveg'], underline: ['++','++','aláhúzott szöveg'], heading: ['## ','','Címsor'], list: ['- ','','listaelem'], link: ['[','](https://)','hivatkozás'] };
   const [before, after, fallback] = forms[action]; const value = input.value.slice(0,start) + before + (selected || fallback) + after + input.value.slice(end);
   input.value = value; input.dispatchEvent(new Event('input', { bubbles: true }));
   const pos = start + before.length + (selected || fallback).length + after.length; input.focus(); input.setSelectionRange(pos,pos);
+});
+$('#groups').addEventListener('change', e => {
+  const select = e.target.closest('[data-md-style]'); if (!select || !select.value) return;
+  const editor = select.closest('.markdown-editor'), input = editor.querySelector('.markdown-input');
+  const start = input.selectionStart, end = input.selectionEnd, selected = input.value.slice(start, end);
+  if (!selected) { select.value = ''; input.focus(); message('Előbb jelöld ki a formázandó szöveget.'); return; }
+  const size = select.dataset.mdStyle === 'size' ? select.value : '16';
+  const font = select.dataset.mdStyle === 'font' ? select.value : 'sans';
+  const before = '[[' + size + '|' + font + ']]', after = '[[/]]';
+  input.value = input.value.slice(0, start) + before + selected + after + input.value.slice(end);
+  input.dispatchEvent(new Event('input', { bubbles: true }));
+  input.focus(); input.setSelectionRange(start + before.length, start + before.length + selected.length);
+  select.value = '';
 });
 $('#groups').addEventListener('input', e => {
   const t = e.target; if (!t.dataset.path || t.dataset.hide) return;
