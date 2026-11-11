@@ -139,9 +139,9 @@ $('#images').addEventListener('input', e => {
 function markdownPreview(source) {
   const inline = raw => {
     let out = esc(raw);
-    const stylePattern = /\\[\\[(12|14|16|18|20|24|28|32|36|42)\\|(sans|serif|mono)\\]\\]([\\s\\S]*?)\\[\\[\\/\\]\\]/g;
+    const stylePattern = /\[\[(12|14|16|18|20|24|28|32|36|42)\|(sans|serif|mono)\]\]([\s\S]*?)\[\[\/\]\]/g;
     for (let i = 0; i < 8 && stylePattern.test(out); i++) { stylePattern.lastIndex = 0; out = out.replace(stylePattern, (_, size, font, inner) => '<span class="rt-size-' + size + ' rt-font-' + font + '">' + inner + '</span>'); }
-    return out.replace(/\\[([^\\]]+)\\]\\((https?:\\/\\/[^\\s)]+)\\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>').replace(/\\*\\*([^*]+)\\*\\*/g,'<strong>$1</strong>').replace(/\\*([^*]+)\\*/g,'<em>$1</em>').replace(/\\+\\+([^+]+)\\+\\+/g,'<u>$1</u>').replace(/`([^`]+)`/g,'<code>$1</code>');
+    return out.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/\*([^*]+)\*/g,'<em>$1</em>').replace(/\+\+([^+]+)\+\+/g,'<u>$1</u>').replace(/`([^`]+)`/g,'<code>$1</code>');
   };
   return String(source || '').split(/\n\s*\n/).map(block => {
     const lines = block.split('\n');
