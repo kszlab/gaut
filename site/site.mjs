@@ -153,7 +153,7 @@ const TEXT = {
     contactKicker: 'Kapcsolat', contactBoxTitle: 'Elérhetőségek', companyBoxTitle: 'Cégadatok',
     officeLabel: 'Iroda', mapLabel: 'Megtekintés Google Térképen', companyLabels: { name: 'Cégnév', address: 'Székhely', taxNumber: 'Adószám', registrationNumber: 'Cégjegyzékszám', bank: 'Számlavezető bank', account: 'Bankszámlaszám' }, pending: 'hamarosan',
     footer: 'GAUT Kft. Gépészeti automatika és épületfelügyelet tervezése.', preview: 'Előnézet. Az oldal még nem végleges, és a keresők elől rejtve van.',
-    themeLabel: 'Arculat', contact: { office: '1033 Budapest, Hévízi út 9. 4. lépcsőház, földszint 2.', map: 'https://www.google.com/maps/search/?api=1&query=1033+Budapest+H%C3%A9v%C3%ADzi+%C3%BAt+9.', email: 'gaut@gaut.hu', phone: 'hamarosan' }, company: { name: 'GAUT Kft.', address: '1037 Budapest, Csillagszem utca 12.', taxNumber: '', registrationNumber: '', bank: '', account: '' },
+    themeLabel: 'Arculat', contact: { office: '1033 Budapest, Hévízi út 9. 4. lépcsőház, földszint 2.', map: 'https://www.google.com/maps/search/?api=1&query=1033+Budapest+H%C3%A9v%C3%ADzi+%C3%BAt+9.', email: 'gaut@gaut.hu', phone: '' }, company: { name: 'GAUT Kft.', address: '1037 Budapest, Csillagszem utca 12.', taxNumber: '', registrationNumber: '', bank: '', account: '' },
     draftPreview: 'Vázlat előnézete. Ezt a változatot a látogatók még nem látják.'
   },
   en: {
@@ -195,7 +195,7 @@ const TEXT = {
     contactKicker: 'Contact', contactBoxTitle: 'Contact details', companyBoxTitle: 'Company details',
     officeLabel: 'Office', mapLabel: 'View on Google Maps', companyLabels: { name: 'Company name', address: 'Registered office', taxNumber: 'Tax number', registrationNumber: 'Company registration no.', bank: 'Bank', account: 'Bank account' }, pending: 'coming soon',
     footer: 'GAUT Ltd. Design of building automation and building management systems.', preview: 'Preview. This page is not final and is hidden from search engines.',
-    themeLabel: 'Identity', contact: { office: 'Hévízi út 9, Building 4, Ground floor 2, 1033 Budapest, Hungary', map: 'https://www.google.com/maps/search/?api=1&query=1033+Budapest+H%C3%A9v%C3%ADzi+%C3%BAt+9.', email: 'gaut@gaut.hu', phone: 'coming soon' }, company: { name: 'GAUT Ltd.', address: 'Csillagszem utca 12, 1037 Budapest, Hungary', taxNumber: '', registrationNumber: '', bank: '', account: '' },
+    themeLabel: 'Identity', contact: { office: 'Hévízi út 9, Building 4, Ground floor 2, 1033 Budapest, Hungary', map: 'https://www.google.com/maps/search/?api=1&query=1033+Budapest+H%C3%A9v%C3%ADzi+%C3%BAt+9.', email: 'gaut@gaut.hu', phone: '' }, company: { name: 'GAUT Ltd.', address: 'Csillagszem utca 12, 1037 Budapest, Hungary', taxNumber: '', registrationNumber: '', bank: '', account: '' },
     draftPreview: 'Draft preview. Visitors do not see this version yet.'
   }
 };
@@ -337,8 +337,8 @@ ${team.length ? `<section id="csapat" class="block alt">
         <h2>${esc(t.contactBoxTitle)}</h2>
         <dl>
           <div><dt>${esc(t.officeLabel)}</dt><dd>${esc(t.contact.office)}${t.contact.map ? `<a class="map-link" href="${esc(t.contact.map)}" target="_blank" rel="noopener noreferrer">${esc(t.mapLabel)} ↗</a>` : ''}</dd></div>
-          <div><dt>E-mail</dt><dd><a href="mailto:${esc(t.contact.email)}">${esc(t.contact.email)}</a></dd></div>
-          <div><dt>Telefon</dt><dd class="pending">${esc(t.contact.phone || t.pending)}</dd></div>
+          <div><dt>E-mail</dt>${t.contact.email ? `<dd><a href="mailto:${esc(t.contact.email)}">${esc(t.contact.email)}</a></dd>` : `<dd class="pending">${esc(t.pending)}</dd>`}</div>
+          <div><dt>Telefon</dt>${t.contact.phone ? `<dd><a href="tel:${esc(t.contact.phone.replace(/[^0-9+]/g, ''))}">${esc(t.contact.phone)}</a></dd>` : `<dd class="pending">${esc(t.pending)}</dd>`}</div>
         </dl>
       </article>
       <article class="contact-card">
