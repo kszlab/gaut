@@ -180,6 +180,10 @@ export function cleanOverrides(input) {
       if (!Object.hasOwn(migratedValues, 'contact.office')) migratedValues['contact.office'] = migratedValues['contact.address'];
       delete migratedValues['contact.address'];
     }
+    // These introductory contact fields were removed from the redesigned section.
+    // Discard them from existing drafts so old saved values cannot block saving.
+    delete migratedValues.contactTitle;
+    delete migratedValues.contactText;
     for (const [path, raw] of Object.entries(migratedValues)) {
       const field = BY_PATH.get(path);
       if (!field) fail(400, `Ismeretlen mező: ${path}`);
