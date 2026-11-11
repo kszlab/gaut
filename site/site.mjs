@@ -94,7 +94,7 @@ export function toPublicReference(record) {
   const titleHu = str(record.website_title_hu || record.name, 160);
   if (!titleHu) return null;
   return {
-    id: String(record.id), kind: kindFor(record.id), category: str(record.category, 80), year: str(record.design_year, 40),
+    id: String(record.id), kind: kindFor(record.id), category: str(record.category, 80), categoryMainId: str(record.category_main_id, 100), categorySubId: str(record.category_sub_id, 100), categoryApproved: record.category_review_status === 'Jóváhagyott' && !!record.category_main_id && !!record.category_sub_id, year: str(record.design_year, 40),
     place: { hu: str(record.city, 80), en: str(record.city, 80) },
     title: { hu: titleHu, en: str(record.website_title_en, 160) },
     summary: { hu: str(record.website_copy_hu, 900), en: str(record.website_copy_en, 900) },
@@ -231,7 +231,7 @@ function teamCard(m, lang, t) {
 </article>`;
 }
 
-export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampleReferences(), team = sampleTeam(), content = null, draft = false, media = {}, page = 'home' } = {}) {
+export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampleReferences(), categories = [], team = sampleTeam(), content = null, draft = false, media = {}, page = 'home' } = {}) {
   lang = LANGS.includes(lang) ? lang : 'hu';
   theme = parseTheme(theme);
   const t = applyContent(TEXT[lang], content?.[lang]);
@@ -309,7 +309,7 @@ ${sub ? phasesMain(t.phases, { esc, paragraphs: paragraphsHtml }) : `<section cl
   <div class="wrap">
     <p class="kicker">${esc(t.refsKicker)}</p><h2>${esc(t.refsTitle)}</h2>
     ${t.refsNote && (references.some(r => r.sample) || content?.[lang]?.refsNote !== undefined) ? `<p class="note">${esc(t.refsNote)}</p>` : ''}
-    ${renderMosaic(references, { lang, categoryLabel: c => categoryLabel(c, lang), labels: { all: t.all, filter: t.refsKicker, open: t.mosaicOpen, close: t.mosaicClose, prev: t.mosaicPrev, next: t.mosaicNext, detail: t.mosaicDetail, sample: t.sample, designYear: t.designYear } })}
+    ${renderMosaic(references, { lang, categories, categoryLabel: c => categoryLabel(c, lang), labels: { all: t.all, filter: t.refsKicker, open: t.mosaicOpen, close: t.mosaicClose, prev: t.mosaicPrev, next: t.mosaicNext, detail: t.mosaicDetail, sample: t.sample, designYear: t.designYear, subcategories: lang === 'hu' ? 'Alkategóriák' : 'Subcategories' } })}
   </div>
 </section>
 
