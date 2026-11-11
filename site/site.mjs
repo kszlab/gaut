@@ -56,8 +56,8 @@ export function richTextHtml(source) {
   const flushP = () => { if (paragraph.length) { html.push('<p>' + paragraph.map(inline).join('<br>') + '</p>'); paragraph = []; } };
   const flushL = () => { if (list.length) { html.push('<ul>' + list.map(x => '<li>' + inline(x) + '</li>').join('') + '</ul>'); list = []; } };
   for (const line of lines) {
-    const item = /^\\s*[-*]\\s+(.+)$/.exec(line);
-    const heading = /^(#{1,3})\\s+(.+)$/.exec(line);
+    const item = /^\s*[-*]\s+(.+)$/.exec(line);
+    const heading = /^(#{1,3})\s+(.+)$/.exec(line);
     if (!line.trim()) { flushP(); flushL(); continue; }
     if (item) { flushP(); list.push(item[1]); continue; }
     flushL();
