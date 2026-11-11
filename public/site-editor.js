@@ -134,6 +134,18 @@ $('#images').addEventListener('input', e => {
   edit[t.dataset.alt] = t.value; state.dirty = true; renderStatus();
 });
 
+function markdownPreview(source) {
+  const escHtml = value => String(value).replace(/[&<>\"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;' }[c]));
+  const inline = raw => escHtml(raw).replace(/\\[([^]]+)\\]\\((https?:\\/\\/[^\\s)]+)\\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>').replace(/\\*\\*([^*]+)\\*\\*/g,'<strong>$1</strong>').replace(/\\*([^*]+)\\*/g,'<em>$1</em>').replace(/`([^`]+)`/g,'<code>$1</code>');
+  return String(source || '').split(/\\n\\s*\\n/).map(block => {
+    const lines = block.split('\\n');
+    if (lines.every(line => /^\\s*[-*]\\s+/.test(line))) return '<ul>' + lines.map(line => '<li>' + inline(line.replace(/^\\s*[-*]\\s+/,'')) + '</li>').join('') + '</ul>';
+    const heading = /^(#{1,3})\\s+(.+)$/.exec(lines[0]);
+    if (heading && lines.length === 1) return '<h' + (heading[1].length + 1) + '>' + inline(heading[2]) + '</h' + (heading[1].length + 1) + '>';
+    return '<p>' + lines.map(inline).join('<br>') + '</p>';
+  }).filter(Boolean).join('');
+}
+
 function renderGroups() {
   const groups = [...new Set(state.fields.map(f => f.group))];
   $('#groups').innerHTML = groups.map(g => `<section class="group"><h2>${esc(g)}</h2>${state.fields.filter(f => f.group === g).map(rowHtml).join('')}</section>`).join('');
@@ -141,9 +153,11 @@ function renderGroups() {
 function cellHtml(f, lang) {
   const value = state.values[lang][f.path], hidden = f.hideable && value === '';
   const shown = value === undefined || hidden ? '' : value;
-  const control = f.type === 'text'
-    ? `<textarea data-lang="${lang}" data-path="${esc(f.path)}" maxlength="${f.max}" placeholder="${esc(state.defaults[lang][f.path])}" ${hidden ? 'disabled' : ''}>${esc(shown)}</textarea>`
-    : `<input data-lang="${lang}" data-path="${esc(f.path)}" maxlength="${f.max}" placeholder="${esc(state.defaults[lang][f.path])}" value="${esc(shown)}">`;
+  const control = f.type === 'markdown'
+    ? `<div class="markdown-editor"><div class="markdown-toolbar" role="toolbar" aria-label="Formázás"><button type="button" data-md-action="bold" title="Félkövér"><strong>B</strong></button><button type="button" data-md-action="italic" title="Dőlt"><em>I</em></button><button type="button" data-md-action="heading" title="Címsor">H</button><button type="button" data-md-action="list" title="Felsorolás">• Lista</button><button type="button" data-md-action="link" title="Hivatkozás">Link</button></div><textarea class="markdown-input" data-lang="${lang}" data-path="${esc(f.path)}" maxlength="${f.max}" placeholder="${esc(state.defaults[lang][f.path])}" ${hidden ? 'disabled' : ''}>${esc(shown)}</textarea><div class="markdown-preview" data-preview="${lang}:${esc(f.path)}"><small>Előnézet</small>${markdownPreview(shown || state.defaults[lang][f.path])}</div><p class="field-hint">Markdown formázás: **félkövér**, *dőlt*, # címsor, - felsorolás, [hivatkozás](https://...). HTML-kód nem engedélyezett.</p></div>`
+    : f.type === 'text'
+      ? `<textarea data-lang="${lang}" data-path="${esc(f.path)}" maxlength="${f.max}" placeholder="${esc(state.defaults[lang][f.path])}" ${hidden ? 'disabled' : ''}>${esc(shown)}</textarea>`
+      : `<input data-lang="${lang}" data-path="${esc(f.path)}" maxlength="${f.max}" placeholder="${esc(state.defaults[lang][f.path])}" value="${esc(shown)}">`;
   const toggle = f.hideable ? `<label class="hide-toggle"><input type="checkbox" data-hide="${lang}" data-path="${esc(f.path)}" ${hidden ? 'checked' : ''}> Szöveg elrejtése</label>` : '';
   return `<div class="cell${value !== undefined ? ' changed' : ''}"><span>${lang.toUpperCase()}</span>${control}${toggle}</div>`;
 }
@@ -170,10 +184,21 @@ const save = async () => {
   const s = await api('/api/site/content', 'PUT', { revision: state.revision, overrides: state.values }); load(s); renderAll();
 };
 
+$('#groups').addEventListener('click', e => {
+  const button = e.target.closest('[data-md-action]'); if (!button) return;
+  const editor = button.closest('.markdown-editor'), input = editor.querySelector('.markdown-input');
+  const action = button.dataset.mdAction, start = input.selectionStart, end = input.selectionEnd, selected = input.value.slice(start, end);
+  const forms = { bold: ['**','**','félkövér szöveg'], italic: ['*','*','dőlt szöveg'], heading: ['## ','','Címsor'], list: ['- ','','listaelem'], link: ['[','](https://)','hivatkozás'] };
+  const [before, after, fallback] = forms[action]; const value = input.value.slice(0,start) + before + (selected || fallback) + after + input.value.slice(end);
+  input.value = value; input.dispatchEvent(new Event('input', { bubbles: true }));
+  const pos = start + before.length + (selected || fallback).length + after.length; input.focus(); input.setSelectionRange(pos,pos);
+});
 $('#groups').addEventListener('input', e => {
   const t = e.target; if (!t.dataset.path || t.dataset.hide) return;
   const { lang, path } = t.dataset, value = t.value;
   if (value.trim() === '') delete state.values[lang][path]; else state.values[lang][path] = value;
+  const preview = t.closest('.markdown-editor')?.querySelector('.markdown-preview');
+  if (preview) preview.innerHTML = '<small>Előnézet</small>' + markdownPreview(value || state.defaults[lang][path]);
   t.closest('.cell').classList.toggle('changed', value.trim() !== '');
   state.dirty = true; renderStatus();
 });
