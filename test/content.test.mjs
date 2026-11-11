@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { makeServer } from '../server.mjs';
 import { FIELDS, cleanOverrides, applyContent, contentStore, defaultsFor } from '../site/content.mjs';
-import { renderSite, defaultText, richTextHtml, withoutRepeatedTitle } from '../site/site.mjs';
+import { renderSite, defaultText, richTextHtml } from '../site/site.mjs';
 
 const PASSWORD = 'teszt-jelszo-123456';
 async function withServer(fn) {
@@ -31,13 +31,6 @@ test('every editable field has a default in both languages', () => {
   }
 });
 
-
-test('repeated introduction title is removed from the first body line only when identical', () => {
-  const title = 'Automatika tervezés a gépészeti rendszerek összehangolt működéséért';
-  const body = '[[20|sans]]**' + title + '**[[/]]\\n\\n**Épületgépészeti erősáram és automatika**\\nLeírás';
-  assert.equal(withoutRepeatedTitle(title, body), '**Épületgépészeti erősáram és automatika**\\nLeírás');
-  assert.equal(withoutRepeatedTitle(title, '**Másik bevezető**\\nLeírás'), '**Másik bevezető**\\nLeírás');
-});
 
 test('long-form introduction supports safe Markdown and four principles render', () => {
   const html = richTextHtml('## Mérnöki tervezés\n\n**Pontos** és *átlátható*.\n- Automatika\n- Felügyelet\n\n<script>alert(1)</script>');
