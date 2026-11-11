@@ -107,7 +107,13 @@ test('contact section shows office and company data in two cards, with optional 
   assert.match(html, /&lt;img src=x onerror=alert\(1\)&gt;/);
   assert.match(html, /href="mailto:info@pelda\.hu"/);
   assert.match(html, /href="tel:\+3612345678"/);
-  assert.match(html, /Példa utca 1\./);
+  assert.match(html, /Példa iroda 1\./);
+  assert.match(html, /Példa székhely 2\./);
+  assert.match(html, /12345678-2-41/);
+  assert.match(html, /contact-grid/);
+  assert.ok(!html.includes('Cégjegyzékszám'));
+  assert.ok(!html.includes('Beszéljük meg a projektet'));
+  assert.ok(!html.includes('Írjon vagy hívjon minket'));
   assert.ok(!html.includes('Bemutató mintaprojektek'), 'an empty hideable note is hidden');
   assert.ok(!renderSite({ lang: 'hu' }).includes('class="pending"'));
 });
