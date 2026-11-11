@@ -16,7 +16,7 @@ export const INITIAL_CATEGORY_TREE = [
     { id: 'lakoeepuletek', name: 'Lakóépületek', sort_order: 50 },
     { id: 'csaladi-hazak', name: 'Családi házak', sort_order: 60 },
     { id: 'bankok', name: 'Bankok', sort_order: 70 },
-    { id: 'egy hazi-letesitmenyek'.replace(' ', ''), name: 'Egyházi létesítmények', sort_order: 80 },
+    { id: 'egyhazi-letesitmenyek', name: 'Egyházi létesítmények', sort_order: 80 },
     { id: 'energetikai-kozmu', name: 'Energetikai és közműlétesítmények', sort_order: 90 },
     { id: 'kozlekedesi-infrastruktura', name: 'Közlekedési és infrastruktúra-létesítmények', sort_order: 100 },
     { id: 'egyeb', name: 'Egyéb', sort_order: 110 }
@@ -34,7 +34,8 @@ const LEGACY_ALIASES = new Map([
 ]);
 export const isReferenceCategory = value => LEGACY_REFERENCE_CATEGORIES.includes(value);
 export const normalizeReferenceCategory = value => LEGACY_ALIASES.get(String(value || '').trim()) || (isReferenceCategory(value) ? value : 'Egyéb');
-export const referenceCategoryLabel = (value, lang = 'hu') => value || '';
+const LEGACY_ENGLISH = { 'Egészségügy':'Healthcare', 'Energia és infrastruktúra':'Energy & infrastructure', 'Ipar és logisztika':'Industry & logistics', 'Iroda és kereskedelem':'Office & retail', 'Lakóépület':'Residential', 'Műemlék és kultúra':'Heritage & culture', 'Oktatás és középület':'Education & public buildings', 'Sport és fürdő':'Sport & spa', 'Szálloda és turizmus':'Hotels & tourism' };
+export const referenceCategoryLabel = (value, lang = 'hu') => lang === 'en' ? LEGACY_ENGLISH[value] || value || '' : value || '';
 export const CATEGORY_REVIEW_STATUSES = ['Jóváhagyott', 'Ellenőrzendő', 'Besorolatlan'];
 
 // Proposed initial mapping based on the existing reference descriptions. Uncertain cases stay flagged for review.
