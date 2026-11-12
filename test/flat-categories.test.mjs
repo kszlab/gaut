@@ -30,9 +30,9 @@ test('the references page filter is one row of link chips, in list order, only f
   assert.ok(!hu.includes('data-main-filter') && !hu.includes('sub-filters') && !hu.includes('category-tree-data'));
   assert.equal((hu.match(/class="mt[^"]*" data-cat="irodahazak"/g) || []).length, 2);
   assert.ok(hu.includes('data-cat="" data-index="3"'), 'a reference without a category stays on the page, under "Mind"');
-  assert.ok(hu.includes('<p class="md-meta">Szállodák · Budapest · Tervév 2020</p>') && en.includes('<p class="md-meta">Hotels · Budapest · Design year 2020</p>'), 'the dialog shows the category name in the page language');
-  assert.ok(hu.includes('<small>2020</small>') && !hu.includes('<small>Szállodák'), 'the tile caption carries only the year');
-  assert.ok(hu.includes('<p class="md-meta">Budapest · Tervév 2020</p>'), 'no category, no label');
+  assert.ok(hu.includes('<p class="md-meta">Szállodák · Budapest · 2020</p>') && en.includes('<p class="md-meta">Hotels · Budapest · 2020</p>'), 'the dialog shows the category name in the page language');
+  assert.ok(hu.includes('<small>Budapest · 2020</small>') && !hu.includes('<small>Szállodák'), 'the tile caption carries place and year, no category');
+  assert.ok(hu.includes('<p class="md-meta">Budapest · 2020</p>'), 'no category, no label');
   // a single category needs no filter row
   assert.equal(chips(renderSite({ lang: 'hu', page, references: references.slice(1, 3), categories })).length, 0);
   // an English name left empty falls back to the Hungarian one

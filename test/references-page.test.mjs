@@ -81,10 +81,10 @@ test('tiles: year and the first paragraph of the description; the dialog has the
   const html = renderSite({ lang: 'hu', page: 'references', categories: INITIAL_CATEGORY_LIST, references: [ref('a', { year: '2015', summary: { hu: summary, en: '' } }), ref('b', { summary: { hu: '', en: '' } })] });
   const [a, b] = html.split('<article class="mt').slice(1);
   const tile = a.slice(0, a.indexOf('<template'));
-  assert.ok(tile.includes('<small>2015</small><span class="mt-sum">Első bekezdés.</span></span>'), 'year, then only the first paragraph');
+  assert.ok(tile.includes('<small>Budapest · 2015</small><span class="mt-sum">Első bekezdés.</span></span>'), 'place and year, then only the first paragraph');
   assert.ok(!tile.includes('Második') && !tile.includes('Szállodák'), 'the tile shows neither the rest of the text nor the category');
   assert.ok(a.includes('<p>Első bekezdés.</p><p>Második bekezdés &lt;b&gt;.</p><p>Harmadik.</p>'), 'the dialog has every paragraph, escaped');
-  assert.ok(a.includes('<p class="md-meta">Szállodák · Budapest · Tervév 2015</p>'));
+  assert.ok(a.includes('<p class="md-meta">Szállodák · Budapest · 2015</p>'));
   assert.ok(!b.includes('mt-sum'), 'no description, nothing under the caption');
 });
 
