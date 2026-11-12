@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { makeServer } from '../server.mjs';
 import { renderSite, THEMES } from '../site/site.mjs';
 
 const css = readFileSync(new URL('../public/site/site.css', import.meta.url), 'utf8');
@@ -24,6 +28,19 @@ test('each identity has a palette for the mode it does not have by default, for 
     assert.ok(css.includes(`@media (prefers-color-scheme: ${scheme}) { :root[data-theme="${theme}"]:not([data-mode="${other}"])`), `${theme}: follows the device`);
     assert.ok(css.includes(`:root[data-theme="${theme}"][data-mode="${scheme}"] {`), `${theme}: forced choice`);
   }
+});
+
+test('the server really serves every script and stylesheet the public page links (mode.js was once forgotten)', async () => {
+  const dataDir = mkdtempSync(join(tmpdir(), 'gaut-assets-'));
+  const server = makeServer({ dataDir, password: 'teszt-jelszo-123456' });
+  await new Promise(r => server.listen(0, '127.0.0.1', r));
+  const base = `http://127.0.0.1:${server.address().port}`;
+  try {
+    const html = await (await fetch(`${base}/hu`)).text();
+    const assets = [...html.matchAll(/(?:src|href)="(\/site\/[^"]+\.(?:js|css))"/g)].map(m => m[1]);
+    assert.ok(assets.includes('/site/mode.js') && assets.includes('/site/site.js') && assets.includes('/site/site.css'));
+    for (const a of assets) assert.equal((await fetch(`${base}${a}`)).status, 200, a);
+  } finally { await new Promise(r => server.close(r)); rmSync(dataDir, { recursive: true, force: true }); }
 });
 
 test('the mode script only accepts light and dark', () => {
