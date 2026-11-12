@@ -10,7 +10,7 @@ const paragraphs = text => String(text ?? '').split(/\n\s*\n/).map(p => p.trim()
 const imgTag = (m, alt, sizes, eager = false) =>
   `<img src="/media/${m.id}/${m.widths.includes(800) ? 800 : m.widths[0]}.webp" srcset="${m.widths.map(w => `/media/${m.id}/${w}.webp ${w}w`).join(', ')}" sizes="${sizes}" width="${m.width}" height="${m.height}" alt="${esc(alt)}" loading="${eager ? 'eager' : 'lazy'}" decoding="async">`;
 
-// labels: { all, close, prev, next, sample, designYear, open }
+// labels: { all, close, prev, next, sample, open }
 // helpers: { categoryLabel(reference) }; categories: the flat category list, in display order
 // filter: false leaves the category chips out (home page selection). chipHref(id): the chips become links to an address that
 // carries the category (references subpage); then `all` is the unfiltered list the chips are built from and `active` the chosen id.
@@ -18,8 +18,9 @@ const imgTag = (m, alt, sizes, eager = false) =>
 export function renderMosaic(references, { lang = 'hu', labels, categoryLabel, categories = [], filter = true, chipHref = null, all = references, active = '', dialog = true }) {
   const tiles = references.map((r, i) => {
     const title = pick(r.title, lang), summary = pick(r.summary, lang), place = pick(r.place, lang);
-    // Dialog: category, place and design year. Tile: only the year, and the first paragraph of the description under it.
-    const meta = [categoryLabel(r), place, r.year ? `${labels.designYear} ${r.year}` : ''].filter(Boolean).map(esc).join(' · ');
+    // Dialog: category, place and year. Tile: place and year (no category), and the first paragraph of the description under it.
+    const meta = [categoryLabel(r), place, r.year].filter(Boolean).map(esc).join(' · ');
+    const tileMeta = [place, r.year].filter(Boolean).map(esc).join(' · ');
     const paras = paragraphs(summary);
     const cm = r.coverMedia;
     const face = cm
@@ -29,7 +30,7 @@ export function renderMosaic(references, { lang = 'hu', labels, categoryLabel, c
     return `<article class="mt${cm ? '' : ' nophoto'}" data-cat="${esc(r.categoryId || r.category || '')}" data-index="${i}">
   <button class="mt-open" type="button" aria-haspopup="dialog" aria-label="${esc(labels.open)}: ${esc(title)}">
     <span class="mt-face">${face}${r.sample ? `<span class="badge">${esc(labels.sample)}</span>` : ''}</span>
-    <span class="mt-cap"><strong>${esc(title)}</strong>${r.year ? `<small>${esc(r.year)}</small>` : ''}${paras.length ? `<span class="mt-sum">${esc(paras[0])}</span>` : ''}</span>
+    <span class="mt-cap"><strong>${esc(title)}</strong>${tileMeta ? `<small>${tileMeta}</small>` : ''}${paras.length ? `<span class="mt-sum">${esc(paras[0])}</span>` : ''}</span>
   </button>
   <template class="mt-detail">${detailImg ? `<figure class="md-fig">${detailImg}</figure>` : ''}<div class="md-body"><p class="md-meta">${meta}</p><h3>${esc(title)}</h3>${paras.map(p => `<p>${esc(p)}</p>`).join('')}</div></template>
 </article>`;

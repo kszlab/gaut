@@ -29,7 +29,7 @@ test('public references are sorted by year and rendered as a mosaic with fallbac
   const mosaic = html.slice(html.indexOf('class="mosaic"'), html.indexOf('</dialog>'));
   assert.equal((mosaic.match(/<article class="mt/g) || []).length, 3, 'one tile per reference, no upper limit');
   assert.ok(!mosaic.includes('mt big'), 'every tile has the same size, featured or not');
-  assert.ok(mosaic.includes('Healthcare · Pécs · Design year 2020'), 'English category name and design year label');
+  assert.ok(mosaic.includes('Healthcare · Pécs · 2020') && !mosaic.includes('Design year'), 'English category name, the year without a label');
   assert.ok(mosaic.includes('<strong>Projekt b</strong>'), 'English title falls back to the Hungarian one');
   assert.match(mosaic, /<img src="\/media\/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\/800\.webp" srcset="[^"]*1600w"/);
   assert.equal((mosaic.match(/class="mt-type"/g) || []).length, 2, 'a reference without a cover photo gets a typographic tile, not a grey box or a generated picture');
