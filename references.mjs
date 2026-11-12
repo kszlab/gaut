@@ -4,6 +4,16 @@ import { isReferenceCategory, normalizeReferenceCategory, INITIAL_CATEGORY_LIST,
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
 const LABELS={common:'Közös',misi:'Misi',nandi:'Nándi',attila:'Attila',krisztian:'Krisztián'};
 const OWNERS = ['common', 'misi', 'nandi', 'attila', 'krisztian'];
+// Photos of a reference that go to the website, in display order (the first one is the cover). Records from before the gallery carry only the cover.
+// website_photos_media runs parallel to website_photos: the copy of each photo in the site image store ('' while there is none).
+export const WEBSITE_PHOTOS_MAX = 8;
+export function normalizePhotoList(r) {
+  let photos = Array.isArray(r.website_photos) ? r.website_photos : [], media = Array.isArray(r.website_photos_media) ? r.website_photos_media : [];
+  if (!photos.length && r.website_cover_photo) { photos = [r.website_cover_photo]; media = r.website_cover_media ? [r.website_cover_media] : []; }
+  r.website_photos = photos; r.website_photos_media = photos.map((_, i) => media[i] || '');
+  r.website_cover_photo = photos[0] || ''; r.website_cover_media = r.website_photos_media[0] || '';
+  return r;
+}
 export function referenceStore(db) {
   const seed = JSON.parse(readFileSync(new URL('./seed/references.json', import.meta.url), 'utf8'));
   db.exec('CREATE TABLE IF NOT EXISTS reference_records(id TEXT PRIMARY KEY,payload TEXT NOT NULL,revision INTEGER NOT NULL,updated_at TEXT NOT NULL); CREATE TABLE IF NOT EXISTS reference_meta(key TEXT PRIMARY KEY,value TEXT NOT NULL)');
@@ -34,7 +44,7 @@ export function referenceStore(db) {
     } catch(e) { db.exec('ROLLBACK'); throw e; }
   }
 
-  const get = id => { const r = db.prepare('SELECT * FROM reference_records WHERE id=?').get(id); if (!r) fail(404,'A referencia nem található.'); const p=JSON.parse(r.payload); return { deleted_at:null, website_publishable:false, website_role_confirmed:false, website_photo_rights:false, website_featured:false, website_title_hu:'', website_title_en:'', website_title_en_source:'', website_copy_hu:'', website_copy_en:'', website_cover_photo:'', website_cover_media:'', category_main_id:null, category_sub_id:null, category_review_status:'Besorolatlan', category_review_note:'', category_legacy:'', ...p, category_id:p.category_id??null, ...(categoryById(p.category_id) ? { category: categoryById(p.category_id).name } : {}), sections:p.sections||[p.section||'common'], revision:r.revision, updated_at:r.updated_at }; };
+  const get = id => { const r = db.prepare('SELECT * FROM reference_records WHERE id=?').get(id); if (!r) fail(404,'A referencia nem található.'); const p=JSON.parse(r.payload); const rec = { deleted_at:null, website_publishable:false, website_role_confirmed:false, website_photo_rights:false, website_featured:false, website_title_hu:'', website_title_en:'', website_title_en_source:'', website_copy_hu:'', website_copy_en:'', website_cover_photo:'', website_cover_media:'', website_photos:[], website_photos_media:[], category_main_id:null, category_sub_id:null, category_review_status:'Besorolatlan', category_review_note:'', category_legacy:'', ...p, category_id:p.category_id??null, ...(categoryById(p.category_id) ? { category: categoryById(p.category_id).name } : {}), sections:p.sections||[p.section||'common'], revision:r.revision, updated_at:r.updated_at }; return normalizePhotoList(rec); };
   function validate(p) {
     if (!p || typeof p !== 'object' || Array.isArray(p)) fail(400,'Hibás referencia.');
     const r = structuredClone(p); delete r.revision; delete r.updated_at; delete r.photo_count; delete r.photo_cover_id; delete r.photo_research;
@@ -50,6 +60,8 @@ export function referenceStore(db) {
     if (!/^[a-zA-Z0-9_-]{1,100}$/.test(r.id || '')) fail(400,'Érvénytelen azonosító.');
     if (typeof r.name !== 'string' || !r.name.trim() || r.name.length>500) fail(400,'A projekt neve kötelező, legfeljebb 500 karakter.');
     for (const key of ['design_year','category','city','address','identification_status','scope_from_pdf','background','questions','publication_status','attribution','website_copy_draft','technical_detail','website_title_hu','website_title_en','website_title_en_source','website_copy_hu','website_copy_en','website_cover_photo','website_cover_media','category_legacy','category_review_note']) { if(r[key]===undefined) r[key]=''; if(typeof r[key]!=='string') fail(400,'A szöveges mezőkben szöveget adj meg.'); }
+    normalizePhotoList(r);
+    if (r.website_photos.length > WEBSITE_PHOTOS_MAX || new Set(r.website_photos).size !== r.website_photos.length || r.website_photos.some(x => typeof x !== 'string' || !/^[a-zA-Z0-9_-]{1,100}$/.test(x)) || r.website_photos_media.some(x => typeof x !== 'string' || x.length > 100)) fail(400, `A honlapra kerülő képek: legfeljebb ${WEBSITE_PHOTOS_MAX} különböző, mentett kép.`);
     if (r.category_id === undefined || r.category_id === '') r.category_id = null;
     if (r.category_id !== null) {
       const chosen = categoryById(r.category_id);

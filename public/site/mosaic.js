@@ -38,16 +38,35 @@ if (dialog) {
     const open = e.target.closest('.mosaic .mt-open'); if (!open) return;
     opener = open; show(open.closest('.mt')); dialog.showModal();
   });
+  // Gallery inside the detail (a reference with two or more images): arrows, dots, swipe and the arrow keys move between its images.
+  // The two buttons at the top of the dialog (and the arrow keys when there is no gallery) move between references.
+  const gallery = () => content.querySelector('[data-gallery]');
+  function slide(delta, to) {
+    const g = gallery(); if (!g) return false;
+    const slides = [...g.querySelectorAll('.mg-slide')], at = slides.findIndex(s => !s.hidden);
+    const i = to ?? (at + delta + slides.length) % slides.length;
+    slides.forEach((s, k) => { s.hidden = k !== i; });
+    g.querySelectorAll('.mg-dot').forEach((d, k) => { if (k === i) d.setAttribute('aria-current', 'true'); else d.removeAttribute('aria-current'); });
+    g.querySelector('.mg-count').textContent = `${i + 1} / ${slides.length}`;
+    return true;
+  }
   dialog.addEventListener('click', e => {
-    const action = e.target.closest('[data-md]')?.dataset.md;
+    const action = e.target.closest('[data-md]')?.dataset.md, mg = e.target.closest('[data-mg]')?.dataset.mg, dot = e.target.closest('[data-mg-dot]');
     if (action === 'close' || e.target === dialog) dialog.close();
     else if (action === 'prev') step(-1);
     else if (action === 'next') step(1);
+    else if (mg) slide(mg === 'prev' ? -1 : 1);
+    else if (dot) slide(0, Number(dot.dataset.mgDot));
   });
   dialog.addEventListener('keydown', e => {
-    if (e.key === 'ArrowLeft') { e.preventDefault(); step(-1); }
-    if (e.key === 'ArrowRight') { e.preventDefault(); step(1); }
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    e.preventDefault();
+    const delta = e.key === 'ArrowLeft' ? -1 : 1;
+    if (!slide(delta)) step(delta);
   });
+  let swipeFrom = null;
+  content.addEventListener('touchstart', e => { swipeFrom = e.target.closest('.mg-stage') && e.touches.length === 1 ? e.touches[0].clientX : null; }, { passive: true });
+  content.addEventListener('touchend', e => { if (swipeFrom === null) return; const dx = e.changedTouches[0].clientX - swipeFrom; swipeFrom = null; if (Math.abs(dx) > 40) slide(dx < 0 ? 1 : -1); }, { passive: true });
   dialog.addEventListener('close', () => { opener?.focus({ preventScroll: true }); content.replaceChildren(); });
 
   // ---- home page: "all references" opens in place and scrolls to the start of the section, so the filter buttons show.

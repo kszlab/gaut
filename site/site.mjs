@@ -114,13 +114,16 @@ export function toPublicReference(record) {
   if (!ok) return null;
   const titleHu = str(record.website_title_hu || record.name, 160);
   if (!titleHu) return null;
+  // Images for the visitor: the copies in the site image store, cover first (older records know only the cover). More than one makes a gallery.
+  const media = Array.isArray(record.website_photos_media) && record.website_photos_media.some(Boolean) ? record.website_photos_media : [record.website_cover_media];
+  const gallery = [...new Set(media.filter(Boolean).map(String))];
   return {
     id: String(record.id), kind: kindFor(record.id), category: str(record.category, 80), categoryId: str(record.category_id, 100), year: str(record.design_year, 40),
     place: { hu: str(record.city, 80), en: str(record.city, 80) },
     title: { hu: titleHu, en: str(record.website_title_en, 160) },
     summary: { hu: str(record.website_copy_hu, 900), en: str(record.website_copy_en, 900) },
     tags: { hu: [], en: [] }, featured: record.website_featured === true,
-    cover: record.website_cover_media ? String(record.website_cover_media) : null
+    cover: gallery[0] ?? null, gallery
   };
 }
 const firstYear = year => Number(/\d{4}/.exec(year)?.[0] ?? 0);
@@ -169,7 +172,7 @@ const TEXT = {
     refsKicker: 'Referenciák', refsTitle: 'Válogatás a munkáinkból', refsAll: 'Összes referencia',
     refsMetaTitle: 'Referenciák | GAUT Mérnökiroda', refsMetaDescription: 'A GAUT Mérnökiroda gépészeti automatika- és épületfelügyeleti tervezési referenciái, kategóriák szerint.',
     refsNote: 'Bemutató mintaprojektek. A látható projektek kitaláltak, a végleges oldalon valós referenciák szerepelnek majd.',
-    all: 'Mind', sample: 'Minta', mosaicOpen: 'Megnyitás', mosaicClose: 'Bezárás', mosaicPrev: 'Előző referencia', mosaicNext: 'Következő referencia', mosaicDetail: 'Referencia részletei',
+    all: 'Mind', sample: 'Minta', mosaicOpen: 'Megnyitás', galLabel: 'Képtár', galPrev: 'Előző kép', galNext: 'Következő kép', galImage: 'Kép', mosaicClose: 'Bezárás', mosaicPrev: 'Előző referencia', mosaicNext: 'Következő referencia', mosaicDetail: 'Referencia részletei',
     contactKicker: 'Kapcsolat', contactBoxTitle: 'Elérhetőségek', companyBoxTitle: 'Cégadatok',
     officeLabel: 'Iroda', mapLabel: 'Megtekintés Google Térképen', companyLabels: { name: 'Cégnév', address: 'Székhely', taxNumber: 'Adószám', registrationNumber: 'Cégjegyzékszám', bank: 'Számlavezető bank', account: 'Bankszámlaszám' }, pending: 'hamarosan',
     footer: 'GAUT Kft. Gépészeti automatika és épületfelügyelet tervezése.', preview: 'Előnézet. Az oldal még nem végleges, és a keresők elől rejtve van.',
@@ -213,7 +216,7 @@ const TEXT = {
     refsKicker: 'Projects', refsTitle: 'Selected work', refsAll: 'All projects',
     refsMetaTitle: 'Projects | GAUT Engineering', refsMetaDescription: 'Building automation and building management design projects by GAUT Engineering, by category.',
     refsNote: 'Illustrative sample projects. The projects shown are invented; the final site will list real references.',
-    all: 'All', sample: 'Sample', mosaicOpen: 'Open', mosaicClose: 'Close', mosaicPrev: 'Previous project', mosaicNext: 'Next project', mosaicDetail: 'Project details',
+    all: 'All', sample: 'Sample', mosaicOpen: 'Open', galLabel: 'Gallery', galPrev: 'Previous image', galNext: 'Next image', galImage: 'Image', mosaicClose: 'Close', mosaicPrev: 'Previous project', mosaicNext: 'Next project', mosaicDetail: 'Project details',
     contactKicker: 'Contact', contactBoxTitle: 'Contact details', companyBoxTitle: 'Company details',
     officeLabel: 'Office', mapLabel: 'View on Google Maps', companyLabels: { name: 'Company name', address: 'Registered office', taxNumber: 'Tax number', registrationNumber: 'Company registration no.', bank: 'Bank', account: 'Bank account' }, pending: 'coming soon',
     footer: 'GAUT Ltd. Design of building automation and building management systems.', preview: 'Preview. This page is not final and is hidden from search engines.',
@@ -273,7 +276,7 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
   if (LEGAL_PAGES.includes(page) && !legalText(page)) return null;
   if (fragment && LEGAL_PAGES.includes(page)) return `<h2 class="legal-title">${esc(t[`${page}Label`])}</h2>${legalHtml(page)}`;
   const categoryName = r => { const c = categories.find(x => x.id === r.categoryId); return c ? (lang === 'en' && c.name_en ? c.name_en : c.name) : categoryLabel(r.category, lang); };
-  const mosaicLabels = { all: t.all, filter: t.refsKicker, open: t.mosaicOpen, close: t.mosaicClose, prev: t.mosaicPrev, next: t.mosaicNext, detail: t.mosaicDetail, sample: t.sample };
+  const mosaicLabels = { all: t.all, filter: t.refsKicker, open: t.mosaicOpen, close: t.mosaicClose, prev: t.mosaicPrev, next: t.mosaicNext, detail: t.mosaicDetail, sample: t.sample, gallery: t.galLabel, galleryPrev: t.galPrev, galleryNext: t.galNext, galleryImage: t.galImage };
   // Only the full list (filter buttons, every tile, "show fewer" buttons): the home page loads this when "all references" is opened in place.
   if (fragment) return renderMosaic(references, { lang, categories, dialog: false, categoryLabel: categoryName, labels: mosaicLabels });
   // Home page: a fixed number of references and a link to all of them. Subpage: every reference, filtered by the category in the address.

@@ -265,6 +265,20 @@ h3 { font-size: 21px; }
 .md-fig { margin: 0; background: var(--ground); }
 .md-fig img { width: 100%; max-height: 62dvh; object-fit: cover; }
 .md-fig .mt-art { position: static; padding: 24px; max-height: 50dvh; }
+/* Gallery in the detail dialog (only for references with two or more images) */
+.md-gallery { background: var(--ground); }
+.mg-stage { position: relative; }
+.mg-slide { display: block; width: 100%; max-height: 62dvh; object-fit: cover; }
+.mg-slide[hidden] { display: none; }
+.mg-prev, .mg-next { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border: 0; border-radius: 50%; background: rgba(8, 14, 24, .55); color: #fff; font-size: 28px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0 0 4px; }
+.mg-prev { left: 12px; } .mg-next { right: 12px; }
+.mg-prev:hover, .mg-next:hover { background: rgba(8, 14, 24, .8); }
+.mg-count { position: absolute; right: 12px; bottom: 12px; padding: 3px 10px; border-radius: 999px; background: rgba(8, 14, 24, .6); color: #fff; font-size: 13px; }
+.mg-dots { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; padding: 6px 12px; }
+.mg-dot { width: 24px; height: 24px; border: 0; background: transparent; cursor: pointer; position: relative; padding: 0; }
+.mg-dot::after { content: ''; position: absolute; inset: 7px; border-radius: 50%; background: var(--line); border: 1px solid var(--muted); }
+.mg-dot[aria-current="true"]::after { background: var(--ink); border-color: var(--ink); }
+
 .md-body { padding: 22px 28px 30px; max-width: 70ch; }
 .md-meta { margin: 0 0 8px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .md-body h3 { font-size: clamp(22px, 2.6vw, 32px); margin-bottom: 12px; }
