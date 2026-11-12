@@ -50,12 +50,24 @@ if (dialog) {
   });
   dialog.addEventListener('close', () => { opener?.focus({ preventScroll: true }); content.replaceChildren(); });
 
-  // ---- home page: all references open in place (#osszes in the address, so the back button and shared links work)
+  // ---- home page: "all references" opens in place and scrolls to the start of the section, so the filter buttons show.
+  // When the list has been scrolled past (the next section reaches the top of the screen) it closes by itself in the
+  // background, and the next section keeps its place on the screen. #osszes in the address makes it a link that opens the list.
   if (live && short && full) {
+    const section = live.closest('section'), after = section.nextElementSibling;
     const isOpen = () => live.classList.contains('is-open');
-    function setOpen(on) {
+    const setOpen = on => {
       if (on) full.innerHTML = fragment; else full.replaceChildren(); // closing drops the list, so it reopens unfiltered
       full.hidden = !on; live.classList.toggle('is-open', on);
+    };
+    // Close the list. Scrolled past: the page above the next section shrinks, so scroll by the same amount, without animation.
+    function collapse() {
+      if (!isOpen()) return;
+      const passed = full.getBoundingClientRect().bottom < 0, before = after?.getBoundingClientRect().top ?? 0;
+      setOpen(false);
+      if (location.hash === OPEN) history.replaceState(null, '', location.pathname + location.search);
+      if (passed && after) scrollTo({ top: scrollY + after.getBoundingClientRect().top - before, behavior: 'instant' });
+      else section.scrollIntoView({ block: 'start', behavior: 'instant' });
     }
     async function openList(push) {
       if (isOpen()) return;
@@ -68,20 +80,15 @@ if (dialog) {
       } catch { location.href = short.querySelector('[data-refs-open]')?.href || location.href; return; } // fall back to the subpage
       setOpen(true);
       if (push) history.pushState(null, '', OPEN);
-    }
-    function closeList() {
-      if (!isOpen()) return;
-      setOpen(false);
-      if (location.hash === OPEN) history.replaceState(null, '', location.pathname + location.search);
-      live.closest('section')?.scrollIntoView({ block: 'start' });
+      section.scrollIntoView({ block: 'start' });
     }
     document.addEventListener('click', e => {
       if (e.target.closest('[data-refs-open]')) { e.preventDefault(); openList(true); }
-      else if (e.target.closest('[data-refs-close]')) closeList();
     });
-    window.addEventListener('popstate', () => {
+    addEventListener('scroll', () => { if (isOpen() && full.getBoundingClientRect().bottom < 0) collapse(); }, { passive: true });
+    addEventListener('popstate', () => {
       if (location.hash === OPEN) openList(false);
-      else if (isOpen()) { setOpen(false); }
+      else if (isOpen()) collapse();
     });
     if (location.hash === OPEN) openList(false);
   }

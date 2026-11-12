@@ -162,7 +162,7 @@ const TEXT = {
     sectors: ['Ipari létesítmények', 'Kereskedelmi létesítmények', 'Szállodák', 'Közösségi épületek', 'Oktatási intézmények', 'Egészségügyi beruházások'],
     activitiesLabel: 'Tevékenységeink',
     activities: ['Tervezés', 'Tervellenőrzés', 'Műszaki ellenőrzés'],
-    refsKicker: 'Referenciák', refsTitle: 'Válogatás a munkáinkból', refsAll: 'Összes referencia', refsLess: 'Kevesebb referencia',
+    refsKicker: 'Referenciák', refsTitle: 'Válogatás a munkáinkból', refsAll: 'Összes referencia',
     refsMetaTitle: 'Referenciák | GAUT Mérnökiroda', refsMetaDescription: 'A GAUT Mérnökiroda gépészeti automatika- és épületfelügyeleti tervezési referenciái, kategóriák szerint.',
     refsNote: 'Bemutató mintaprojektek. A látható projektek kitaláltak, a végleges oldalon valós referenciák szerepelnek majd.',
     all: 'Mind', sample: 'Minta', designYear: 'Tervév', mosaicOpen: 'Megnyitás', mosaicClose: 'Bezárás', mosaicPrev: 'Előző referencia', mosaicNext: 'Következő referencia', mosaicDetail: 'Referencia részletei',
@@ -205,7 +205,7 @@ const TEXT = {
     sectors: ['Industrial facilities', 'Commercial facilities', 'Hotels', 'Community buildings', 'Educational institutions', 'Healthcare projects'],
     activitiesLabel: 'Our services',
     activities: ['Design', 'Design review', 'Technical supervision'],
-    refsKicker: 'Projects', refsTitle: 'Selected work', refsAll: 'All projects', refsLess: 'Fewer projects',
+    refsKicker: 'Projects', refsTitle: 'Selected work', refsAll: 'All projects',
     refsMetaTitle: 'Projects | GAUT Engineering', refsMetaDescription: 'Building automation and building management design projects by GAUT Engineering, by category.',
     refsNote: 'Illustrative sample projects. The projects shown are invented; the final site will list real references.',
     all: 'All', sample: 'Sample', designYear: 'Design year', mosaicOpen: 'Open', mosaicClose: 'Close', mosaicPrev: 'Previous project', mosaicNext: 'Next project', mosaicDetail: 'Project details',
@@ -263,9 +263,9 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
   const pathOf = l => (pagePath ? pagePath[l] : homeOf(l));
   const meta = page === 'phases' ? [t.phases.metaTitle, t.phases.metaDescription] : page === 'references' ? [t.refsMetaTitle, t.refsMetaDescription] : [t.title, t.description];
   const categoryName = r => { const c = categories.find(x => x.id === r.categoryId); return c ? (lang === 'en' && c.name_en ? c.name_en : c.name) : categoryLabel(r.category, lang); };
-  const mosaicLabels = { all: t.all, filter: t.refsKicker, open: t.mosaicOpen, close: t.mosaicClose, prev: t.mosaicPrev, next: t.mosaicNext, detail: t.mosaicDetail, sample: t.sample, designYear: t.designYear, less: t.refsLess };
+  const mosaicLabels = { all: t.all, filter: t.refsKicker, open: t.mosaicOpen, close: t.mosaicClose, prev: t.mosaicPrev, next: t.mosaicNext, detail: t.mosaicDetail, sample: t.sample, designYear: t.designYear };
   // Only the full list (filter buttons, every tile, "show fewer" buttons): the home page loads this when "all references" is opened in place.
-  if (fragment) return renderMosaic(references, { lang, categories, dialog: false, collapse: true, categoryLabel: categoryName, labels: mosaicLabels });
+  if (fragment) return renderMosaic(references, { lang, categories, dialog: false, categoryLabel: categoryName, labels: mosaicLabels });
   // Home page: a fixed number of references and a link to all of them. Subpage: every reference, filtered by the category in the address.
   const onHome = homeReferences(references, day);
   const activeCategory = categories.some(c => c.id === category) && references.some(r => r.categoryId === category) ? category : '';

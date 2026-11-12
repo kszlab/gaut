@@ -76,6 +76,27 @@ test('references subpage: every reference, the category comes from the address, 
   assert.ok(renderSite({ lang: 'hu', references: list }).includes('<a href="#referenciak">Referenciák</a>'), 'on the home page the menu item still jumps to the section');
 });
 
+test('tiles: year and the first paragraph of the description; the dialog has the whole text and the category', () => {
+  const summary = ['Első bekezdés.', 'Második bekezdés <b>.', '', 'Harmadik.'].join(String.fromCharCode(10, 10));
+  const html = renderSite({ lang: 'hu', page: 'references', categories: INITIAL_CATEGORY_LIST, references: [ref('a', { year: '2015', summary: { hu: summary, en: '' } }), ref('b', { summary: { hu: '', en: '' } })] });
+  const [a, b] = html.split('<article class="mt').slice(1);
+  const tile = a.slice(0, a.indexOf('<template'));
+  assert.ok(tile.includes('<small>2015</small><span class="mt-sum">Első bekezdés.</span></span>'), 'year, then only the first paragraph');
+  assert.ok(!tile.includes('Második') && !tile.includes('Szállodák'), 'the tile shows neither the rest of the text nor the category');
+  assert.ok(a.includes('<p>Első bekezdés.</p><p>Második bekezdés &lt;b&gt;.</p><p>Harmadik.</p>'), 'the dialog has every paragraph, escaped');
+  assert.ok(a.includes('<p class="md-meta">Szállodák · Budapest · Tervév 2015</p>'));
+  assert.ok(!b.includes('mt-sum'), 'no description, nothing under the caption');
+});
+
+test('the full list for the home page: filter buttons and every tile, no dialog, no close buttons and no page shell', () => {
+  const list = [...many(12), ...many(3, () => ({ categoryId: 'irodahazak', category: 'Irodaházak' })).map((r, i) => ({ ...r, id: `o${i}`, title: { hu: `Projekt o${i}`, en: '' } }))];
+  const frag = renderSite({ lang: 'hu', page: 'references', references: list, categories: INITIAL_CATEGORY_LIST, fragment: true });
+  assert.equal(tiles(frag).length, 15);
+  assert.ok(frag.includes('<button type="button" class="chip on" data-filter="*">Mind</button>') && frag.includes('data-filter="irodahazak"'));
+  assert.ok(!frag.includes('data-refs-close') && !/Kevesebb|Fewer/.test(frag), 'the list closes by scrolling past it, not with a button');
+  assert.ok(!frag.includes('<dialog') && !frag.includes('<html') && !frag.includes('href="/referenciak?'), 'the dialog already on the page is reused');
+});
+
 test('the subpage is served in both languages and filters by ?kategoria=', async () => {
   const dataDir = mkdtempSync(join(tmpdir(), 'gaut-refpage-'));
   const server = makeServer({ dataDir, password: 'teszt-jelszo-123456' });

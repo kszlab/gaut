@@ -10,13 +10,12 @@ const paragraphs = text => String(text ?? '').split(/\n\s*\n/).map(p => p.trim()
 const imgTag = (m, alt, sizes, eager = false) =>
   `<img src="/media/${m.id}/${m.widths.includes(800) ? 800 : m.widths[0]}.webp" srcset="${m.widths.map(w => `/media/${m.id}/${w}.webp ${w}w`).join(', ')}" sizes="${sizes}" width="${m.width}" height="${m.height}" alt="${esc(alt)}" loading="${eager ? 'eager' : 'lazy'}" decoding="async">`;
 
-// labels: { all, close, prev, next, sample, designYear, open, less }
+// labels: { all, close, prev, next, sample, designYear, open }
 // helpers: { categoryLabel(reference) }; categories: the flat category list, in display order
 // filter: false leaves the category chips out (home page selection). chipHref(id): the chips become links to an address that
 // carries the category (references subpage); then `all` is the unfiltered list the chips are built from and `active` the chosen id.
 // dialog: false leaves the detail dialog out (the list that opens in place on the home page reuses the dialog already there).
-// collapse: true adds "show fewer" buttons above and below the list (the in-place list on the home page).
-export function renderMosaic(references, { lang = 'hu', labels, categoryLabel, categories = [], filter = true, chipHref = null, all = references, active = '', dialog = true, collapse = false }) {
+export function renderMosaic(references, { lang = 'hu', labels, categoryLabel, categories = [], filter = true, chipHref = null, all = references, active = '', dialog = true }) {
   const tiles = references.map((r, i) => {
     const title = pick(r.title, lang), summary = pick(r.summary, lang), place = pick(r.place, lang);
     // Dialog: category, place and design year. Tile: only the year, and the first paragraph of the description under it.
@@ -46,10 +45,9 @@ export function renderMosaic(references, { lang = 'hu', labels, categoryLabel, c
   const chips = !filter || cats.length < 2 ? '' : chipHref
     ? `<nav class="filters" aria-label="${esc(labels.filter)}">${link('', labels.all)}${cats.map(c => link(c.key, c.label)).join('')}</nav>`
     : cats.length > 1
-    ? `<div class="filters" role="group" aria-label="${esc(labels.filter)}"><button type="button" class="chip on" data-filter="*">${esc(labels.all)}</button>${cats.map(c => `<button type="button" class="chip" data-filter="${esc(c.key)}">${esc(c.label)}</button>`).join('')}${collapse ? `<button type="button" class="chip refs-less" data-refs-close>${esc(labels.less)}</button>` : ''}</div>`
+    ? `<div class="filters" role="group" aria-label="${esc(labels.filter)}"><button type="button" class="chip on" data-filter="*">${esc(labels.all)}</button>${cats.map(c => `<button type="button" class="chip" data-filter="${esc(c.key)}">${esc(c.label)}</button>`).join('')}</div>`
     : '';
-  const closeRow = collapse ? `<p class="refs-more"><button type="button" class="btn" data-refs-close>${esc(labels.less)}</button></p>` : '';
   return `${chips}
-<div class="mosaic" data-total="${references.length}">${tiles}</div>${closeRow}${!dialog ? '' : `
+<div class="mosaic" data-total="${references.length}">${tiles}</div>${!dialog ? '' : `
 <dialog class="mosaic-dialog" aria-label="${esc(labels.detail)}"><div class="md-nav"><button type="button" data-md="prev" aria-label="${esc(labels.prev)}">←</button><button type="button" data-md="next" aria-label="${esc(labels.next)}">→</button><button type="button" data-md="close" aria-label="${esc(labels.close)}">×</button></div><div class="md-content"></div></dialog>`}`;
 }
