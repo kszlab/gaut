@@ -374,4 +374,3 @@ h1.kicker { font-family: inherit; line-height: 1.4; }
 .refs-all { padding-top: 28px; }
 /* Home page: "all references" opens in place; the dialog stays, so the tiles of the short list only hide */
 .refs-live.is-open > .refs-short > :not(dialog) { display: none; }
-.refs-less { margin-left: auto; }
