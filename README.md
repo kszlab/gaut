@@ -184,6 +184,14 @@ A referenciatár és a honlap össze van kötve. A „Honlapon megjeleníthető 
 - **Sorrend és megjelenítés (mozaik):** a referenciák tervév szerint csökkenő sorrendben, egyforma méretű képcsempékkel jelennek meg (a kiemelt csempe már nem nagyobb). Háromoszlopos rács (tableten kettő, telefonon egy). A csempén a borítókép és egy sáv a névvel, a tervévvel (csak az évszám) és a honlapos leírás **első bekezdésével** (a bekezdéseket üres sor választja el; érdemes egy rövid mondatot írni); kategória, település és „Tervév" felirat nincs rajta. Kattintásra egy ablakban nagyobb kép, a teljes leírás (minden bekezdés), a kategória, a település és a tervév, nyilakkal és billentyűzettel lapozható (`site/mosaic.mjs` adja a HTML-t, `public/site/mosaic.js` a viselkedést). Kategóriaszűrő gombok szűkítik a listát. Borítókép nélkül tipográfiai csempe jelenik meg (a cím nagy betűkkel), a „Minta" projektek generált illusztrációt kapnak. A koncepciók közül a B használja ugyanezt.
 - **Mintaprojektek:** ha egyetlen referencia sincs megjelölve, a „Minta" jelzésű mintaprojektek maradnak (a közzététel ilyenkor nem rögzít referencialistát).
 
+### Impresszum és adatkezelési tájékoztató
+
+A két jogi szöveg a honlap-szerkesztő „Impresszum" és „Adatkezelési tájékoztató" csoportjában írható (`imprint`, `privacy` a `site/content.mjs`-ben), magyarul és angolul, ugyanazzal a formázható szerkesztővel és előnézettel, mint a Bemutatkozás (cím, felsorolás, félkövér, dőlt, aláhúzás, hivatkozás, betűméret és -típus; HTML nem engedélyezett). Vázlat és közzététel alatt működnek, mint a többi szöveg. Az angol mező üresen hagyható: ilyenkor a magyar szöveg látszik az angol oldalon.
+
+- **Nincs külön menüpont.** A főmenüben nem szerepelnek; a lábléc két hivatkozása a szöveget ablakban nyitja meg (zárás ×-szel, Esc-pel vagy a háttérre kattintással). A hivatkozás valódi cím is: `/impresszum`, `/adatkezeles`, angolul `/en/imprint`, `/en/privacy`; JavaScript nélkül vagy új lapon megnyitva ez külön oldalként jelenik meg. Az ablak a `?reszlet=1` darabot tölti be (csak a cím és a szöveg).
+- **Üres szöveg = nincs hivatkozás és nincs oldal** (a cím 404-et ad), tehát amíg nem írod meg, semmi nem látszik a nyilvános oldalon. A vázlat-előnézetben (`?elonezet=1`) a hivatkozások megtartják az előnézetet.
+- A szöveg tartalmát (a tárhelyszolgáltató, az adatkezelő, a jogalapok stb.) a tulajdonos írja; a program csak a keretet adja.
+
 ## Mentés és visszaállítás
 
 A teljes adat (adatbázis, fájlok, referenciafotók, honlapképek) egyetlen `.tar.gz` fájlban tölthető le: belépve a munkatér főoldalán, vagy a `/api/backup` címen. Automatikus napi mentéshez a `GAUT_BACKUP_TOKEN` környezeti változó (legalább 32 karakter) és a `tools/backup-gaut.ps1` használható; ellenőrzéshez és visszaállításhoz a `tools/backup-tools.mjs`. Részletek, ütemezés és a visszaállítás lépései: [docs/BACKUP.md](docs/BACKUP.md).

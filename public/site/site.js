@@ -60,3 +60,23 @@ document.querySelectorAll('[data-contact-member]').forEach(button => {
     } catch (error) { button.disabled = false; button.textContent = error.message || original; }
   });
 });
+
+// Legal texts: the footer links open the text in a dialog (the link itself is a real page, which opens without scripts or with a modified click).
+const legal = document.querySelector('.legal-dialog');
+if (legal) {
+  const body = legal.querySelector('.legal-body');
+  document.addEventListener('click', async e => {
+    const a = e.target.closest('a[data-legal]');
+    if (!a || e.defaultPrevented || e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    try {
+      const url = new URL(a.href); url.searchParams.set('reszlet', '1');
+      const res = await fetch(url, { headers: { Accept: 'text/html' } });
+      if (!res.ok) throw new Error(String(res.status));
+      body.innerHTML = await res.text();
+      legal.showModal(); legal.querySelector('.md-content').scrollTop = 0;
+    } catch { location.href = a.href; }
+  });
+  legal.addEventListener('click', e => { if (e.target === legal || e.target.closest('[data-legal-close]')) legal.close(); });
+  legal.addEventListener('close', () => { body.replaceChildren(); });
+}
