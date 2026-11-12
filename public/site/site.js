@@ -20,6 +20,24 @@ function setTheme(name, persist) {
 setTheme(initial, false);
 document.querySelectorAll('[data-theme-choice]').forEach(b => b.addEventListener('click', () => setTheme(b.dataset.themeChoice, true)));
 
+// Day / night switch: automatic (the device decides) -> light -> dark -> automatic. The choice is kept in this browser only.
+const modeBtn = document.querySelector('[data-mode-btn]');
+if (modeBtn) {
+  const MODES = ['auto', 'light', 'dark'], names = modeBtn.dataset.names.split('|');
+  const show = mode => {
+    const text = `${modeBtn.dataset.label}: ${names[MODES.indexOf(mode)]}`;
+    modeBtn.setAttribute('aria-label', text); modeBtn.title = text;
+  };
+  let mode = MODES.includes(root.dataset.mode) ? root.dataset.mode : 'auto';
+  show(mode);
+  modeBtn.addEventListener('click', () => {
+    mode = MODES[(MODES.indexOf(mode) + 1) % MODES.length];
+    if (mode === 'auto') delete root.dataset.mode; else root.dataset.mode = mode;
+    try { if (mode === 'auto') localStorage.removeItem('gaut-mode'); else localStorage.setItem('gaut-mode', mode); } catch { /* ignore */ }
+    show(mode);
+  });
+}
+
 const btn = document.querySelector('.menu-btn'), nav = document.getElementById('nav');
 btn?.addEventListener('click', () => { const open = nav.classList.toggle('open'); btn.setAttribute('aria-expanded', String(open)); });
 nav?.addEventListener('click', e => { if (e.target.closest('a')) { nav.classList.remove('open'); btn?.setAttribute('aria-expanded', 'false'); } });

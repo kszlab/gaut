@@ -128,7 +128,10 @@ A gyökércímen (`/`, magyarul) és az `/en` címen (angolul) elérhető, belé
 - `site/art.mjs`: generált SVG-k (három ideiglenes logóváltozat és az izometrikus épületillusztrációk, CSS-változókkal színezve).
 - `site/sample-references.json`: **kitalált** mintaprojektek, az oldalon „Minta" jelzéssel. Nem valós referenciák.
 - `site/sample-team.json`: helyőrző csapattagok (név, szerepkör, mintaszöveg), „Minta" jelzéssel. Fotó nélkül monogramos helyőrző jelenik meg. Később szerkeszthető csapatlista lesz a munkatérben, portréfotókkal, a referenciafotókhoz hasonló privát feltöltéssel és külön jóváhagyott nyilvános képútvonallal.
-- `public/site/site.css`, `public/site/site.js`: stílus és kis kliensoldali viselkedés (témaváltó, szűrő, mobilmenü).
+- `public/site/site.css`, `public/site/site.js`: stílus és kis kliensoldali viselkedés (témaváltó, szűrő, mobilmenü, nappali/éjszakai kapcsoló).
+- `public/site/mode.js`: apró, a megjelenés előtt lefutó szkript, amely a mentett nappali/éjszakai választást beállítja (így nincs villanás).
+
+**Nappali / éjszakai mód.** A nyilvános honlap mindhárom arculata kapott világos és sötét változatot (a Rendszer és a Struktúra alapból világos, a Szinkron alapból sötét; mindegyikhez az ellenkező paletta készült el a `site.css` elején). Alapesetben a látogató eszközének beállítását követi (`prefers-color-scheme`). A fejléc ikongombja automatikus → világos → sötét között vált, a választást a böngésző jegyzi meg (`gaut-mode`), és nem kerül szerverre. A hátteret nem érintő színek változók, a főoldali épületképet a sötét módban szűrő (`--hero-filter`, `--hero-blend`) igazítja. A belső munkatér nem kapott sötét módot.
 
 ### Terv a valódi referenciatárral való összekötéshez
 
