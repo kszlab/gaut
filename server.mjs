@@ -1,5 +1,5 @@
 import http from 'node:http';
-import { referenceStore } from './references.mjs';
+import { referenceStore, WEBSITE_PHOTOS_MAX } from './references.mjs';
 import { renderSite, parseTheme, defaultText, toPublicReference, publicReferences } from './site/site.mjs';
 import { websiteWarnings } from './public/site-readiness.js';
 import { contentStore, defaultsFor, FIELDS, HERO_SLOTS } from './site/content.mjs';
@@ -50,21 +50,32 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
   const siteContent = contentStore(db);
   const siteMedia = mediaStore(db, dataDir);
   const resolveMedia = (map = {}) => Object.fromEntries(Object.entries(map).map(([slot, id]) => [slot, siteMedia.get(id)]).filter(([, m]) => m));
-  const isPublishedMedia = id => { const live = siteContent.live()?.overrides; return Object.values(live?.media ?? {}).includes(id) || Boolean(live?.references?.some(r => r.cover === id)); };
+  const isPublishedMedia = id => { const live = siteContent.live()?.overrides; return Object.values(live?.media ?? {}).includes(id) || Boolean(live?.references?.some(r => r.cover === id || r.gallery?.includes(id))); };
   // References that a publication would put on the site, with advisory warnings (never blocking).
   const referenceOverview = () => references.list().filter(r => toPublicReference(r)).map(r => ({ id: r.id, name: r.website_title_hu || r.name, featured: r.website_featured === true, warnings: websiteWarnings(r) }));
-  // The cover photo of a reference is copied into the site image store (resized WebP, no metadata) when it is chosen, never taken from the client.
-  async function prepareCover(id, data) {
+  // The photos of a reference that go to the website (website_photos, the first is the cover) are copied into the site image store (resized WebP,
+  // no metadata) when they are chosen; the media ids are never taken from the client. A photo that was already copied keeps its copy.
+  async function prepareGallery(id, data) {
     const old = id ? references.get(id) : null;
-    const want = typeof data.website_cover_photo === 'string' ? data.website_cover_photo : '';
-    data.website_cover_media = '';
-    if (!want) { data.website_cover_photo = ''; return; }
-    if (!old) fail(400, 'Új referenciához előbb mentsd el a referenciát, utána választhatsz borítóképet.');
-    if (want === old.website_cover_photo && old.website_cover_media) { data.website_cover_media = old.website_cover_media; return; }
-    const photo = photos.file(want);
-    if (photo.reference_id !== id || photo.deleted_at) fail(400, 'A borítókép ehhez a referenciához tartozó, nem törölt kép legyen.');
-    const media = await siteMedia.add({ filename: photo.filename, bytes: readFileSync(photo.path), alt_hu: old.name.slice(0, 190), alt_en: '' });
-    data.website_cover_media = media.id;
+    // The list wins while its first entry is the cover the client sent; a client that only changes the cover (website_cover_photo) gets a one-photo list.
+    const cover = typeof data.website_cover_photo === 'string' ? data.website_cover_photo : '';
+    const asked = Array.isArray(data.website_photos) && (data.website_photos[0] || '') === cover ? data.website_photos : cover ? [cover] : [];
+    if (data.website_photos !== undefined && !Array.isArray(data.website_photos)) fail(400, 'Hibás képlista a honlaphoz.');
+    if (asked.some(x => typeof x !== 'string')) fail(400, 'Hibás képlista a honlaphoz.');
+    const want = asked.filter(Boolean);
+    if (new Set(want).size !== want.length) fail(400, 'Egy kép csak egyszer szerepelhet a honlapos képek között.');
+    if (want.length > WEBSITE_PHOTOS_MAX) fail(400, `Legfeljebb ${WEBSITE_PHOTOS_MAX} kép kerülhet egy referencia honlapos képei közé.`);
+    if (want.length && !old) fail(400, 'Új referenciához előbb mentsd el a referenciát, utána választhatsz képeket a honlapra.');
+    const had = new Map(old ? old.website_photos.map((photoId, i) => [photoId, old.website_photos_media[i]]) : []);
+    const media = [];
+    for (const photoId of want) {
+      if (had.get(photoId)) { media.push(had.get(photoId)); continue; }
+      const photo = photos.file(photoId);
+      if (photo.reference_id !== id || photo.deleted_at) fail(400, 'A honlapos képek ehhez a referenciához tartozó, nem törölt képek legyenek.');
+      media.push((await siteMedia.add({ filename: photo.filename, bytes: readFileSync(photo.path), alt_hu: String(photo.caption || old.name).slice(0, 190), alt_en: '' })).id);
+    }
+    data.website_photos = want; data.website_photos_media = media;
+    data.website_cover_photo = want[0] || ''; data.website_cover_media = media[0] || '';
   }
   // What a visitor sees: the published version, or the saved draft (with the current reference store) for a signed-in preview.
   // References: the live version shows the list frozen at publication; without any publishable reference the sample projects stay.
@@ -74,7 +85,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
     const team = shown?.team?.map(m => ({ ...m, sample: false, photoMedia: media[`team.${m.id}`] }));
     const currentById = new Map(references.list().map(r => [r.id, r]));
     const frozen = draft ? publicReferences(references.list()) : (siteContent.live()?.overrides.references || []).map(r => { const current = currentById.get(r.id); return { ...r, categoryId: current?.category_id || '', category: current?.category ?? r.category }; }); // the category follows the current record, so re-categorising needs no new publication
-    const refs = frozen?.length ? frozen.map(r => ({ ...r, coverMedia: r.cover ? siteMedia.get(r.cover) ?? undefined : undefined })) : undefined;
+    const refs = frozen?.length ? frozen.map(r => { const gallery = (r.gallery?.length ? r.gallery : r.cover ? [r.cover] : []).map(id => siteMedia.get(id)).filter(Boolean); return { ...r, coverMedia: gallery[0], galleryMedia: gallery }; }) : undefined;
     return { content: shown, media, team, references: refs, hasLive: Boolean(siteContent.live()) };
   }
   const siteState = () => {
@@ -199,7 +210,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         if (categoryMatch && req.method === 'DELETE') fail(405, 'Kategória nem törölhető, csak átnevezhető.');
         if (path === '/api/references/category-assignments' && req.method === 'POST') { const b = await body(req, 512*1024); return json(res, 200, references.assignCategories(b.assignments, b.overwrite === true)); }
         if (path === '/api/references' && req.method === 'GET') return json(res, 200, { references: references.list().map(r=>{const active=photos.list(r.id).filter(p=>!p.deleted_at);return {...r,photo_count:active.length,photo_cover_id:active[0]?.id||null,photo_research:photos.research(r.id)};}) });
-        if (path === '/api/references' && req.method === 'POST') { const data = await body(req, 1024*1024); await prepareCover(null, data); return json(res, 201, { reference: references.create(data) }); }
+        if (path === '/api/references' && req.method === 'POST') { const data = await body(req, 1024*1024); await prepareGallery(null, data); return json(res, 201, { reference: references.create(data) }); }
         if (path === '/api/references/export' && req.method === 'GET') return json(res, 200, {...references.bundle(),photos:photos.all(),photo_export_note:'A JSON a képek metaadatait tartalmazza. A képfájlok külön tölthetők le az adatlapokról; teljes mentéshez a DATA_DIR könyvtár is szükséges.'});
         const photoUpload = /^\/api\/references\/([a-zA-Z0-9_-]{1,100})\/photos$/.exec(path);
         if (photoUpload && req.method === 'GET') return json(res, 200, {photos:photos.list(photoUpload[1])});
@@ -221,7 +232,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         if(referenceRestore && req.method==='POST') {const data=await body(req,1024);return json(res,200,{reference:references.trash(referenceRestore[1],data.revision,true)});}
         const referenceMatch = /^\/api\/references\/([a-zA-Z0-9_-]{1,100})$/.exec(path);
         if(referenceMatch && req.method==='DELETE') {const data=await body(req,1024);return json(res,200,{reference:references.trash(referenceMatch[1],data.revision)});}
-        if (referenceMatch && req.method === 'PUT') { const data = await body(req, 1024*1024); await prepareCover(referenceMatch[1], data); return json(res, 200, { reference: references.update(referenceMatch[1], data) }); }
+        if (referenceMatch && req.method === 'PUT') { const data = await body(req, 1024*1024); await prepareGallery(referenceMatch[1], data); return json(res, 200, { reference: references.update(referenceMatch[1], data) }); }
         if (path === '/api/site/content' && req.method === 'GET') return json(res, 200, siteState());
         if (path === '/api/site/content' && req.method === 'PUT') { const b = await body(req, 512 * 1024); siteContent.saveDraft(b.revision, b.overrides); return json(res, 200, siteState()); }
         if (path === '/api/site/publish' && req.method === 'POST') { const b = await body(req, 4096); const list = publicReferences(references.list()); siteContent.publish(b.revision, b.note ?? '', list.length ? { references: list } : {}); return json(res, 200, siteState()); }

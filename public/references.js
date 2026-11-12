@@ -1,5 +1,5 @@
 import {matchesReference} from '/reference-search.js';
-import {setupPhotos,resetPhotos,savePhotos,savedPhotos} from '/reference-photos.js';
+import {setupPhotos,resetPhotos,savePhotos,savedPhotos,photosReady} from '/reference-photos.js';
 import {websiteWarnings} from '/site-readiness.js';
 const $=s=>document.querySelector(s), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sections={common:'Közös',misi:'Misi',nandi:'Nándi',attila:'Attila',krisztian:'Krisztián'};
@@ -61,10 +61,19 @@ const SITE_TEXT=['website_title_hu','website_title_en','website_copy_hu','websit
 // The English title turns red while it still belongs to another Hungarian title than the one in the form; its text stays.
 function markStaleTitle(){const f=$('#edit-form'),hu=f.elements.website_title_hu.value.trim(),en=f.elements.website_title_en,saved=(editing.website_title_en||'').trim(),base=editing.website_title_en_source||(editing.website_title_hu||'').trim();const stale=Boolean(saved)&&en.value.trim()===saved&&Boolean(base)&&hu!==base;en.classList.toggle('stale',stale);$('#title-en-stale').hidden=!stale;}
 for(const k of ['website_title_hu','website_title_en'])$('#edit-form').elements[k].addEventListener('input',markStaleTitle);
-function siteFormValues(){const f=$('#edit-form'),v={};for(const k of SITE_TEXT)v[k]=f.elements[k].value.trim();for(const k of SITE_FLAGS)v[k]=f.elements[k].checked;v.website_cover_photo=f.elements.website_cover_photo.value;return v;}
+// Photos for the website: the chosen ones in display order (the first is the cover). Only saved, not deleted photos can be chosen; a list that cannot be checked yet is kept as it is.
+let sitePhotos=[];const SITE_PHOTOS_MAX=8;
+function sitePhotoIds(){const saved=savedPhotos();return photosReady()?sitePhotos.filter(id=>saved.some(p=>p.id===id)):[...sitePhotos];}
+function renderSitePhotos(focusId,focusDir){const saved=savedPhotos(),box=$('#site-photos'),chosen=sitePhotoIds(),full=chosen.length>=SITE_PHOTOS_MAX;
+ if(!saved.length){box.innerHTML='<p class="field-hint">Ehhez a referenciához még nincs mentett kép. Tölts fel képet, mentsd el a referenciát, majd nyisd meg újra az adatlapot.</p>';return;}
+ const order=[...chosen,...saved.map(p=>p.id).filter(id=>!chosen.includes(id))];
+ box.innerHTML=order.map(id=>{const p=saved.find(x=>x.id===id),i=chosen.indexOf(id),on=i>=0;return `<div class="site-photo${on?' on':''}"><img loading="lazy" src="${esc(p.src)}" alt=""><label><input type="checkbox" data-site-photo="${esc(id)}"${on?' checked':''}${!on&&full?' disabled':''}> ${esc(p.label)}</label>${on?`<span class="site-photo-pos">${i===0?'Borítókép':(i+1)+'. kép'}</span><span class="site-photo-move"><button type="button" data-site-move="${esc(id)}" data-dir="-1"${i===0?' disabled':''} aria-label="Előrébb">↑</button><button type="button" data-site-move="${esc(id)}" data-dir="1"${i===chosen.length-1?' disabled':''} aria-label="Hátrébb">↓</button></span>`:''}</div>`;}).join('')+`<p class="field-hint">${chosen.length} / ${SITE_PHOTOS_MAX} kép kijelölve${chosen.length>1?'. Több képnél a megnyíló kártyán lapozható képtár jelenik meg.':'.'}</p>`;
+ if(focusId)(box.querySelector(`[data-site-move="${focusId}"][data-dir="${focusDir}"]:not([disabled])`)||box.querySelector(`[data-site-move="${focusId}"]:not([disabled])`))?.focus();}
+$('#site-photos').addEventListener('change',e=>{const c=e.target.closest('[data-site-photo]');if(!c)return;const id=c.dataset.sitePhoto,list=sitePhotoIds().filter(x=>x!==id);if(c.checked){if(list.length>=SITE_PHOTOS_MAX){c.checked=false;return;}list.push(id);}sitePhotos=list;renderSitePhotos();dirty=true;showSiteWarnings();});
+$('#site-photos').addEventListener('click',e=>{const b=e.target.closest('[data-site-move]');if(!b)return;const list=sitePhotoIds(),i=list.indexOf(b.dataset.siteMove),j=i+Number(b.dataset.dir);if(i<0||j<0||j>=list.length)return;[list[i],list[j]]=[list[j],list[i]];sitePhotos=list;renderSitePhotos(b.dataset.siteMove,b.dataset.dir);dirty=true;showSiteWarnings();});
+function siteFormValues(){const f=$('#edit-form'),v={};for(const k of SITE_TEXT)v[k]=f.elements[k].value.trim();for(const k of SITE_FLAGS)v[k]=f.elements[k].checked;const ids=sitePhotoIds();v.website_photos=ids;v.website_cover_photo=ids[0]||'';return v;}
 function fillSiteSection(){const f=$('#edit-form');for(const k of SITE_TEXT)f.elements[k].value=editing[k]||'';for(const k of SITE_FLAGS)f.elements[k].checked=editing[k]===true;markStaleTitle();
- const photos=savedPhotos(),current=editing.website_cover_photo||'';
- f.elements.website_cover_photo.innerHTML='<option value="">Nincs borítókép (illusztráció jelenik meg)</option>'+photos.map(p=>`<option value="${esc(p.id)}"${p.id===current?' selected':''}>${esc(p.label)}</option>`).join('')+(current&&!photos.some(p=>p.id===current)?`<option value="${esc(current)}" selected>(a jelenlegi borítókép)</option>`:'');
+ sitePhotos=[...(editing.website_photos||[])];renderSitePhotos();
  showSiteWarnings();}
 function showSiteWarnings(){const f=$('#edit-form'),box=$('#site-warnings');if(!f.elements.website_publishable.checked){box.hidden=true;return;}
  const w=websiteWarnings(siteFormValues());box.hidden=false;

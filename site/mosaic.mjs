@@ -10,7 +10,7 @@ const paragraphs = text => String(text ?? '').split(/\n\s*\n/).map(p => p.trim()
 const imgTag = (m, alt, sizes, eager = false) =>
   `<img src="/media/${m.id}/${m.widths.includes(800) ? 800 : m.widths[0]}.webp" srcset="${m.widths.map(w => `/media/${m.id}/${w}.webp ${w}w`).join(', ')}" sizes="${sizes}" width="${m.width}" height="${m.height}" alt="${esc(alt)}" loading="${eager ? 'eager' : 'lazy'}" decoding="async">`;
 
-// labels: { all, close, prev, next, sample, open }
+// labels: { all, close, prev, next, sample, open, gallery, galleryPrev, galleryNext, galleryImage }
 // helpers: { categoryLabel(reference) }; categories: the flat category list, in display order
 // filter: false leaves the category chips out (home page selection). chipHref(id): the chips become links to an address that
 // carries the category (references subpage); then `all` is the unfiltered list the chips are built from and `active` the chosen id.
@@ -26,7 +26,11 @@ export function renderMosaic(references, { lang = 'hu', labels, categoryLabel, c
     const face = cm
       ? imgTag(cm, title, '(max-width: 640px) 100vw, (max-width: 1040px) 50vw, 400px')
       : r.sample ? `<span class="mt-art">${buildingSvg(r.kind)}</span>` : `<span class="mt-type"><span>${esc(title)}</span></span>`;
-    const detailImg = cm ? imgTag(cm, title, '(max-width: 900px) 100vw, 900px') : r.sample ? `<span class="mt-art">${buildingSvg(r.kind)}</span>` : '';
+    // Two or more images make a gallery (arrows, dots, swipe; only the first image loads at once); one image or none looks as before.
+    const gal = (r.galleryMedia ?? []).slice(0, 12);
+    const detailImg = gal.length > 1
+      ? `<div class="md-gallery" data-gallery role="group" aria-roledescription="carousel" aria-label="${esc(labels.gallery)}"><div class="mg-stage">${gal.map((m, k) => imgTag(m, k ? `${title} – ${k + 1}` : title, '(max-width: 900px) 100vw, 900px', k === 0).replace('<img ', `<img class="mg-slide"${k ? ' hidden' : ''} `)).join('')}<button type="button" class="mg-prev" data-mg="prev" aria-label="${esc(labels.galleryPrev)}">‹</button><button type="button" class="mg-next" data-mg="next" aria-label="${esc(labels.galleryNext)}">›</button><span class="mg-count" aria-live="polite">1 / ${gal.length}</span></div><div class="mg-dots">${gal.map((m, k) => `<button type="button" class="mg-dot" data-mg-dot="${k}" aria-label="${esc(labels.galleryImage)} ${k + 1}"${k === 0 ? ' aria-current="true"' : ''}></button>`).join('')}</div></div>`
+      : cm ? imgTag(cm, title, '(max-width: 900px) 100vw, 900px') : r.sample ? `<span class="mt-art">${buildingSvg(r.kind)}</span>` : '';
     return `<article class="mt${cm ? '' : ' nophoto'}" data-cat="${esc(r.categoryId || r.category || '')}" data-index="${i}">
   <button class="mt-open" type="button" aria-haspopup="dialog" aria-label="${esc(labels.open)}: ${esc(title)}">
     <span class="mt-face">${face}${r.sample ? `<span class="badge">${esc(labels.sample)}</span>` : ''}</span>
