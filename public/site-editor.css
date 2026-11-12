@@ -1,4 +1,8 @@
 .site-editor .editor-bar { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; background: #fff; border: 1px solid var(--line); border-radius: 7px; padding: 12px 16px; margin: 22px 0 8px; box-shadow: 0 4px 18px #102a4310; }
+.site-editor .jump { flex: 1 0 100%; display: flex; gap: 6px; overflow-x: auto; padding-top: 10px; border-top: 1px solid var(--line); scrollbar-width: thin; }
+.site-editor .jump .chip { flex: none; font: inherit; font-size: 13px; padding: 4px 12px; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--ink); cursor: pointer; white-space: nowrap; }
+.site-editor .jump .chip:hover { border-color: var(--teal); color: var(--teal); }
+.site-editor .group, .site-editor .versions { scroll-margin-top: calc(var(--bar-h, 150px) + 14px); }
 .site-editor .editor-status { font-size: 13px; line-height: 1.5; }
 .site-editor .editor-status strong { color: var(--teal); }
 .site-editor .editor-status .dirty { color: #a35a00; font-weight: 700; }

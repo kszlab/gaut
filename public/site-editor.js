@@ -179,7 +179,17 @@ function renderStatus() {
 function renderVersions() {
   $('#versions').innerHTML = state.versions.length ? state.versions.map((v, i) => `<div class="version-row"><span class="version-number">${state.versions.length - i}</span><div><strong>${esc(date(v.created_at))}${i === 0 ? '<span class="current-tag">ÉLŐ</span>' : ''}</strong><small>${esc(v.note || 'Nincs megjegyzés')} · ${v.changes} módosított mező</small></div><button class="secondary" type="button" data-restore="${esc(v.id)}">Vázlatba töltés</button></div>`).join('') : '<p class="muted">Még nincs közzétett verzió.</p>';
 }
-function renderAll() { renderImages(); renderTeam(); renderRefs(); renderGroups(); renderStatus(); renderVersions(); }
+// Jump bar in the sticky header: one chip per section (read from the page, so new field groups appear by themselves).
+function renderJump() {
+  // by position, not by name: two sections share a title ("Csapat", "Referenciák")
+  $('#jump').innerHTML = [...document.querySelectorAll('#tools section h2')].map((h, i) => `<button type="button" class="chip" data-jump="${i}">${esc(h.textContent)}</button>`).join('');
+}
+$('#jump').addEventListener('click', e => {
+  const b = e.target.closest('[data-jump]'); if (!b) return;
+  document.documentElement.style.setProperty('--bar-h', `${document.querySelector('.editor-bar').offsetHeight}px`); // the sticky bar must not cover the title
+  document.querySelectorAll('#tools section h2')[Number(b.dataset.jump)]?.closest('section')?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+});
+function renderAll() { renderImages(); renderTeam(); renderRefs(); renderGroups(); renderStatus(); renderVersions(); renderJump(); }
 
 async function run(fn, done) {
   if (state.busy) return; state.busy = true; renderStatus();

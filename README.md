@@ -143,6 +143,8 @@ A gyökércím átállítása megtörtént. A végleges élesítésből még há
 
 ### Honlap-szerkesztő (`/munkater/honlap`)
 
+A szerkesztő tetején, a rögzített (sticky) sávban gyorsugró gombsor van: egy gomb minden szakaszhoz (Képek, Csapat, Referenciák, a szövegcsoportok, a közzétett verziók), kattintásra odagörget. A gombok a lapon lévő szakaszokból készülnek, így új mezőcsoport magától megjelenik.
+
 A munkatérből (közös jelszóval) szerkeszthetők a nyilvános honlap szövegei magyarul és angolul. A szerkeszthető mezők listája a `site/content.mjs`-ben van (`FIELDS`); az elrendezés, a menü és a felületi szövegek kódban maradnak. Üres mező esetén az alapszöveg jelenik meg.
 
 - **Vázlat és közzététel:** a mentés csak a vázlatot módosítja. A „Közzététel" gomb a vázlatról verziót készít, és csak az látszik a látogatóknak (`site_versions` tábla, a legújabb az élő). A korábbi verziók „Vázlatba töltéssel" visszahozhatók, utána újra közzé kell tenni.
