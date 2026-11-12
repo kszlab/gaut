@@ -12,10 +12,12 @@ export const HOME_REFERENCES = 9;
 export const dayOf = (date = new Date()) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Budapest' }).format(date);
 const mix = text => { let h = 2166136261; for (const c of String(text)) { h ^= c.codePointAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
 // Home page selection: references marked "kiemelt", in an order that depends on the day; when there are fewer than
-// `count`, the newest other references fill the remaining places (the list arrives newest first).
+// `count`, the newest other references that have a cover image fill the remaining places (the list arrives newest first).
+// A featured reference without a cover image is shown anyway; a reference without one is never added on its own,
+// so with too few of those the home page simply shows fewer tiles.
 export function homeReferences(references, day, count = HOME_REFERENCES) {
   const featured = references.filter(r => r.featured === true).map(r => [mix(`${day}:${r.id}`), r]).sort((a, b) => a[0] - b[0] || String(a[1].id).localeCompare(String(b[1].id))).map(x => x[1]).slice(0, count);
-  return featured.length >= count ? featured : [...featured, ...references.filter(r => r.featured !== true).slice(0, count - featured.length)];
+  return featured.length >= count ? featured : [...featured, ...references.filter(r => r.featured !== true && (r.coverMedia || r.sample)).slice(0, count - featured.length)];
 }
 
 // Hero render for concept n: a high-resolution file (hero-N.webp or hero-N.jpg) wins over the interim
@@ -160,7 +162,7 @@ const TEXT = {
     sectors: ['Ipari létesítmények', 'Kereskedelmi létesítmények', 'Szállodák', 'Közösségi épületek', 'Oktatási intézmények', 'Egészségügyi beruházások'],
     activitiesLabel: 'Tevékenységeink',
     activities: ['Tervezés', 'Tervellenőrzés', 'Műszaki ellenőrzés'],
-    refsKicker: 'Referenciák', refsTitle: 'Válogatás a munkáinkból', refsAll: 'Összes referencia', refsPageTitle: 'Referenciák',
+    refsKicker: 'Referenciák', refsTitle: 'Válogatás a munkáinkból', refsAll: 'Összes referencia', refsLess: 'Kevesebb referencia',
     refsMetaTitle: 'Referenciák | GAUT Mérnökiroda', refsMetaDescription: 'A GAUT Mérnökiroda gépészeti automatika- és épületfelügyeleti tervezési referenciái, kategóriák szerint.',
     refsNote: 'Bemutató mintaprojektek. A látható projektek kitaláltak, a végleges oldalon valós referenciák szerepelnek majd.',
     all: 'Mind', sample: 'Minta', designYear: 'Tervév', mosaicOpen: 'Megnyitás', mosaicClose: 'Bezárás', mosaicPrev: 'Előző referencia', mosaicNext: 'Következő referencia', mosaicDetail: 'Referencia részletei',
@@ -203,7 +205,7 @@ const TEXT = {
     sectors: ['Industrial facilities', 'Commercial facilities', 'Hotels', 'Community buildings', 'Educational institutions', 'Healthcare projects'],
     activitiesLabel: 'Our services',
     activities: ['Design', 'Design review', 'Technical supervision'],
-    refsKicker: 'Projects', refsTitle: 'Selected work', refsAll: 'All projects', refsPageTitle: 'Projects',
+    refsKicker: 'Projects', refsTitle: 'Selected work', refsAll: 'All projects', refsLess: 'Fewer projects',
     refsMetaTitle: 'Projects | GAUT Engineering', refsMetaDescription: 'Building automation and building management design projects by GAUT Engineering, by category.',
     refsNote: 'Illustrative sample projects. The projects shown are invented; the final site will list real references.',
     all: 'All', sample: 'Sample', designYear: 'Design year', mosaicOpen: 'Open', mosaicClose: 'Close', mosaicPrev: 'Previous project', mosaicNext: 'Next project', mosaicDetail: 'Project details',
@@ -251,7 +253,7 @@ function teamCard(m, lang, t) {
 </article>`;
 }
 
-export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampleReferences(), categories = [], team = sampleTeam(), content = null, draft = false, media = {}, page = 'home', category = '', day = dayOf() } = {}) {
+export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampleReferences(), categories = [], team = sampleTeam(), content = null, draft = false, media = {}, page = 'home', category = '', day = dayOf(), fragment = false } = {}) {
   lang = LANGS.includes(lang) ? lang : 'hu';
   theme = parseTheme(theme);
   const t = applyContent(TEXT[lang], content?.[lang]);
@@ -261,7 +263,9 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
   const pathOf = l => (pagePath ? pagePath[l] : homeOf(l));
   const meta = page === 'phases' ? [t.phases.metaTitle, t.phases.metaDescription] : page === 'references' ? [t.refsMetaTitle, t.refsMetaDescription] : [t.title, t.description];
   const categoryName = r => { const c = categories.find(x => x.id === r.categoryId); return c ? (lang === 'en' && c.name_en ? c.name_en : c.name) : categoryLabel(r.category, lang); };
-  const mosaicLabels = { all: t.all, filter: t.refsKicker, open: t.mosaicOpen, close: t.mosaicClose, prev: t.mosaicPrev, next: t.mosaicNext, detail: t.mosaicDetail, sample: t.sample, designYear: t.designYear };
+  const mosaicLabels = { all: t.all, filter: t.refsKicker, open: t.mosaicOpen, close: t.mosaicClose, prev: t.mosaicPrev, next: t.mosaicNext, detail: t.mosaicDetail, sample: t.sample, designYear: t.designYear, less: t.refsLess };
+  // Only the full list (filter buttons, every tile, "show fewer" buttons): the home page loads this when "all references" is opened in place.
+  if (fragment) return renderMosaic(references, { lang, categories, dialog: false, collapse: true, categoryLabel: categoryName, labels: mosaicLabels });
   // Home page: a fixed number of references and a link to all of them. Subpage: every reference, filtered by the category in the address.
   const onHome = homeReferences(references, day);
   const activeCategory = categories.some(c => c.id === category) && references.some(r => r.categoryId === category) ? category : '';
@@ -269,8 +273,7 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
   const refsHref = (id = '') => { const q = [id ? `kategoria=${encodeURIComponent(id)}` : '', draft ? 'elonezet=1' : ''].filter(Boolean).join('&'); return `${REFERENCES_PATH[lang]}${q ? `?${q}` : ''}`; };
   const referencesMain = () => `<section class="page-hero refs-hero">
   <div class="wrap">
-    <p class="kicker">${esc(t.refsKicker)}</p>
-    <h1 class="page-title">${esc(t.refsPageTitle)}</h1>
+    <h1 class="kicker">${esc(t.refsKicker)}</h1>
   </div>
 </section>
 <section id="referenciak" class="block refs-all">
@@ -351,8 +354,13 @@ ${page === 'phases' ? phasesMain(t.phases, { esc, paragraphs: paragraphsHtml }) 
   <div class="wrap">
     <p class="kicker">${esc(t.refsKicker)}</p><h2>${esc(t.refsTitle)}</h2>
     ${t.refsNote && (references.some(r => r.sample) || content?.[lang]?.refsNote !== undefined) ? `<p class="note">${esc(t.refsNote)}</p>` : ''}
-    ${renderMosaic(onHome, { lang, categories, filter: false, categoryLabel: categoryName, labels: mosaicLabels })}
-    ${references.length > onHome.length ? `<p class="refs-more"><a class="btn" href="${refsHref()}">${esc(t.refsAll)} (${references.length}) ${arrow}</a></p>` : ''}
+    <div class="refs-live" data-refs-all="${esc(`${REFERENCES_PATH[lang]}?reszlet=1${draft ? '&elonezet=1' : ''}`)}">
+      <div class="refs-short">
+        ${renderMosaic(onHome, { lang, categories, filter: false, categoryLabel: categoryName, labels: mosaicLabels })}
+        ${references.length > onHome.length ? `<p class="refs-more"><a class="btn" href="${refsHref()}" data-refs-open>${esc(t.refsAll)} ${arrow}</a></p>` : ''}
+      </div>
+      <div class="refs-full" hidden></div>
+    </div>
   </div>
 </section>
 

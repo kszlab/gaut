@@ -231,21 +231,22 @@ h3 { font-size: 21px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } html { scroll-behavior: auto; } }
 
 /* Reference mosaic: tiles of different sizes (featured = double size), dense packing, photo-led with a caption bar */
-.mosaic { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 300px; grid-auto-flow: dense; gap: 28px; }
+.mosaic { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; align-items: stretch; }
 .mt { position: relative; min-width: 0; overflow: hidden; border-radius: var(--radius); background: var(--ground); }
 .mt[hidden] { display: none; }
 .mt-open { all: unset; box-sizing: border-box; cursor: pointer; display: flex; flex-direction: column; width: 100%; height: 100%; }
 .mt-open:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
-.mt-face { position: relative; flex: 1; min-height: 0; overflow: hidden; display: block; }
+.mt-face { position: relative; flex: none; aspect-ratio: 4 / 3; overflow: hidden; display: block; }
 .mt-face img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
 .mt:hover .mt-face img, .mt-open:focus-visible .mt-face img { transform: scale(1.03); }
 .mt-art { position: absolute; inset: 0; display: block; padding: 14px; }
 .mt-art svg { width: 100%; height: 100%; }
 .mt-type { position: absolute; inset: 0; display: flex; align-items: flex-end; padding: 22px; background: var(--alt); }
 .mt-type span { font: var(--head-weight) clamp(20px, 2.2vw, 30px)/1.12 var(--font-head); letter-spacing: var(--head-track); color: var(--ink); }
-.mt-cap { display: block; flex: none; padding: 12px 18px 14px; background: var(--ink); color: var(--bg); }
+.mt-cap { display: block; flex: 1; padding: 12px 18px 16px; background: var(--ink); color: var(--bg); }
 .mt-cap strong { display: block; font-size: 16px; line-height: 1.3; }
-.mt-cap small { display: block; margin-top: 2px; font-size: 12px; letter-spacing: .04em; opacity: .8; }
+.mt-cap small { display: block; margin-top: 2px; font-size: 13px; letter-spacing: .04em; opacity: .8; }
+.mt-sum { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; margin-top: 8px; font-size: 14px; line-height: 1.45; opacity: .9; }
 .badge { z-index: 2; }
 
 /* Detail dialog */
@@ -265,8 +266,8 @@ h3 { font-size: 21px; }
 .md-body h3 { font-size: clamp(22px, 2.6vw, 32px); margin-bottom: 12px; }
 .md-body p:not(.md-meta) { color: var(--muted); }
 
-@media (max-width: 1040px) { .mosaic { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 240px; gap: 20px; } }
-@media (max-width: 640px) { .mosaic { grid-template-columns: 1fr; grid-auto-rows: 250px; gap: 16px; } .md-body { padding: 18px 18px 24px; } }
+@media (max-width: 1040px) { .mosaic { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; } }
+@media (max-width: 640px) { .mosaic { grid-template-columns: 1fr; gap: 16px; } .md-body { padding: 18px 18px 24px; } }
 .mt.nophoto .mt-cap strong { display: none; } /* the typographic tile already shows the title */
 
 /* General introduction of the team: full content width, under the section heading */
@@ -364,6 +365,13 @@ h3 { font-size: 21px; }
 
 /* References: link to the subpage under the home page selection; on the subpage the filter chips are links */
 .refs-more { margin: 36px 0 0; }
+button.btn { font-family: inherit; cursor: pointer; }
 a.chip { display: inline-block; text-decoration: none; }
-.refs-hero { padding-bottom: 8px; }
-.refs-all { padding-top: 40px; }
+/* The subpage heading is the small label itself (an h1 styled like the section labels) */
+h1.kicker { font-family: inherit; line-height: 1.4; }
+.refs-hero { padding: 44px 0 0; }
+.refs-hero .kicker { margin: 0; }
+.refs-all { padding-top: 28px; }
+/* Home page: "all references" opens in place; the dialog stays, so the tiles of the short list only hide */
+.refs-live.is-open > .refs-short > :not(dialog) { display: none; }
+.refs-less { margin-left: auto; }

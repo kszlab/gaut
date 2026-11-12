@@ -4,18 +4,24 @@ import { buildingSvg } from './art.mjs';
 // filter and a detail dialog. The behaviour is in public/site/mosaic.js.
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const pick = (pair, lang) => (pair?.[lang] || pair?.hu || '');
+// A description is plain text; an empty line separates the paragraphs. The first one is the tile's teaser, the dialog shows all of them.
+const paragraphs = text => String(text ?? '').split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
 
 const imgTag = (m, alt, sizes, eager = false) =>
   `<img src="/media/${m.id}/${m.widths.includes(800) ? 800 : m.widths[0]}.webp" srcset="${m.widths.map(w => `/media/${m.id}/${w}.webp ${w}w`).join(', ')}" sizes="${sizes}" width="${m.width}" height="${m.height}" alt="${esc(alt)}" loading="${eager ? 'eager' : 'lazy'}" decoding="async">`;
 
-// labels: { all, close, prev, next, sample, designYear, open }
+// labels: { all, close, prev, next, sample, designYear, open, less }
 // helpers: { categoryLabel(reference) }; categories: the flat category list, in display order
 // filter: false leaves the category chips out (home page selection). chipHref(id): the chips become links to an address that
 // carries the category (references subpage); then `all` is the unfiltered list the chips are built from and `active` the chosen id.
-export function renderMosaic(references, { lang = 'hu', labels, categoryLabel, categories = [], filter = true, chipHref = null, all = references, active = '' }) {
+// dialog: false leaves the detail dialog out (the list that opens in place on the home page reuses the dialog already there).
+// collapse: true adds "show fewer" buttons above and below the list (the in-place list on the home page).
+export function renderMosaic(references, { lang = 'hu', labels, categoryLabel, categories = [], filter = true, chipHref = null, all = references, active = '', dialog = true, collapse = false }) {
   const tiles = references.map((r, i) => {
     const title = pick(r.title, lang), summary = pick(r.summary, lang), place = pick(r.place, lang);
+    // Dialog: category, place and design year. Tile: only the year, and the first paragraph of the description under it.
     const meta = [categoryLabel(r), place, r.year ? `${labels.designYear} ${r.year}` : ''].filter(Boolean).map(esc).join(' · ');
+    const paras = paragraphs(summary);
     const cm = r.coverMedia;
     const face = cm
       ? imgTag(cm, title, '(max-width: 640px) 100vw, (max-width: 1040px) 50vw, 400px')
@@ -24,9 +30,9 @@ export function renderMosaic(references, { lang = 'hu', labels, categoryLabel, c
     return `<article class="mt${cm ? '' : ' nophoto'}" data-cat="${esc(r.categoryId || r.category || '')}" data-index="${i}">
   <button class="mt-open" type="button" aria-haspopup="dialog" aria-label="${esc(labels.open)}: ${esc(title)}">
     <span class="mt-face">${face}${r.sample ? `<span class="badge">${esc(labels.sample)}</span>` : ''}</span>
-    <span class="mt-cap"><strong>${esc(title)}</strong><small>${meta}</small></span>
+    <span class="mt-cap"><strong>${esc(title)}</strong>${r.year ? `<small>${esc(r.year)}</small>` : ''}${paras.length ? `<span class="mt-sum">${esc(paras[0])}</span>` : ''}</span>
   </button>
-  <template class="mt-detail">${detailImg ? `<figure class="md-fig">${detailImg}</figure>` : ''}<div class="md-body"><p class="md-meta">${meta}</p><h3>${esc(title)}</h3>${summary ? `<p>${esc(summary)}</p>` : ''}</div></template>
+  <template class="mt-detail">${detailImg ? `<figure class="md-fig">${detailImg}</figure>` : ''}<div class="md-body"><p class="md-meta">${meta}</p><h3>${esc(title)}</h3>${paras.map(p => `<p>${esc(p)}</p>`).join('')}</div></template>
 </article>`;
   }).join('');
   // One chip per category that has at least one reference on the page, in the order of the category list.
@@ -40,9 +46,10 @@ export function renderMosaic(references, { lang = 'hu', labels, categoryLabel, c
   const chips = !filter || cats.length < 2 ? '' : chipHref
     ? `<nav class="filters" aria-label="${esc(labels.filter)}">${link('', labels.all)}${cats.map(c => link(c.key, c.label)).join('')}</nav>`
     : cats.length > 1
-    ? `<div class="filters" role="group" aria-label="${esc(labels.filter)}"><button type="button" class="chip on" data-filter="*">${esc(labels.all)}</button>${cats.map(c => `<button type="button" class="chip" data-filter="${esc(c.key)}">${esc(c.label)}</button>`).join('')}</div>`
+    ? `<div class="filters" role="group" aria-label="${esc(labels.filter)}"><button type="button" class="chip on" data-filter="*">${esc(labels.all)}</button>${cats.map(c => `<button type="button" class="chip" data-filter="${esc(c.key)}">${esc(c.label)}</button>`).join('')}${collapse ? `<button type="button" class="chip refs-less" data-refs-close>${esc(labels.less)}</button>` : ''}</div>`
     : '';
+  const closeRow = collapse ? `<p class="refs-more"><button type="button" class="btn" data-refs-close>${esc(labels.less)}</button></p>` : '';
   return `${chips}
-<div class="mosaic" data-total="${references.length}">${tiles}</div>
-<dialog class="mosaic-dialog" aria-label="${esc(labels.detail)}"><div class="md-nav"><button type="button" data-md="prev" aria-label="${esc(labels.prev)}">←</button><button type="button" data-md="next" aria-label="${esc(labels.next)}">→</button><button type="button" data-md="close" aria-label="${esc(labels.close)}">×</button></div><div class="md-content"></div></dialog>`;
+<div class="mosaic" data-total="${references.length}">${tiles}</div>${closeRow}${!dialog ? '' : `
+<dialog class="mosaic-dialog" aria-label="${esc(labels.detail)}"><div class="md-nav"><button type="button" data-md="prev" aria-label="${esc(labels.prev)}">←</button><button type="button" data-md="next" aria-label="${esc(labels.next)}">→</button><button type="button" data-md="close" aria-label="${esc(labels.close)}">×</button></div><div class="md-content"></div></dialog>`}`;
 }
