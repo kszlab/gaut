@@ -176,7 +176,7 @@ const TEXT = {
     contactKicker: 'Kapcsolat', contactBoxTitle: 'Elérhetőségek', companyBoxTitle: 'Cégadatok',
     officeLabel: 'Iroda', mapLabel: 'Megtekintés Google Térképen', companyLabels: { name: 'Cégnév', address: 'Székhely', taxNumber: 'Adószám', registrationNumber: 'Cégjegyzékszám', bank: 'Számlavezető bank', account: 'Bankszámlaszám' }, pending: 'hamarosan',
     footer: 'GAUT Kft. Gépészeti automatika és épületfelügyelet tervezése.', preview: 'Előnézet. Az oldal még nem végleges, és a keresők elől rejtve van.',
-    themeLabel: 'Arculat', contact: { office: '1033 Budapest, Hévízi út 9. 4. lépcsőház, földszint 2.', map: 'https://www.google.com/maps/search/?api=1&query=1033+Budapest+H%C3%A9v%C3%ADzi+%C3%BAt+9.', email: 'gaut@gaut.hu', phone: '' }, company: { name: 'GAUT Kft.', address: '1037 Budapest, Csillagszem utca 12.', taxNumber: '', registrationNumber: '', bank: '', account: '' },
+    themeLabel: 'Arculat', modeLabel: 'Megjelenés', modeNames: ['automatikus', 'világos', 'sötét'], contact: { office: '1033 Budapest, Hévízi út 9. 4. lépcsőház, földszint 2.', map: 'https://www.google.com/maps/search/?api=1&query=1033+Budapest+H%C3%A9v%C3%ADzi+%C3%BAt+9.', email: 'gaut@gaut.hu', phone: '' }, company: { name: 'GAUT Kft.', address: '1037 Budapest, Csillagszem utca 12.', taxNumber: '', registrationNumber: '', bank: '', account: '' },
     draftPreview: 'Vázlat előnézete. Ezt a változatot a látogatók még nem látják.'
   },
   en: {
@@ -220,7 +220,7 @@ const TEXT = {
     contactKicker: 'Contact', contactBoxTitle: 'Contact details', companyBoxTitle: 'Company details',
     officeLabel: 'Office', mapLabel: 'View on Google Maps', companyLabels: { name: 'Company name', address: 'Registered office', taxNumber: 'Tax number', registrationNumber: 'Company registration no.', bank: 'Bank', account: 'Bank account' }, pending: 'coming soon',
     footer: 'GAUT Ltd. Design of building automation and building management systems.', preview: 'Preview. This page is not final and is hidden from search engines.',
-    themeLabel: 'Identity', contact: { office: 'Hévízi út 9, Building 4, Ground floor 2, 1033 Budapest, Hungary', map: 'https://www.google.com/maps/search/?api=1&query=1033+Budapest+H%C3%A9v%C3%ADzi+%C3%BAt+9.', email: 'gaut@gaut.hu', phone: '' }, company: { name: 'GAUT Ltd.', address: 'Csillagszem utca 12, 1037 Budapest, Hungary', taxNumber: '', registrationNumber: '', bank: '', account: '' },
+    themeLabel: 'Identity', modeLabel: 'Appearance', modeNames: ['automatic', 'light', 'dark'], contact: { office: 'Hévízi út 9, Building 4, Ground floor 2, 1033 Budapest, Hungary', map: 'https://www.google.com/maps/search/?api=1&query=1033+Budapest+H%C3%A9v%C3%ADzi+%C3%BAt+9.', email: 'gaut@gaut.hu', phone: '' }, company: { name: 'GAUT Ltd.', address: 'Csillagszem utca 12, 1037 Budapest, Hungary', taxNumber: '', registrationNumber: '', bank: '', account: '' },
     draftPreview: 'Draft preview. Visitors do not see this version yet.'
   }
 };
@@ -318,6 +318,7 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
 <meta name="description" content="${esc(meta[1])}">
 <link rel="alternate" hreflang="hu" href="${pathOf('hu')}"><link rel="alternate" hreflang="en" href="${pathOf('en')}">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<script src="/site/mode.js"></script>
 <link rel="stylesheet" href="/site/site.css">
 <script type="module" src="/site/site.js"></script>
 </head>
@@ -328,6 +329,7 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
   <a class="brand" href="${home}" aria-label="GAUT Mérnökiroda">
     ${Object.entries(LOGOS).map(([k, svg]) => `<span class="logo logo-${k}">${svg}</span>`).join('')}
   </a>
+  <button class="mode-btn" type="button" data-mode-btn data-label="${esc(t.modeLabel)}" data-names="${esc(t.modeNames.join('|'))}" aria-label="${esc(t.modeLabel)}: ${esc(t.modeNames[0])}" title="${esc(t.modeLabel)}: ${esc(t.modeNames[0])}"><svg class="mode-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor"/></svg><svg class="mode-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg><svg class="mode-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/></svg></button>
   <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav" aria-label="Menu"><span></span><span></span></button>
   <nav id="nav" class="nav" aria-label="${lang === 'hu' ? 'Főmenü' : 'Main'}">
     ${t.nav.filter(([id]) => id !== 'csapat' || team.length).map(navLink).join('')}

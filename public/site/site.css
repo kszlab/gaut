@@ -39,6 +39,56 @@
   --wordmark-track: 0.01em; --wordmark-weight: 800;
 }
 
+/* Day / night. "Auto" follows the visitor's device; the switch in the header can force light or dark (data-mode on <html>).
+   The identity drafts are light (Rendszer, Struktúra) or dark (Szinkron) by design; each gets the opposite palette below. */
+@media (prefers-color-scheme: dark) { :root[data-theme="rendszer"]:not([data-mode="light"]) {
+  --bg: #0F1B26; --surface: #162533; --alt: #1B2D3D; --ink: #E6EEF3; --muted: #9FB1C0; --line: #2A3D4D;
+  --accent: #3CC4C7; --accent-strong: #2FB4B7; --accent-text: #4FD0D3; --on-accent: #06222A; --link: #4FD0D3;
+  --bt: #223548; --bl: #1A2B3B; --br: #142331; --bline: #3B556B; --bwin: #4F6C84; --ground: #122130; --grid: #21364A;
+  --hero-bg: linear-gradient(180deg, #132230, #0F1B26); --hero-filter: invert(1) hue-rotate(180deg) brightness(.9); --hero-blend: lighten;
+  color-scheme: dark;
+} }
+:root[data-theme="rendszer"][data-mode="dark"] {
+  --bg: #0F1B26; --surface: #162533; --alt: #1B2D3D; --ink: #E6EEF3; --muted: #9FB1C0; --line: #2A3D4D;
+  --accent: #3CC4C7; --accent-strong: #2FB4B7; --accent-text: #4FD0D3; --on-accent: #06222A; --link: #4FD0D3;
+  --bt: #223548; --bl: #1A2B3B; --br: #142331; --bline: #3B556B; --bwin: #4F6C84; --ground: #122130; --grid: #21364A;
+  --hero-bg: linear-gradient(180deg, #132230, #0F1B26); --hero-filter: invert(1) hue-rotate(180deg) brightness(.9); --hero-blend: lighten;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) { :root[data-theme="struktura"]:not([data-mode="light"]) {
+  --bg: #1C1D1E; --surface: #242526; --alt: #2B2C2D; --ink: #ECE7DE; --muted: #A9A59C; --line: #3A3A38;
+  --accent: #D9906A; --accent-strong: #C97E55; --accent-text: #E2A07C; --on-accent: #1C1D1E; --link: #E2A07C;
+  --bt: #55575A; --bl: #34393C; --br: #25292B; --bline: #6A7378; --bwin: #7E888D; --ground: #26272A; --grid: #3A3A38;
+  --hero-filter: brightness(.78); --hero-blend: normal;
+  color-scheme: dark;
+} }
+:root[data-theme="struktura"][data-mode="dark"] {
+  --bg: #1C1D1E; --surface: #242526; --alt: #2B2C2D; --ink: #ECE7DE; --muted: #A9A59C; --line: #3A3A38;
+  --accent: #D9906A; --accent-strong: #C97E55; --accent-text: #E2A07C; --on-accent: #1C1D1E; --link: #E2A07C;
+  --bt: #55575A; --bl: #34393C; --br: #25292B; --bline: #6A7378; --bwin: #7E888D; --ground: #26272A; --grid: #3A3A38;
+  --hero-filter: brightness(.78); --hero-blend: normal;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) { :root[data-theme="szinkron"]:not([data-mode="dark"]) {
+  --bg: #F3F6FA; --surface: #FFFFFF; --alt: #E6ECF4; --ink: #152C52; --muted: #4B5F7F; --line: #CBD5E3;
+  --accent: #5F7D00; --accent-strong: #5F7D00; --accent-text: #5F7D00; --on-accent: #FFFFFF; --link: #4F6A00;
+  --bt: #FFFFFF; --bl: #DCE5F2; --br: #C5D3E8; --bline: #9DB2D2; --bwin: #7F9AC4; --ground: #E4EBF5; --grid: #D0DAEA;
+  --hero-filter: invert(1) hue-rotate(180deg) brightness(1.05); --hero-blend: multiply;
+  color-scheme: light;
+} }
+:root[data-theme="szinkron"][data-mode="light"] {
+  --bg: #F3F6FA; --surface: #FFFFFF; --alt: #E6ECF4; --ink: #152C52; --muted: #4B5F7F; --line: #CBD5E3;
+  --accent: #5F7D00; --accent-strong: #5F7D00; --accent-text: #5F7D00; --on-accent: #FFFFFF; --link: #4F6A00;
+  --bt: #FFFFFF; --bl: #DCE5F2; --br: #C5D3E8; --bline: #9DB2D2; --bwin: #7F9AC4; --ground: #E4EBF5; --grid: #D0DAEA;
+  --hero-filter: invert(1) hue-rotate(180deg) brightness(1.05); --hero-blend: multiply;
+  color-scheme: light;
+}
+:root[data-theme="szinkron"]:not([data-mode]) { color-scheme: dark; }
+.mode-btn { display: inline-flex; align-items: center; justify-content: center; order: 3; width: 44px; height: 44px; padding: 0; border: 1px solid var(--line); border-radius: var(--radius); background: none; color: var(--ink); cursor: pointer; }
+.mode-btn:hover { border-color: var(--accent); }
+.mode-btn svg { width: 22px; height: 22px; display: none; }
+:root:not([data-mode]) .mode-auto, :root[data-mode="light"] .mode-light, :root[data-mode="dark"] .mode-dark { display: block; }
+
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 84px; }
 body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 17px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
@@ -91,8 +141,9 @@ h1, h2, h3 { font-family: var(--font-head); font-weight: var(--head-weight); let
 .hero-img { display: none; width: 100%; height: auto; }
 [data-theme="rendszer"] .hero-rendszer, [data-theme="struktura"] .hero-struktura, [data-theme="szinkron"] .hero-szinkron { display: block; }
 /* The renders fade into the page background instead of sitting in a box. */
-.hero-rendszer { mix-blend-mode: multiply; -webkit-mask-image: radial-gradient(ellipse 72% 70% at 50% 50%, #000 58%, transparent 100%); mask-image: radial-gradient(ellipse 72% 70% at 50% 50%, #000 58%, transparent 100%); }
-.hero-struktura { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 16%); mask-image: linear-gradient(to right, transparent 0, #000 16%); }
+.hero-img { filter: var(--hero-filter, none); }
+.hero-rendszer { mix-blend-mode: var(--hero-blend, multiply); -webkit-mask-image: radial-gradient(ellipse 72% 70% at 50% 50%, #000 58%, transparent 100%); mask-image: radial-gradient(ellipse 72% 70% at 50% 50%, #000 58%, transparent 100%); }
+.hero-struktura { mix-blend-mode: var(--hero-blend, normal); -webkit-mask-image: linear-gradient(to right, transparent 0, #000 16%); mask-image: linear-gradient(to right, transparent 0, #000 16%); }
 .hero-szinkron { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 10%), linear-gradient(to bottom, transparent 0, #000 12%, #000 72%, transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 10%), linear-gradient(to bottom, transparent 0, #000 12%, #000 72%, transparent 100%); -webkit-mask-composite: source-in; mask-composite: intersect; }
 [data-theme="szinkron"] .hero-title { font-size: clamp(34px, 4.6vw, 58px); }
 /* Subsystem column of the "Szinkron" concept: small icon boxes over the dark right edge of the render, each with a short lime connector towards the building. */
@@ -111,7 +162,7 @@ h1, h2, h3 { font-family: var(--font-head); font-weight: var(--head-weight); let
 [data-theme="szinkron"] .nav a:not(.lang):hover::after, [data-theme="szinkron"] .nav a[aria-current]::after { opacity: 1; }
 [data-theme="szinkron"] .btn { border-radius: 999px; padding: 11px 24px; font-size: 15px; }
 [data-theme="szinkron"] .sub { font-weight: 400; }
-[data-theme="szinkron"] .hero-szinkron { mix-blend-mode: lighten; -webkit-mask-image: linear-gradient(to right, transparent 0, #000 14%), linear-gradient(to bottom, #000 80%, transparent 97%); mask-image: linear-gradient(to right, transparent 0, #000 14%), linear-gradient(to bottom, #000 80%, transparent 97%); }
+[data-theme="szinkron"] .hero-szinkron { mix-blend-mode: var(--hero-blend, lighten); -webkit-mask-image: linear-gradient(to right, transparent 0, #000 14%), linear-gradient(to bottom, #000 80%, transparent 97%); mask-image: linear-gradient(to right, transparent 0, #000 14%), linear-gradient(to bottom, #000 80%, transparent 97%); }
 [data-theme="szinkron"] .sys-icons { width: 50px; }
 [data-theme="szinkron"] .sys-icons li { width: 50px; height: 50px; margin-top: -25px; border-color: color-mix(in srgb, var(--ink) 75%, transparent); background: color-mix(in srgb, var(--bg) 55%, transparent); }
 [data-theme="szinkron"] .sys-icons li::before { display: none; } /* the render's own lime lines run to the icons */
@@ -227,7 +278,8 @@ h3 { font-size: 21px; }
 }
 /* The menu folds into the menu button a little earlier than the hero stacks, so six items never crowd the logo. */
 @media (max-width: 1020px) {
-  .menu-btn { display: block; }
+  .menu-btn { display: block; order: 2; }
+  .mode-btn { order: 1; margin-left: auto; margin-right: -10px; }
   .nav { display: none; position: absolute; left: 0; right: 0; top: 100%; flex-direction: column; align-items: flex-start; gap: 4px; padding: 14px 28px 22px; background: var(--bg); border-bottom: 1px solid var(--line); }
   .nav.open { display: flex; } .nav a { padding: 10px 0; font-size: 17px; }
 }
