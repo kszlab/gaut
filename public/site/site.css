@@ -206,6 +206,10 @@ h3 { font-size: 21px; }
 .contact-card .pending { color: var(--muted); font-style: italic; }
 .contact-card .note { margin: 0; }
 .foot { border-top: 1px solid var(--line); padding: 28px 0; font-size: 14px; color: var(--muted); }
+.foot .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 28px; }
+.legal-links { display: flex; flex-wrap: wrap; gap: 6px 22px; }
+.legal-links a { color: inherit; text-underline-offset: 3px; }
+.legal-links a:hover { color: var(--ink); }
 
 /* Theme switcher (preview only) */
 .theme-switch { position: fixed; left: 16px; bottom: 16px; z-index: 40; display: flex; align-items: center; gap: 6px; background: var(--ink); color: var(--bg); padding: 8px 10px 8px 14px; border-radius: 999px; font-size: 12px; box-shadow: 0 8px 28px rgba(0,0,0,.25); flex-wrap: wrap; max-width: calc(100vw - 32px); }
@@ -250,9 +254,9 @@ h3 { font-size: 21px; }
 .badge { z-index: 2; }
 
 /* Detail dialog */
-.mosaic-dialog { width: min(980px, 100% - 32px); max-height: calc(100dvh - 32px); padding: 0; border: 0; border-radius: var(--radius); background: var(--surface); color: var(--ink); overflow: hidden; }
-.mosaic-dialog::backdrop { background: rgba(8, 14, 24, .72); }
-.mosaic-dialog[open] { display: flex; flex-direction: column; }
+.mosaic-dialog, .legal-dialog { width: min(980px, 100% - 32px); max-height: calc(100dvh - 32px); padding: 0; border: 0; border-radius: var(--radius); background: var(--surface); color: var(--ink); overflow: hidden; }
+.mosaic-dialog::backdrop, .legal-dialog::backdrop { background: rgba(8, 14, 24, .72); }
+.mosaic-dialog[open], .legal-dialog[open] { display: flex; flex-direction: column; }
 .md-nav { display: flex; justify-content: flex-end; gap: 6px; padding: 8px 10px; border-bottom: 1px solid var(--line); }
 .md-nav button { font: inherit; font-size: 20px; line-height: 1; width: 40px; height: 40px; background: transparent; color: var(--ink); border: 1px solid var(--line); border-radius: var(--radius); cursor: pointer; }
 .md-nav button:hover:not(:disabled) { border-color: var(--ink); }
@@ -374,3 +378,13 @@ h1.kicker { font-family: inherit; line-height: 1.4; }
 .refs-all { padding-top: 28px; }
 /* Home page: "all references" opens in place; the dialog stays, so the tiles of the short list only hide */
 .refs-live.is-open > .refs-short > :not(dialog) { display: none; }
+/* Legal texts (imprint, privacy notice): in the dialog and on their own pages */
+.legal-body { max-width: none; }
+.legal-title { font-size: clamp(22px, 2.6vw, 30px); margin: 0 0 18px; }
+.legal-text { max-width: 78ch; color: var(--muted); font-size: 16px; line-height: 1.75; }
+.legal-text p { margin: 0 0 1.1em; }
+.legal-text h2, .legal-text h3, .legal-text h4 { color: var(--ink); margin: 1.6em 0 .5em; line-height: 1.3; }
+.legal-text ul { padding-left: 1.3em; margin: .5em 0 1.2em; }
+.legal-text li { margin: .35em 0; }
+.legal-text a { color: var(--accent-text); text-underline-offset: 3px; }
+.legal-body .legal-text { max-width: 70ch; }

@@ -15,7 +15,7 @@ import { randomBytes, randomUUID, createHash, scryptSync, timingSafeEqual } from
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
 // Public pages of the site: the home page and the "Tervezési fázisok" subpage, in both languages.
-const SITE_PAGES = { '/': { lang: 'hu', page: 'home' }, '/hu': { lang: 'hu', page: 'home' }, '/en': { lang: 'en', page: 'home' }, '/tervezesi-fazisok': { lang: 'hu', page: 'phases' }, '/en/design-phases': { lang: 'en', page: 'phases' }, '/referenciak': { lang: 'hu', page: 'references' }, '/en/references': { lang: 'en', page: 'references' } };
+const SITE_PAGES = { '/': { lang: 'hu', page: 'home' }, '/hu': { lang: 'hu', page: 'home' }, '/en': { lang: 'en', page: 'home' }, '/tervezesi-fazisok': { lang: 'hu', page: 'phases' }, '/en/design-phases': { lang: 'en', page: 'phases' }, '/referenciak': { lang: 'hu', page: 'references' }, '/en/references': { lang: 'en', page: 'references' }, '/impresszum': { lang: 'hu', page: 'imprint' }, '/en/imprint': { lang: 'en', page: 'imprint' }, '/adatkezeles': { lang: 'hu', page: 'privacy' }, '/en/privacy': { lang: 'en', page: 'privacy' } };
 const SECTIONS = { common: 'Közös', misi: 'Misi', nandi: 'Nándi', attila: 'Attila', krisztian: 'Krisztián' };
 const CATEGORIES = ['Referencia', 'Fénykép', 'Leírás', 'Cégbemutatás', 'Arculat', 'Egyéb'];
 const MAX_FILE = 20 * 1024 * 1024;
@@ -295,7 +295,8 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         // ?elonezet=1 shows the unpublished draft, but only to a signed-in workspace user; everyone else gets the live version.
         const draft = url.searchParams.get('elonezet') === '1' && Boolean(session(req));
         const view = siteView(draft);
-        const html = renderSite({ lang: sitePage.lang, page: sitePage.page, category: url.searchParams.get('kategoria') || '', categories: references.categories(), theme: parseTheme(url.searchParams.get('tema')), content: view.content, draft, fragment: sitePage.page === 'references' && url.searchParams.get('reszlet') === '1', media: view.media, ...(view.team ? { team: view.team } : {}), ...(view.references ? { references: view.references } : {}) });
+        const html = renderSite({ lang: sitePage.lang, page: sitePage.page, category: url.searchParams.get('kategoria') || '', categories: references.categories(), theme: parseTheme(url.searchParams.get('tema')), content: view.content, draft, fragment: sitePage.page !== 'home' && sitePage.page !== 'phases' && url.searchParams.get('reszlet') === '1', media: view.media, ...(view.team ? { team: view.team } : {}), ...(view.references ? { references: view.references } : {}) });
+        if (html === null) fail(404, 'Nincs ilyen oldal.'); // a legal text that has not been written yet
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         return res.end(req.method === 'HEAD' ? undefined : html);

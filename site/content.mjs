@@ -35,6 +35,8 @@ export const FIELDS = [
   line('teamTitle', 'Csapat', 'Szekció címe', 120),
   { ...text('teamIntro', 'Csapat', 'Csapat általános bemutatkozása (üres sor: új bekezdés)', 2000), optional: true },
   text('teamNote', 'Csapat', 'Megjegyzés a szekció alatt', 400, true),
+  { ...markdown('imprint', 'Impresszum', 'Impresszum (a láblécből ablakban nyílik; üresen a hivatkozás nem látszik)', 12000), optional: true },
+  { ...markdown('privacy', 'Adatkezelési tájékoztató', 'Adatkezelési tájékoztató (a láblécből ablakban nyílik; üresen a hivatkozás nem látszik)', 20000), optional: true },
   line('contact.office', 'Kapcsolat és lábléc', 'Iroda címe', 240),
   line('contact.map', 'Kapcsolat és lábléc', 'Google Térkép hivatkozás', 500),
   line('contact.email', 'Kapcsolat és lábléc', 'E-mail', 120),

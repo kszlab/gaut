@@ -7,6 +7,9 @@ import { PHASES_TEXT, PHASES_PATH, phasesMain } from './phases.mjs';
 
 // The references subpage, and the selection of references shown on the home page.
 export const REFERENCES_PATH = { hu: '/referenciak', en: '/en/references' };
+// Legal texts (imprint, privacy notice): written in the editor, shown in a dialog from the footer, and also reachable at their own address.
+export const LEGAL_PATH = { imprint: { hu: '/impresszum', en: '/en/imprint' }, privacy: { hu: '/adatkezeles', en: '/en/privacy' } };
+export const LEGAL_PAGES = Object.keys(LEGAL_PATH);
 export const HOME_REFERENCES = 9;
 // Today's date in Budapest (YYYY-MM-DD): the home page selection changes once a day, not on every page load.
 export const dayOf = (date = new Date()) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Budapest' }).format(date);
@@ -61,7 +64,7 @@ export const paragraphsHtml = text => String(text ?? '').trim().split(/\n\s*\n/)
 export function richTextHtml(source) {
   const inline = raw => {
     let out = esc(raw);
-    out = out.replace(/\[([^]]+)\]\((https?:\/\/[^\s)]+)\)/g, (_, label, url) => '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + label + '</a>');
+    out = out.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (_, label, url) => '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + label + '</a>');
     out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
     const stylePattern = /\[\[(12|14|16|18|20|24|28|32|36|42)\|(sans|serif|mono)\]\]([\s\S]*?)\[\[\/\]\]/g;
     for (let i = 0; i < 8 && stylePattern.test(out); i++) { stylePattern.lastIndex = 0; out = out.replace(stylePattern, (_, size, font, inner) => '<span class="rt-size-' + size + ' rt-font-' + font + '">' + inner + '</span>'); }
@@ -134,6 +137,7 @@ const TEXT = {
     description: 'A GAUT gépészeti automatika- és épületfelügyeleti rendszereket tervező mérnökiroda.',
     nav: [['bemutatkozas', 'Bemutatkozás'], ['szakteruletek', 'Szakterületek'], ['szemlelet', 'Szemlélet'], ['referenciak', 'Referenciák'], ['csapat', 'Csapat'], ['kapcsolat', 'Kapcsolat']],
     teamKicker: 'Csapat', teamTitle: 'A tervezők, akikkel dolgozhat', teamIntro: '',
+    imprint: '', privacy: '', imprintLabel: 'Impresszum', privacyLabel: 'Adatkezelési tájékoztató', legalNav: 'Jogi tájékoztatók', legalClose: 'Bezárás', siteSuffix: 'GAUT Mérnökiroda',
     teamNote: 'Helyőrző bemutatkozások. A fotók és a szövegek a kollégáktól érkeznek majd.', photoSoon: 'Fotó hamarosan',
     chamberLabel: 'Mérnöki kamarai névjegyzék', chamberOpen: 'megnyitás', contactReveal: 'Kapcsolati adatok megjelenítése',
     skip: 'Ugrás a tartalomra', descriptor: 'Mérnökiroda', other: 'EN', otherName: 'English',
@@ -177,6 +181,7 @@ const TEXT = {
     description: 'GAUT is an engineering consultancy designing mechanical automation and building management systems.',
     nav: [['bemutatkozas', 'About'], ['szakteruletek', 'Services'], ['szemlelet', 'Approach'], ['referenciak', 'Projects'], ['csapat', 'Team'], ['kapcsolat', 'Contact']],
     teamKicker: 'Team', teamTitle: 'The engineers you will work with', teamIntro: '',
+    imprint: '', privacy: '', imprintLabel: 'Legal notice', privacyLabel: 'Privacy notice', legalNav: 'Legal information', legalClose: 'Close', siteSuffix: 'GAUT Engineering',
     teamNote: 'Placeholder introductions. Photos and texts will come from the colleagues.', photoSoon: 'Photo coming soon',
     chamberLabel: 'Chamber of Engineers register', chamberOpen: 'open', contactReveal: 'Show contact details',
     skip: 'Skip to content', descriptor: 'Engineering', other: 'HU', otherName: 'Magyar',
@@ -259,9 +264,14 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
   const t = applyContent(TEXT[lang], content?.[lang]);
   const homeOf = l => (l === 'hu' ? '/' : '/en'); // the Hungarian site is the root, English lives at /en
   const sub = page !== 'home'; // the subpages ("Tervezési fázisok", "Referenciák") share the header, footer and themes of the home page
-  const pagePath = page === 'phases' ? PHASES_PATH : page === 'references' ? REFERENCES_PATH : null;
+  const pagePath = page === 'phases' ? PHASES_PATH : page === 'references' ? REFERENCES_PATH : LEGAL_PATH[page] ?? null;
   const pathOf = l => (pagePath ? pagePath[l] : homeOf(l));
-  const meta = page === 'phases' ? [t.phases.metaTitle, t.phases.metaDescription] : page === 'references' ? [t.refsMetaTitle, t.refsMetaDescription] : [t.title, t.description];
+  const meta = page === 'phases' ? [t.phases.metaTitle, t.phases.metaDescription] : page === 'references' ? [t.refsMetaTitle, t.refsMetaDescription] : LEGAL_PAGES.includes(page) ? [`${t[`${page}Label`]} | ${t.siteSuffix}`, t.description] : [t.title, t.description];
+  // A legal text of the other language falls back to the Hungarian one, like the team introduction; empty means there is no such page or link.
+  const legalText = key => String(t[key] || content?.hu?.[key] || '').trim();
+  const legalHtml = key => `<div class="rich-text legal-text">${richTextHtml(legalText(key))}</div>`;
+  if (LEGAL_PAGES.includes(page) && !legalText(page)) return null;
+  if (fragment && LEGAL_PAGES.includes(page)) return `<h2 class="legal-title">${esc(t[`${page}Label`])}</h2>${legalHtml(page)}`;
   const categoryName = r => { const c = categories.find(x => x.id === r.categoryId); return c ? (lang === 'en' && c.name_en ? c.name_en : c.name) : categoryLabel(r.category, lang); };
   const mosaicLabels = { all: t.all, filter: t.refsKicker, open: t.mosaicOpen, close: t.mosaicClose, prev: t.mosaicPrev, next: t.mosaicNext, detail: t.mosaicDetail, sample: t.sample, designYear: t.designYear };
   // Only the full list (filter buttons, every tile, "show fewer" buttons): the home page loads this when "all references" is opened in place.
@@ -281,6 +291,17 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
     ${renderMosaic(activeCategory ? references.filter(r => r.categoryId === activeCategory) : references, { lang, categories, all: references, active: activeCategory, chipHref: id => refsHref(id), categoryLabel: categoryName, labels: mosaicLabels })}
   </div>
 </section>`;
+  const legalMain = key => `<section class="page-hero refs-hero">
+  <div class="wrap">
+    <h1 class="kicker">${esc(t[`${key}Label`])}</h1>
+  </div>
+</section>
+<section class="block refs-all">
+  <div class="wrap">
+    ${legalHtml(key)}
+  </div>
+</section>`;
+  const legalLinks = LEGAL_PAGES.filter(legalText).map(key => ({ key, href: `${LEGAL_PATH[key][lang]}${draft ? '?elonezet=1' : ''}`, label: t[`${key}Label`] }));
   const home = homeOf(lang), anchor = id => `${sub ? home : ''}#${id}`;
   const navLink = ([id, label]) => `${id === 'referenciak' && page === 'references' ? `<a href="${REFERENCES_PATH[lang]}" aria-current="page">${esc(label)}</a>` : `<a href="${anchor(id)}">${esc(label)}</a>`}${id === 'szakteruletek' ? `<a href="${PHASES_PATH[lang]}"${page === 'phases' ? ' aria-current="page"' : ''}>${esc(t.phases.navLabel)}</a>` : ''}`;
   const otherLang = lang === 'hu' ? 'en' : 'hu';
@@ -311,7 +332,7 @@ export function renderSite({ lang = 'hu', theme = 'rendszer', references = sampl
   </nav>
 </header>
 <main id="tartalom">
-${page === 'phases' ? phasesMain(t.phases, { esc, paragraphs: paragraphsHtml }) : page === 'references' ? referencesMain() : `<section class="hero">
+${page === 'phases' ? phasesMain(t.phases, { esc, paragraphs: paragraphsHtml }) : page === 'references' ? referencesMain() : LEGAL_PAGES.includes(page) ? legalMain(page) : `<section class="hero">
   <div class="wrap hero-grid">
     <div class="hero-copy">
       ${Object.entries(t.hero).map(([k, v]) => heroTitle(k, v)).join('')}
@@ -398,7 +419,8 @@ ${team.length ? `<section id="csapat" class="block alt">
   </div>
 </section>`}
 </main>
-<footer class="foot"><div class="wrap"><span>${esc(t.footer)}</span></div></footer>
+<footer class="foot"><div class="wrap"><span>${esc(t.footer)}</span>${legalLinks.length ? `<nav class="legal-links" aria-label="${esc(t.legalNav)}">${legalLinks.map(l => `<a href="${l.href}" data-legal>${esc(l.label)}</a>`).join('')}</nav>` : ''}</div></footer>
+${legalLinks.length ? `<dialog class="legal-dialog" aria-label="${esc(t.legalNav)}"><div class="md-nav"><button type="button" data-legal-close aria-label="${esc(t.legalClose)}">×</button></div><div class="md-content"><div class="md-body legal-body"></div></div></dialog>` : ''}
 
 <aside class="theme-switch" aria-label="${esc(t.themeLabel)}">
   <span>${esc(t.themeLabel)}</span>
