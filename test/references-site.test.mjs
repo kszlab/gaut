@@ -39,7 +39,7 @@ test('public references are sorted by year and rendered as a mosaic with fallbac
   const samples = renderSite({ lang: 'en' });
   assert.ok(samples.includes('Illustrative sample projects') && samples.includes('class="mt-art"') && samples.includes('class="badge">Sample'), 'sample projects are labelled and use illustrations');
   assert.ok(toPublicReference({ id: 'x', name: '<b>Név</b>', website_publishable: true }).title.hu.includes('<b>'), 'raw text is kept; escaping happens at render time');
-  const escaped = renderSite({ lang: 'hu', references: [toPublicReference({ id: 'x', name: '<b>Név</b>', website_publishable: true, website_copy_hu: '<i>leírás</i>' })] });
+  const escaped = renderSite({ lang: 'hu', references: [toPublicReference({ id: 'x', name: '<b>Név</b>', website_publishable: true, website_copy_hu: '<i>leírás</i>', website_featured: true })] });
   assert.ok(escaped.includes('&lt;b&gt;Név&lt;/b&gt;') && escaped.includes('&lt;i&gt;leírás&lt;/i&gt;') && !escaped.includes('<b>Név</b>'), 'titles and summaries are escaped in the tile and in the detail template');
 });
 const PASSWORD = 'teszt-jelszo-123456';

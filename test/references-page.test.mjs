@@ -22,26 +22,35 @@ test('home selection: featured references, a different order each day, the same 
   const seen = new Set(); for (let d = 1; d <= 28; d++) for (const r of homeReferences(list, `2026-12-${String(d).padStart(2, '0')}`)) seen.add(r.id);
   assert.equal(seen.size, 15, 'over a few weeks every featured reference gets its turn');
   // too few featured ones: they all show, and the newest others fill up to nine (the list arrives newest first)
-  const few = many(20, i => ({ featured: i === 7 || i === 15 }));
+  const cover = { id: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee', widths: [800], width: 800, height: 600 };
+  const few = many(20, i => ({ featured: i === 7 || i === 15, coverMedia: cover }));
   const picked = homeReferences(few, '2026-11-09').map(r => r.id);
   assert.equal(picked.length, 9); assert.ok(picked.includes('r07') && picked.includes('r15'));
   assert.deepEqual(picked.filter(id => id !== 'r07' && id !== 'r15'), ['r00', 'r01', 'r02', 'r03', 'r04', 'r05', 'r06']);
-  assert.deepEqual(homeReferences(many(4), '2026-11-09').map(r => r.id), ['r00', 'r01', 'r02', 'r03'], 'fewer than nine references: all of them');
+  assert.deepEqual(homeReferences(many(4, () => ({ coverMedia: cover })), '2026-11-09').map(r => r.id), ['r00', 'r01', 'r02', 'r03'], 'fewer than nine references: all of them');
+  // a reference without a cover image is never added as a filler, but a featured one shows even without an image
+  const mixed = many(20, i => ({ featured: i === 5, coverMedia: i % 2 ? cover : undefined }));
+  const shown = homeReferences(mixed, '2026-11-09').map(r => r.id);
+  assert.ok(shown.includes('r05'), 'featured without a cover image still shows');
+  assert.ok(shown.filter(id => id !== 'r05').every(id => mixed.find(r => r.id === id).coverMedia), 'fillers all have a cover image');
+  assert.equal(shown.length, 9);
+  assert.deepEqual(homeReferences(many(20), '2026-11-09'), [], 'no featured and no images: nothing is picked on its own');
   assert.match(dayOf(new Date('2026-11-09T23:30:00Z')), /^2026-11-10$/, 'the day follows Budapest time');
 });
 
-test('home page shows nine tiles without a filter and a counted link to the subpage; all tiles have one size', () => {
+test('home page shows nine tiles without a filter and a button that opens the full list in place; all tiles have one size', () => {
   const list = many(30, i => ({ featured: i < 12 }));
   const hu = renderSite({ lang: 'hu', references: list, categories: INITIAL_CATEGORY_LIST, day: '2026-11-09' });
   assert.equal(tiles(section(hu)).length, 9);
   assert.deepEqual(tiles(section(hu)).sort(), homeReferences(list, '2026-11-09').map(r => r.id).sort());
   assert.ok(!section(hu).includes('class="filters"') && !section(hu).includes('data-filter'), 'no category filter over nine tiles');
-  assert.match(hu, /<p class="refs-more"><a class="btn" href="\/referenciak">Összes referencia \(30\) /);
-  assert.match(renderSite({ lang: 'en', references: list, day: '2026-11-09' }), /<a class="btn" href="\/en\/references">All projects \(30\) /);
+  assert.match(hu, /<p class="refs-more"><a class="btn" href="\/referenciak" data-refs-open>Összes referencia <svg/, 'no count on the button; without scripts it is a link to the subpage');
+  assert.ok(hu.includes('data-refs-all="/referenciak?reszlet=1"') && hu.includes('class="refs-full" hidden') && !hu.includes('(30)'));
+  assert.match(renderSite({ lang: 'en', references: list, day: '2026-11-09' }), /<a class="btn" href="\/en\/references" data-refs-open>All projects </);
   assert.ok(!hu.includes('mt big'));
-  assert.ok(!renderSite({ lang: 'hu', references: many(5) }).includes('refs-more'), 'nothing more to show, no button');
+  assert.ok(!renderSite({ lang: 'hu', references: many(5, () => ({ coverMedia: { id: 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee', widths: [800], width: 800, height: 600 } })) }).includes('data-refs-open'), 'nothing more to show, no button');
   const edited = renderSite({ lang: 'hu', references: list, content: { hu: { refsAll: 'Minden munkánk' }, en: {} } });
-  assert.ok(edited.includes('>Minden munkánk (30) '), 'the button label is editable');
+  assert.ok(edited.includes('>Minden munkánk <'), 'the button label is editable');
   assert.ok(!readFileSync(new URL('../public/site/site.css', import.meta.url), 'utf8').includes('.mt.big'));
   assert.ok(readFileSync(new URL('../public/references.html', import.meta.url), 'utf8').includes('Kiemelt referencia (megjelenhet a főoldali válogatásban)'));
 });
@@ -50,7 +59,7 @@ test('references subpage: every reference, the category comes from the address, 
   const list = [...many(12), ...many(3, () => ({ categoryId: 'irodahazak', category: 'Irodaházak' })).map((r, i) => ({ ...r, id: `o${i}`, title: { hu: `Projekt o${i}`, en: '' } }))];
   const opts = { page: 'references', references: list, categories: INITIAL_CATEGORY_LIST };
   const all = renderSite({ lang: 'hu', ...opts });
-  assert.equal((all.match(/<h1[ >]/g) || []).length, 1); assert.ok(all.includes('<h1 class="page-title">Referenciák</h1>'));
+  assert.equal((all.match(/<h1[ >]/g) || []).length, 1); assert.ok(all.includes('<h1 class="kicker">Referenciák</h1>') && !all.includes('page-title'), 'the small label is the heading; no second big title');
   assert.ok(all.includes('<title>Referenciák | GAUT Mérnökiroda</title>') && all.includes('class="theme-switch"'));
   assert.equal(tiles(all).length, 15, 'no upper limit on the subpage');
   assert.ok(all.includes('<a class="chip on" href="/referenciak" aria-current="true">Mind</a>'));
@@ -79,6 +88,9 @@ test('the subpage is served in both languages and filters by ?kategoria=', async
       const html = await r.text();
       assert.ok(html.includes(`<title>${title}</title>`) && html.includes('noindex') && html.includes('class="mosaic"'), path);
     }
+    const part = await fetch(`${base}/referenciak?reszlet=1`); const partHtml = await part.text();
+    assert.ok(part.status === 200 && partHtml.startsWith('<') && !partHtml.includes('<html') && partHtml.includes('class="mosaic"'), 'the list fragment for the home page');
+    assert.ok((await (await fetch(`${base}/?reszlet=1`)).text()).includes('<html'), 'the fragment exists only on the references pages');
     assert.equal((await fetch(`${base}/referenciak/`, { redirect: 'manual' })).status, 404);
     assert.ok((await (await fetch(`${base}/munkater/referenciak`)).text()).includes('/references.js'), 'the workspace keeps its own address');
   } finally { await new Promise(r => server.close(r)); rmSync(dataDir, { recursive: true, force: true }); }
