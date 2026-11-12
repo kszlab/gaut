@@ -297,7 +297,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         fail(404, 'Ismeretlen művelet.');
       }
       // Public site preview. Pages are rendered from sample data; nothing here reads the private stores.
-      const siteAssets = { '/site/site.css': ['site/site.css', 'text/css'], '/site/site.js': ['site/site.js', 'text/javascript'], '/site/mosaic.js': ['site/mosaic.js', 'text/javascript'] };
+      const siteAssets = { '/site/site.css': ['site/site.css', 'text/css'], '/site/site.js': ['site/site.js', 'text/javascript'], '/site/mosaic.js': ['site/mosaic.js', 'text/javascript'], '/site/mode.js': ['site/mode.js', 'text/javascript'] };
       // The workspace lives under /munkater; the root is the public site. Old workspace page addresses keep working through redirects.
       const moved = { '/honlap': '/munkater/honlap', '/munkater/': '/munkater', '/munkater/referenciak/': '/munkater/referenciak', '/munkater/honlap/': '/munkater/honlap' };
       if (['GET', 'HEAD'].includes(req.method) && moved[path]) { res.writeHead(302, { Location: moved[path] + url.search }); return res.end(); }

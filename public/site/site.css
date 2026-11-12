@@ -84,8 +84,8 @@
   color-scheme: light;
 }
 :root[data-theme="szinkron"]:not([data-mode]) { color-scheme: dark; }
-.mode-btn { display: inline-flex; align-items: center; justify-content: center; order: 3; width: 44px; height: 44px; padding: 0; border: 1px solid var(--line); border-radius: var(--radius); background: none; color: var(--ink); cursor: pointer; }
-.mode-btn:hover { border-color: var(--accent); }
+.mode-btn { display: inline-flex; align-items: center; justify-content: center; order: 3; width: 36px; height: 36px; flex: none; padding: 0; border: 0; border-radius: var(--radius); background: none; color: var(--ink); cursor: pointer; }
+.mode-btn:hover { color: var(--accent-text); }
 .mode-btn svg { width: 22px; height: 22px; display: none; }
 :root:not([data-mode]) .mode-auto, :root[data-mode="light"] .mode-light, :root[data-mode="dark"] .mode-dark { display: block; }
 
@@ -113,8 +113,9 @@ h1, h2, h3 { font-family: var(--font-head); font-weight: var(--head-weight); let
 /* The small "MÉRNÖKIRODA" line is live text (sharp at any size); the mark and the wordmark are traced vectors. */
 .logo-desc { fill: var(--ink); font-family: var(--font-body); font-weight: 500; text-rendering: geometricPrecision; }
 .nav { display: flex; align-items: center; gap: 28px; }
-.nav a { color: var(--ink); text-decoration: none; font-size: 15px; padding: 6px 0; border-bottom: 2px solid transparent; }
+.nav a { white-space: nowrap; color: var(--ink); text-decoration: none; font-size: 15px; padding: 6px 0; border-bottom: 2px solid transparent; }
 .nav a:hover, .nav a[aria-current="page"] { border-color: var(--accent); }
+@media (min-width: 1081px) and (max-width: 1260px) { .top { gap: 12px; } .nav { gap: clamp(12px, 1.6vw, 24px); } }
 .nav .lang { border: 1px solid var(--line); padding: 4px 10px; font-size: 13px; letter-spacing: 0.08em; border-radius: var(--radius); }
 .menu-btn { display: none; background: none; border: 1px solid var(--line); width: 44px; height: 44px; border-radius: var(--radius); cursor: pointer; padding: 0; position: relative; }
 .menu-btn span { position: absolute; left: 12px; right: 12px; height: 2px; background: var(--ink); }
@@ -277,9 +278,9 @@ h3 { font-size: 21px; }
   .block { padding: 60px 0; }
 }
 /* The menu folds into the menu button a little earlier than the hero stacks, so six items never crowd the logo. */
-@media (max-width: 1020px) {
+@media (max-width: 1080px) {
   .menu-btn { display: block; order: 2; }
-  .mode-btn { order: 1; margin-left: auto; margin-right: -10px; }
+  .mode-btn { order: 1; margin-left: auto; margin-right: -4px; }
   .nav { display: none; position: absolute; left: 0; right: 0; top: 100%; flex-direction: column; align-items: flex-start; gap: 4px; padding: 14px 28px 22px; background: var(--bg); border-bottom: 1px solid var(--line); }
   .nav.open { display: flex; } .nav a { padding: 10px 0; font-size: 17px; }
 }
