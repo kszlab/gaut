@@ -9,6 +9,7 @@ import { toPublicReference, renderSite } from '../site/site.mjs';
 
 // Bytes that start like a JPEG: the photo store checks the file signature, nothing decodes them here.
 const JPEG = Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.alloc(64)]);
+const JSON_IMG = JPEG.toString('base64');
 
 test('Commons links: file pages, categories, Wikipedia media links and bare titles', () => {
   assert.deepEqual(parseCommonsLink('https://commons.wikimedia.org/wiki/File:Telenor1.jpg'), { kind: 'file', title: 'File:Telenor1.jpg' });
@@ -119,6 +120,41 @@ test('Wikimedia import end to end: category and file, limit of five, no duplicat
     assert.equal((await req('/api/references/GAUT-REF-004/photos')).data.photos.find(p => p.id === kept.id).public_credit, 'Fotó: Fotós 1 / Wikimedia Commons, CC BY-SA 4.0');
   } finally {
     if (server.listening) await new Promise(r => server.close(r));
+    rmSync(dataDir, { recursive: true, force: true });
+  }
+});
+
+test('earlier Wikimedia photos get their website credit once, from the author and licence already noted', async () => {
+  const { DatabaseSync } = await import('node:sqlite');
+  const dataDir = mkdtempSync(join(tmpdir(), 'gaut-wm-mig-')), password = 'wikimedia-test-password';
+  let server, base, cookie = '';
+  const start = async () => { server = makeServer({ dataDir, password }); await new Promise(r => server.listen(0, '127.0.0.1', r)); base = `http://127.0.0.1:${server.address().port}`; };
+  const stop = () => new Promise(r => server.close(r));
+  const req = async (path, method = 'GET', data) => { const r = await fetch(base + path, { method, headers: { 'Content-Type': 'application/json', 'X-Gaut-Request': '1', Cookie: cookie }, body: data === undefined ? undefined : JSON.stringify(data) }); return (await r.json()); };
+  try {
+    await start();
+    const login = await fetch(base + '/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Gaut-Request': '1' }, body: JSON.stringify({ password }) });
+    cookie = login.headers.get('set-cookie').split(';')[0];
+    const path = '/api/references/GAUT-REF-029/photos', content = JSON_IMG;
+    const commons = (await req(path, 'POST', { filename: 'a.jpg', content, credit: 'Yair-haklai', source_url: 'https://commons.wikimedia.org/wiki/File:Szervita_Square_Building.jpg', reuse_status: 'CC BY-SA 4.0 – a licenc feltételeivel, szerző- és forrásmegjelöléssel', license_url: 'https://creativecommons.org/licenses/by-sa/4.0' })).photo;
+    const fromUrl = (await req(path, 'POST', { filename: 'b.jpg', content, credit: 'Christo', source_url: 'https://hu.wikipedia.org/wiki/F%C3%A1jl:X.jpg', reuse_status: 'Felhasználási engedély pontosítandó', license_url: 'http://creativecommons.org/publicdomain/zero/1.0/deed.en' })).photo;
+    const own = (await req(path, 'POST', { filename: 'c.jpg', content, credit: 'Saját', source_url: 'https://example.com/x', reuse_status: 'CC BY 4.0 – saját' })).photo;
+    const noAuthor = (await req(path, 'POST', { filename: 'd.jpg', content, source_url: 'https://commons.wikimedia.org/wiki/File:D.jpg', reuse_status: 'CC BY-SA 3.0 – x' })).photo;
+    await stop();
+    // Pretend the database is from before the credit field: the one-time fill has not run.
+    const db = new DatabaseSync(join(dataDir, 'gaut.sqlite')); db.exec("DELETE FROM photo_migrations WHERE name='wikimedia-public-credit'"); db.close();
+    await start();
+    const byId = Object.fromEntries((await req(path)).photos.map(p => [p.id, p]));
+    assert.equal(byId[commons.id].public_credit, 'Fotó: Yair-haklai / Wikimedia Commons, CC BY-SA 4.0');
+    assert.equal(byId[fromUrl.id].public_credit, 'Fotó: Christo / Wikipédia, CC0');
+    assert.equal(byId[own.id].public_credit, '', 'not from Wikimedia: left alone');
+    assert.equal(byId[noAuthor.id].public_credit, '', 'no author noted: left for a person to fill');
+    // A field cleared on purpose stays cleared after a restart.
+    await req(`/api/reference-photos/${commons.id}`, 'PATCH', { caption: '', credit: 'Yair-haklai', source_url: commons.source_url, reuse_status: commons.reuse_status, license_url: commons.license_url, public_credit: '' });
+    await stop(); await start();
+    assert.equal((await req(path)).photos.find(p => p.id === commons.id).public_credit, '');
+  } finally {
+    if (server?.listening) await stop();
     rmSync(dataDir, { recursive: true, force: true });
   }
 });
