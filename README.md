@@ -1,8 +1,16 @@
-# GAUT · Anyaggyűjtő
+# GAUT · Honlap és belső munkatér
 
-Magyar nyelvű, sötétkék–türkiz anyaggyűjtő a GAUT weboldalához. Egyetlen közös jelszóval nyitható meg, felhasználónév és regisztráció nélkül.
+Egyetlen Node.js alkalmazás, három résszel:
 
-## Funkciók
+- **Nyilvános honlap** (`/`, `/en`): kétnyelvű bemutatkozó oldal referenciákkal, csapattal, tervezési fázisokkal. Részletek: [Nyilvános honlap](#nyilvános-honlap-előnézet).
+- **Belső munkatér** (`/munkater`): közös jelszóval nyitható, felhasználónév és regisztráció nélkül. Itt van az anyaggyűjtő, a referencia-kezelő (`/munkater/referenciak`), a kategóriák (`/munkater/kategoriak`) és a honlap-szerkesztő (`/munkater/honlap`).
+- **Mentés**: a teljes adat egy fájlban letölthető, lásd [Mentés és visszaállítás](#mentés-és-visszaállítás).
+
+Az adatok (SQLite adatbázis, feltöltött fájlok, képek) a `DATA_DIR` mappában vannak; külső adatbázis nem kell.
+
+## Anyaggyűjtő
+
+### Funkciók
 
 - Öt gyűjtőrész: Közös, Misi, Nándi, Attila, Krisztián.
 - Több fájl feltöltése tallózással vagy behúzással; megnevezés, kategória, projekt és megjegyzés.
@@ -37,8 +45,11 @@ Environment Variables:
 | `DATA_DIR` | `/app/data` |
 | `COOKIE_SECURE` | `true` |
 | `GAUT_PASSWORD` | Saját közös jelszó, legalább 12 karakterrel |
+| `TRUST_PROXY` | `1` (a Render egy proxyn át továbbítja a kéréseket; a próbálkozáskorlátok így a valódi látogatói címet figyelik) |
 
 **A jelszót kizárólag a Render titkos környezeti változójába írd. Ne tedd a repóba és ne küldd el chatben.** A Render `PORT` változóját a program automatikusan használja, külön nem kell megadni.
+
+**Látogatói cím és próbálkozáskorlát.** A belépés, a mentésletöltés és a csapattagok elérhetőségének lekérése IP-címenként korlátozott. Proxy mögött a `TRUST_PROXY` mondja meg, hány megbízható proxy áll az alkalmazás előtt; a program az `X-Forwarded-For` fejlécből jobbról ennyiedik címet veszi. Az ennél balrabb lévő értékeket a látogató maga írhatja, ezeket figyelmen kívül hagyja. Közvetlen kapcsolatnál (helyben, proxy nélkül) a változó maradjon üres vagy `0`. Más tárhelyre költözéskor a proxyk számát az ottani beállításhoz kell igazítani.
 
 Ezután indítható a Deploy web service. Nincs szükség setup parancsra: az alkalmazás első indításkor létrehozza az adatbázist a tartós lemezen. Hiányzó vagy rövid jelszó esetén leáll; nincs beépített alapértelmezett jelszó. A `/api/health` jelszó nélkül csak a működést jelzi, az anyaglistához és a letöltésekhez belépés kell.
 

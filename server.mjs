@@ -28,7 +28,16 @@ const textField = (value, max, required = false) => {
   return value.trim();
 };
 
-export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), secureCookies = process.env.COOKIE_SECURE === 'true', password = process.env.GAUT_PASSWORD, backupToken = process.env.GAUT_BACKUP_TOKEN } = {}) {
+export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), secureCookies = process.env.COOKIE_SECURE === 'true', password = process.env.GAUT_PASSWORD, backupToken = process.env.GAUT_BACKUP_TOKEN, trustProxy = process.env.TRUST_PROXY } = {}) {
+  // Number of reverse proxies in front of the app (e.g. 1 on Render). Their addresses are appended to X-Forwarded-For from the right,
+  // so the client address is the entry that many places from the end; anything further left is client-supplied and not trusted.
+  const proxyHops = Math.max(0, Math.min(10, Number.parseInt(trustProxy ?? '0', 10) || 0));
+  function clientIp(req) {
+    const socketIp = req.socket.remoteAddress || 'unknown';
+    if (!proxyHops) return socketIp;
+    const chain = String(req.headers['x-forwarded-for'] || '').split(',').map(part => part.trim()).filter(Boolean);
+    return (chain.length >= proxyHops ? chain[chain.length - proxyHops] : chain[0] || socketIp).slice(0, 100);
+  }
   mkdirSync(join(dataDir, 'files'), { recursive: true });
   if (typeof password !== 'string' || password.length < 12 || password.length > 1024) throw new Error('Állítsd be a GAUT_PASSWORD változót egy legalább 12, legfeljebb 1024 karakteres közös jelszóra.');
   const passwordSalt = 'gaut-shared-access-v1';
@@ -153,7 +162,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         if (req.headers.origin && new URL(req.headers.origin).host !== req.headers.host) fail(403, 'Idegen eredetű kérés.');
       }
       if (path === '/api/login' && req.method === 'POST') {
-        const ip = req.socket.remoteAddress;
+        const ip = clientIp(req);
         const timestamp = Date.now();
         for (const [key, val] of attempts) if (val.until < timestamp) attempts.delete(key);
         const entry = attempts.get(ip) || { count: 0, until: timestamp + 15 * 60 * 1000 };
@@ -172,7 +181,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
       }
       if (path === '/api/health' && req.method === 'GET') return json(res, 200, { ok: true, version: '1.5.1' });
       if (path === '/api/public/team-contact' && req.method === 'POST') {
-        const ip = String(req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown').split(',')[0].trim().slice(0, 100);
+        const ip = clientIp(req);
         const timestamp = Date.now(), windowMs = 10 * 60 * 1000;
         for (const [key, value] of contactAttempts) if (value.until <= timestamp) contactAttempts.delete(key);
         const attempt = contactAttempts.get(ip) || { count: 0, until: timestamp + windowMs };
@@ -189,7 +198,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         let allowed = Boolean(session(req));
         const bearer = /^Bearer\s+(\S{1,512})$/.exec(req.headers.authorization || '')?.[1];
         if (!allowed && bearer) {
-          const key = `backup:${req.socket.remoteAddress}`, timestamp = Date.now();
+          const key = `backup:${clientIp(req)}`, timestamp = Date.now();
           for (const [k, val] of attempts) if (val.until < timestamp) attempts.delete(k);
           const entry = attempts.get(key) || { count: 0, until: timestamp + 15 * 60 * 1000 };
           if (entry.count >= 10) fail(429, 'Túl sok próbálkozás. Próbáld újra 15 perc múlva.');
