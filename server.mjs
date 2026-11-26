@@ -6,6 +6,7 @@ import { contentStore, defaultsFor, FIELDS, HERO_SLOTS } from './site/content.mj
 import { mediaStore } from './site/media.mjs';
 import { photoStore } from './photos.mjs';
 import { streamBackup, backupFileName } from './backup.mjs';
+import { commonsClient, importCommons } from './wikimedia.mjs';
 import { DatabaseSync } from 'node:sqlite';
 import { readFileSync, writeFileSync, mkdirSync, existsSync, unlinkSync, createReadStream } from 'node:fs';
 import { join, resolve, dirname, extname } from 'node:path';
@@ -28,7 +29,7 @@ const textField = (value, max, required = false) => {
   return value.trim();
 };
 
-export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), secureCookies = process.env.COOKIE_SECURE === 'true', password = process.env.GAUT_PASSWORD, backupToken = process.env.GAUT_BACKUP_TOKEN, trustProxy = process.env.TRUST_PROXY } = {}) {
+export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), secureCookies = process.env.COOKIE_SECURE === 'true', password = process.env.GAUT_PASSWORD, backupToken = process.env.GAUT_BACKUP_TOKEN, trustProxy = process.env.TRUST_PROXY, commonsFetch = globalThis.fetch } = {}) {
   // Number of reverse proxies in front of the app (e.g. 1 on Render). Their addresses are appended to X-Forwarded-For from the right,
   // so the client address is the entry that many places from the end; anything further left is client-supplied and not trusted.
   const proxyHops = Math.max(0, Math.min(10, Number.parseInt(trustProxy ?? '0', 10) || 0));
@@ -93,7 +94,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
     const media = resolveMedia(shown?.media);
     const team = shown?.team?.map(m => ({ ...m, sample: false, photoMedia: media[`team.${m.id}`] }));
     const currentById = new Map(references.list().map(r => [r.id, r]));
-    const frozen = draft ? publicReferences(references.list()) : (siteContent.live()?.overrides.references || []).map(r => { const current = currentById.get(r.id); return { ...r, categoryId: current?.category_id || '', category: current?.category ?? r.category }; }); // the category follows the current record, so re-categorising needs no new publication
+    const frozen = draft ? publicReferences(withPhotoCredits(references.list())) : (siteContent.live()?.overrides.references || []).map(r => { const current = currentById.get(r.id); return { ...r, categoryId: current?.category_id || '', category: current?.category ?? r.category }; }); // the category follows the current record, so re-categorising needs no new publication
     const refs = frozen?.length ? frozen.map(r => { const gallery = (r.gallery?.length ? r.gallery : r.cover ? [r.cover] : []).map(id => siteMedia.get(id)).filter(Boolean); return { ...r, coverMedia: gallery[0], galleryMedia: gallery }; }) : undefined;
     return { content: shown, media, team, references: refs, hasLive: Boolean(siteContent.live()) };
   }
@@ -102,6 +103,11 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
     return { fields: FIELDS, slots: HERO_SLOTS.map(([slot, label, fallback]) => ({ slot, label, fallback })), defaults: { hu: defaultsFor(defaultText('hu')), en: defaultsFor(defaultText('en')) }, draft: siteContent.draft(), live: live && { id: live.id, created_at: live.created_at, note: live.note, changes: live.changes }, versions: siteContent.versions(), media: siteMedia.list(), references: referenceOverview() };
   };
   const photos = photoStore(db, dataDir);
+  const commons = commonsClient(commonsFetch);
+  // The credit line of each website photo (author, licence, source), read from the photo at the moment the list is built, so an edit of the
+  // photo's fields reaches the next publication without saving the reference again. Only filled public credits go on; the rest stays internal.
+  const creditOf = photoId => { try { const p = photos.file(photoId); return p.public_credit ? { text: p.public_credit, source: p.source_url, license: p.license_url } : null; } catch { return null; } };
+  const withPhotoCredits = records => records.map(r => ({ ...r, website_photos_credits: (r.website_photos || []).map(creditOf) }));
   const attempts = new Map();
   const contactAttempts = new Map();
   // An optional long random token lets an unattended job (e.g. a nightly task on the owner's PC) download the backup without the shared password.
@@ -224,6 +230,8 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         const photoUpload = /^\/api\/references\/([a-zA-Z0-9_-]{1,100})\/photos$/.exec(path);
         if (photoUpload && req.method === 'GET') return json(res, 200, {photos:photos.list(photoUpload[1])});
         if (photoUpload && req.method === 'POST') return json(res, 201, {photo:photos.add(photoUpload[1],await body(req))});
+        const commonsImport = /^\/api\/references\/([a-zA-Z0-9_-]{1,100})\/photos\/wikimedia$/.exec(path);
+        if (commonsImport && req.method === 'POST') { const b = await body(req, 16384); references.get(commonsImport[1]); return json(res, 200, await importCommons({ client: commons, photos, referenceId: commonsImport[1], links: Array.isArray(b.links) ? b.links : [b.link], max: b.max })); }
         const photoAction = /^\/api\/reference-photos\/([a-f0-9-]{36})(?:\/(trash|restore))?$/.exec(path);
         if (photoAction) {
           const [,id,action]=photoAction;
@@ -244,7 +252,7 @@ export function makeServer({ dataDir = resolve(process.env.DATA_DIR || 'data'), 
         if (referenceMatch && req.method === 'PUT') { const data = await body(req, 1024*1024); await prepareGallery(referenceMatch[1], data); return json(res, 200, { reference: references.update(referenceMatch[1], data) }); }
         if (path === '/api/site/content' && req.method === 'GET') return json(res, 200, siteState());
         if (path === '/api/site/content' && req.method === 'PUT') { const b = await body(req, 512 * 1024); siteContent.saveDraft(b.revision, b.overrides); return json(res, 200, siteState()); }
-        if (path === '/api/site/publish' && req.method === 'POST') { const b = await body(req, 4096); const list = publicReferences(references.list()); siteContent.publish(b.revision, b.note ?? '', list.length ? { references: list } : {}); return json(res, 200, siteState()); }
+        if (path === '/api/site/publish' && req.method === 'POST') { const b = await body(req, 4096); const list = publicReferences(withPhotoCredits(references.list())); siteContent.publish(b.revision, b.note ?? '', list.length ? { references: list } : {}); return json(res, 200, siteState()); }
         if (path === '/api/site/media' && req.method === 'POST') {
           const b = await body(req);
           const f = fileData({ filename: b.filename, content: b.content }); // same size and base64 checks as workspace uploads

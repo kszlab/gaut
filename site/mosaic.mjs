@@ -7,6 +7,9 @@ const pick = (pair, lang) => (pair?.[lang] || pair?.hu || '');
 // A description is plain text; an empty line separates the paragraphs. The first one is the tile's teaser, the dialog shows all of them.
 const paragraphs = text => String(text ?? '').split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
 
+// The credit line of a photo (author, licence) under the picture in the dialog: the words link to the source page, and the licence gets its own link.
+const creditLine = (c, labels, hidden = false) => !c?.text ? '' : `<figcaption class="md-credit"${hidden ? ' hidden' : ''}>${c.source ? `<a href="${esc(c.source)}" target="_blank" rel="noopener noreferrer">${esc(c.text)}</a>` : esc(c.text)}${c.license ? ` · <a href="${esc(c.license)}" target="_blank" rel="noopener noreferrer">${esc(labels.license || 'Licenc')}</a>` : ''}</figcaption>`;
+
 const imgTag = (m, alt, sizes, eager = false) =>
   `<img src="/media/${m.id}/${m.widths.includes(800) ? 800 : m.widths[0]}.webp" srcset="${m.widths.map(w => `/media/${m.id}/${w}.webp ${w}w`).join(', ')}" sizes="${sizes}" width="${m.width}" height="${m.height}" alt="${esc(alt)}" loading="${eager ? 'eager' : 'lazy'}" decoding="async">`;
 
@@ -31,12 +34,16 @@ export function renderMosaic(references, { lang = 'hu', labels, categoryLabel, c
     const detailImg = gal.length > 1
       ? `<div class="md-gallery" data-gallery role="group" aria-roledescription="carousel" aria-label="${esc(labels.gallery)}"><div class="mg-stage">${gal.map((m, k) => imgTag(m, k ? `${title} – ${k + 1}` : title, '(max-width: 900px) 100vw, 900px', k === 0).replace('<img ', `<img class="mg-slide"${k ? ' hidden' : ''} `)).join('')}<button type="button" class="mg-prev" data-mg="prev" aria-label="${esc(labels.galleryPrev)}">‹</button><button type="button" class="mg-next" data-mg="next" aria-label="${esc(labels.galleryNext)}">›</button><span class="mg-count" aria-live="polite">1 / ${gal.length}</span></div><div class="mg-dots">${gal.map((m, k) => `<button type="button" class="mg-dot" data-mg-dot="${k}" aria-label="${esc(labels.galleryImage)} ${k + 1}"${k === 0 ? ' aria-current="true"' : ''}></button>`).join('')}</div></div>`
       : cm ? imgTag(cm, title, '(max-width: 900px) 100vw, 900px') : r.sample ? `<span class="mt-art">${buildingSvg(r.kind)}</span>` : '';
+    const credits = r.credits ?? [];
+    // Gallery: one credit per image, shown with its image (public/site/mosaic.js switches them). A single image: its own credit.
+    const detailCredit = gal.length > 1 ? gal.map((m, k) => creditLine(credits[k], labels, k > 0) || `<figcaption class="md-credit" hidden></figcaption>`).join('') : creditLine(credits[0], labels);
+    const tileCredit = cm && credits[0]?.text ? `<span class="mt-credit">${esc(credits[0].text)}</span>` : '';
     return `<article class="mt${cm ? '' : ' nophoto'}" data-cat="${esc(r.categoryId || r.category || '')}" data-index="${i}">
   <button class="mt-open" type="button" aria-haspopup="dialog" aria-label="${esc(labels.open)}: ${esc(title)}">
-    <span class="mt-face">${face}${r.sample ? `<span class="badge">${esc(labels.sample)}</span>` : ''}</span>
+    <span class="mt-face">${face}${tileCredit}${r.sample ? `<span class="badge">${esc(labels.sample)}</span>` : ''}</span>
     <span class="mt-cap"><strong>${esc(title)}</strong>${tileMeta ? `<small>${tileMeta}</small>` : ''}${paras.length ? `<span class="mt-sum">${esc(paras[0])}</span>` : ''}</span>
   </button>
-  <template class="mt-detail">${detailImg ? `<figure class="md-fig">${detailImg}</figure>` : ''}<div class="md-body"><p class="md-meta">${meta}</p><h3>${esc(title)}</h3>${paras.map(p => `<p>${esc(p)}</p>`).join('')}</div></template>
+  <template class="mt-detail">${detailImg ? `<figure class="md-fig">${detailImg}${detailCredit}</figure>` : ''}<div class="md-body"><p class="md-meta">${meta}</p><h3>${esc(title)}</h3>${paras.map(p => `<p>${esc(p)}</p>`).join('')}</div></template>
 </article>`;
   }).join('');
   // One chip per category that has at least one reference on the page, in the order of the category list.
