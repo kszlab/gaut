@@ -59,14 +59,14 @@
   --bg: #1C1D1E; --surface: #242526; --alt: #2B2C2D; --ink: #ECE7DE; --muted: #A9A59C; --line: #3A3A38;
   --accent: #D9906A; --accent-strong: #C97E55; --accent-text: #E2A07C; --on-accent: #1C1D1E; --link: #E2A07C;
   --bt: #55575A; --bl: #34393C; --br: #25292B; --bline: #6A7378; --bwin: #7E888D; --ground: #26272A; --grid: #3A3A38;
-  --hero-filter: brightness(.78); --hero-blend: normal;
+  --hero-filter: invert(1) hue-rotate(180deg) brightness(.9); --hero-blend: lighten; --hero-builtin-filter: brightness(.78); --hero-builtin-blend: normal;
   color-scheme: dark;
 } }
 :root[data-theme="struktura"][data-mode="dark"] {
   --bg: #1C1D1E; --surface: #242526; --alt: #2B2C2D; --ink: #ECE7DE; --muted: #A9A59C; --line: #3A3A38;
   --accent: #D9906A; --accent-strong: #C97E55; --accent-text: #E2A07C; --on-accent: #1C1D1E; --link: #E2A07C;
   --bt: #55575A; --bl: #34393C; --br: #25292B; --bline: #6A7378; --bwin: #7E888D; --ground: #26272A; --grid: #3A3A38;
-  --hero-filter: brightness(.78); --hero-blend: normal;
+  --hero-filter: invert(1) hue-rotate(180deg) brightness(.9); --hero-blend: lighten; --hero-builtin-filter: brightness(.78); --hero-builtin-blend: normal;
   color-scheme: dark;
 }
 @media (prefers-color-scheme: light) { :root[data-theme="szinkron"]:not([data-mode="dark"]) {
@@ -114,7 +114,8 @@ h1, h2, h3 { font-family: var(--font-head); font-weight: var(--head-weight); let
 .logo-desc { fill: var(--ink); font-family: var(--font-body); font-weight: 500; text-rendering: geometricPrecision; }
 .nav { display: flex; align-items: center; gap: 28px; }
 .nav a { white-space: nowrap; color: var(--ink); text-decoration: none; font-size: 15px; padding: 6px 0; border-bottom: 2px solid transparent; }
-.nav a:hover, .nav a[aria-current="page"] { border-color: var(--accent); }
+/* The page you are on, or on the home page the section in view (public/site/site.js), is underlined in every identity. */
+.nav a:hover, .nav a[aria-current] { border-color: var(--accent); }
 @media (min-width: 1081px) and (max-width: 1260px) { .top { gap: 12px; } .nav { gap: clamp(12px, 1.6vw, 24px); } }
 .nav .lang { border: 1px solid var(--line); padding: 4px 10px; font-size: 13px; letter-spacing: 0.08em; border-radius: var(--radius); }
 .menu-btn { display: none; background: none; border: 1px solid var(--line); width: 44px; height: 44px; border-radius: var(--radius); cursor: pointer; padding: 0; position: relative; }
@@ -143,7 +144,11 @@ h1, h2, h3 { font-family: var(--font-head); font-weight: var(--head-weight); let
 [data-theme="rendszer"] .hero-rendszer, [data-theme="struktura"] .hero-struktura, [data-theme="szinkron"] .hero-szinkron { display: block; }
 /* The renders fade into the page background instead of sitting in a box. */
 .hero-img { filter: var(--hero-filter, none); }
+/* The bundled Struktúra image is a photo, which an inverted night version would spoil: in the dark it is only dimmed.
+   An uploaded image (a light drawing) is recoloured like the Rendszer render. */
+.hero-img.hero-builtin { filter: var(--hero-builtin-filter, var(--hero-filter, none)); }
 .hero-rendszer { mix-blend-mode: var(--hero-blend, multiply); -webkit-mask-image: radial-gradient(ellipse 72% 70% at 50% 50%, #000 58%, transparent 100%); mask-image: radial-gradient(ellipse 72% 70% at 50% 50%, #000 58%, transparent 100%); }
+.hero-struktura.hero-builtin { mix-blend-mode: var(--hero-builtin-blend, var(--hero-blend, normal)); }
 .hero-struktura { mix-blend-mode: var(--hero-blend, normal); -webkit-mask-image: linear-gradient(to right, transparent 0, #000 16%); mask-image: linear-gradient(to right, transparent 0, #000 16%); }
 .hero-szinkron { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 10%), linear-gradient(to bottom, transparent 0, #000 12%, #000 72%, transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 10%), linear-gradient(to bottom, transparent 0, #000 12%, #000 72%, transparent 100%); -webkit-mask-composite: source-in; mask-composite: intersect; }
 [data-theme="szinkron"] .hero-title { font-size: clamp(34px, 4.6vw, 58px); }
