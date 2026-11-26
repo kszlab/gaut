@@ -317,6 +317,10 @@ h3 { font-size: 21px; }
 .md-content { overflow: auto; }
 .md-fig { margin: 0; background: var(--ground); }
 .md-fig img { width: 100%; max-height: 62dvh; object-fit: contain; } /* the whole picture, never cropped */
+.md-credit { padding: 6px 14px 8px; font-size: 12px; line-height: 1.4; color: var(--muted); text-align: right; }
+.md-credit[hidden] { display: none; }
+.md-credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.mt-credit { position: absolute; right: 0; bottom: 0; z-index: 1; max-width: 100%; padding: 2px 8px; font-size: 10px; line-height: 1.5; color: rgba(255, 255, 255, .88); background: rgba(8, 14, 24, .45); border-top-left-radius: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
 .md-fig .mt-art { position: static; padding: 24px; max-height: 50dvh; }
 /* Gallery in the detail dialog (only for references with two or more images) */
 .md-gallery { background: var(--ground); }

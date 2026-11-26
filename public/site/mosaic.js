@@ -46,6 +46,9 @@ if (dialog) {
     const slides = [...g.querySelectorAll('.mg-slide')], at = slides.findIndex(s => !s.hidden);
     const i = to ?? (at + delta + slides.length) % slides.length;
     slides.forEach((s, k) => { s.hidden = k !== i; });
+    // The credit lines sit after the gallery, one per image, only the one of the shown image is visible (empty ones stay hidden).
+    const credits = [...(g.closest('.md-fig')?.querySelectorAll(':scope > .md-credit') ?? [])];
+    if (credits.length === slides.length) credits.forEach((c, k) => { c.hidden = k !== i || !c.textContent; });
     g.querySelectorAll('.mg-dot').forEach((d, k) => { if (k === i) d.setAttribute('aria-current', 'true'); else d.removeAttribute('aria-current'); });
     g.querySelector('.mg-count').textContent = `${i + 1} / ${slides.length}`;
     return true;
