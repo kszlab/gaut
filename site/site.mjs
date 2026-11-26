@@ -33,7 +33,7 @@ function heroImage(n) {
 // One hero <img>: an uploaded image (with srcset over its stored widths) or the bundled default for that identity draft.
 function heroImg(key, n, active, custom, lang) {
   const loading = active ? 'eager' : 'lazy';
-  if (!custom) return `<img class="hero-img hero-${key}" src="${heroImage(n)}" alt="" loading="${loading}" decoding="async">`;
+  if (!custom) return `<img class="hero-img hero-${key} hero-builtin" src="${heroImage(n)}" alt="" loading="${loading}" decoding="async">`;
   const widths = custom.widths, best = widths.includes(1600) ? 1600 : widths.at(-1);
   const srcset = widths.map(w => `/media/${custom.id}/${w}.webp ${w}w`).join(', ');
   return `<img class="hero-img hero-${key}" src="/media/${custom.id}/${best}.webp" srcset="${srcset}" sizes="(max-width: 860px) 100vw, 720px" width="${custom.width}" height="${custom.height}" alt="${esc(custom.alt?.[lang] || '')}" loading="${loading}" decoding="async">`;

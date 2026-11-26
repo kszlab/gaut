@@ -47,3 +47,19 @@ test('the mode script only accepts light and dark', () => {
   const js = readFileSync(new URL('../public/site/mode.js', import.meta.url), 'utf8');
   assert.ok(js.includes("'gaut-mode'") && js.includes("saved === 'light' || saved === 'dark'"));
 });
+
+test('night: an uploaded Struktúra image is recoloured like the Rendszer render, the bundled photo only dimmed', () => {
+  const darkStruktura = css.split(':root[data-theme="struktura"][data-mode="dark"]')[1].split('}')[0];
+  assert.match(darkStruktura, /--hero-filter: invert\(1\) hue-rotate\(180deg\)/);
+  assert.match(darkStruktura, /--hero-builtin-filter: brightness\(\.78\)/);
+  assert.match(css, /\.hero-img\.hero-builtin \{ filter: var\(--hero-builtin-filter, var\(--hero-filter, none\)\); \}/);
+  const builtin = renderSite({ lang: 'hu', theme: 'struktura' });
+  assert.ok(builtin.includes('class="hero-img hero-struktura hero-builtin"'), 'the bundled image is marked');
+  const custom = renderSite({ lang: 'hu', theme: 'struktura', media: { 'hero.struktura': { id: 'aaaaaaaa-bbbb-cccc-dddd-000000000001', widths: [800, 1600], width: 1600, height: 1000, alt: { hu: '', en: '' } } } });
+  assert.ok(/class="hero-img hero-struktura"/.test(custom) && !/hero-struktura hero-builtin/.test(custom), 'an uploaded image is not');
+});
+
+test('menu: the page or section in view is underlined in every identity, not only the subpage link', () => {
+  assert.ok(css.includes('.nav a:hover, .nav a[aria-current] { border-color: var(--accent); }'));
+  assert.ok(!css.includes('.nav a[aria-current="page"] {'));
+});
